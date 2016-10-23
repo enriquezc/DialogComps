@@ -1,0 +1,11 @@
+Course relation:
+    course_id, course_title, course_description, dept_id
+    
+Section relation:
+    sec_id, course_id, meeting_time, instructor_id, credits
+    
+Instructor relation:
+    instructor_id, instructor_name, dept_id
+    
+Department relation:
+    dept_id, department_name
