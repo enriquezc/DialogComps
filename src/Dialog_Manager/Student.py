@@ -1,4 +1,4 @@
-import Class
+from src.Dialog_Manager import Class
 
 class Student:
     def __init__(self):

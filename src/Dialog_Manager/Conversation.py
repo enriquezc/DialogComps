@@ -1,5 +1,5 @@
 import queue
-import Student
+from src.Dialog_Manager import Student
 
 
 class Conversation:
