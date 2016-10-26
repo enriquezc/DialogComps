@@ -7,7 +7,7 @@ class Student:
         self.major = []
         self.concentration = None
         self.previous_classes = []
-        self.distrobutions_needed = []
+        self.distributions_needed = []
         self.major_classes_needed = []
         self.terms_left = 12
         self.total_credits = None
