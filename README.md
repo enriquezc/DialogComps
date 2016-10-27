@@ -1,1 +1,5 @@
-This is a Readme. So readme. Did ya read me? What is my purpose? To be read? I feel so alone right now.
+# Comps project 2016
+
+Conversation machine to help register students for courses at Carleton College.
+
+We have broken this project up into 3 main parts:
