@@ -21,4 +21,3 @@ class Class:
         #Boolean. Have they taken the class yet?
         self.taken = None
         self.credits = None
-

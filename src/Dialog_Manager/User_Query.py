@@ -75,6 +75,3 @@ class QueryType(Enum):
     new_class_requirements = 34
     #Ask what time they'd like the class to be. Or alternatively, what time they don't want it to be
     new_class_time = 35
-
-
-

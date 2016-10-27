@@ -17,8 +17,3 @@ class Student:
         #3. Strings with phrases we believe they said they were interested in
         self.interests = []
         self.abroad = False
-
-
-
-
-
