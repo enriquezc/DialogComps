@@ -1,6 +1,8 @@
 #import nltk
 #import pyluis
 from src.Dialog_Manager import Student, Conversation
+from src.utils import constants
+import random
 
 class nLUU: 
     def __init__(self, luisurl):
@@ -19,7 +21,7 @@ class nLUU:
             client_response = input(our_response)
             luis_analysis = get_luis(client_response)
             tree = create_syntax_tree(client_response)
-            our_response_nebulous = dialog_manager.create_response(tree, luis_analysis)
+            our_response_nebulous = dialog_manager.create_response(tree, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
             our_response = create_response_string(our_response_nebulous)
             if our_response == "STOP":
                 conversing = False
@@ -53,7 +55,9 @@ class nLUU:
         return self.luis.analyze(s)
 
 
-    def create_response_string(self, res):
+    def create_response_string(self, res_type, res):
         '''
             Takes whatever response from backend and converts to readable string
         '''
+        rand = random.randint(0, len(res_type))
+        res_type[0].format(res[0], res[1])
