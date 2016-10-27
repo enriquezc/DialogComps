@@ -1,12 +1,5 @@
 from enum import Enum
 
-#This gets passed on to the NLUU, allowing it to decipher
-class UserQuery:
-    def __init__(self, object = None, type = QueryType.pleasantry):
-        self.type = type
-        #As of now either empty, of type class, or of type student.
-        self.object = object
-
 
 class QueryType(Enum):
     #welcome statement for our bot
@@ -75,3 +68,12 @@ class QueryType(Enum):
     new_class_requirements = 34
     #Ask what time they'd like the class to be. Or alternatively, what time they don't want it to be
     new_class_time = 35
+
+
+#This gets passed on to the NLUU, allowing it to decipher
+class UserQuery:
+    def __init__(self, object = None, type = QueryType.pleasantry):
+        self.type = type
+        #As of now either empty, of type class, or of type student.
+        self.object = object
+
