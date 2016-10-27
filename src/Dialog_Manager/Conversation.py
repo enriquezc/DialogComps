@@ -23,11 +23,19 @@ class Conversation:
         self.priority_queue = queue.PriorityQueue()
         self.student = Student()
 
-    def classify_job(self, input):
+    def classify_intent(self, input):
             #input is a luis dictionary
-            if input.intents[0].score >= .5:
-                return input.intents[0].intent
-            return "unknown"
-    
+        if input.intents[0].score >= .5:
+            return input.intents[0].intent
+        return "unknown"
+
+    def classify_entities(self, input):
+        CUTOFF = .3
+        entities = {}
+        for key in input.keys():
+            if input.entities[key].score > CUTOFF:
+                entities[input.entities[key].type] = input.entities[key].score
+        return entities
+
 
 
