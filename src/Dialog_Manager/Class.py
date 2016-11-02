@@ -5,6 +5,7 @@ class Class:
         self.prof = None
         self.term = None
         self.department = None
+        self.courseNum = None
         #A score from 1-10 of how much they liked the class
         self.sentiment = 0
         #how confident are we in this sentiment
