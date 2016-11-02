@@ -35,4 +35,4 @@ add reccomendation to prio Q.
 
 9. Send top of prio Q to NLU Unit.
 
-10. Rinse, repeat. 
+10. Rinse, repeat.
