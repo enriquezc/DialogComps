@@ -17,6 +17,10 @@ class Course:
         self.prereqs = []
         self.instructor = ""
 
+def connect_to_db():
+    conn = psycopg2.connect(host = "cmc307-07.mathcs.carleton.edu", \
+    database = "dialogComps", user = "dialogComps", password = "dln!=dialog")
+
 def query_courses(course):
     '''
     Returns a list of course objects which share the attributes defined for the
@@ -28,6 +32,12 @@ def query_courses(course):
     # point seems super inefficient
     # have to find a way to share some conditions
 
+    if course.dept != None:
+        # we know we are working with a specific department?
+
+        if course.course_num != None:
+            # we can now make a reasonable query with the intent of finding
+            # a course that exists
 
     list_courses = []
 
