@@ -1,4 +1,4 @@
-class Class:
+class Course:
     def __init__(self):
         #name of class
         self.name = None
