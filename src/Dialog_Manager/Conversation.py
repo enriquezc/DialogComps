@@ -51,21 +51,36 @@ class Conversation:
     # @params
     # @return
     def get_next_response(self, input, luisAI):
-        self.add_to_PriorityQueue(input)
+        #self.add_to_PriorityQueue(input)
         luis_entities = self.classify_entities(luisAI)
         luis_intent = self.classify_intent(luisAI)
-        entity_information = self.task_manager_information(luis_entities)
+
+
+        #entity_information = self.task_manager_information(luis_entities)
         if luis_intent == "ClassRequest":
-            information_type = self.new_information(entity_information)
-            student_value = self.add_to_student(entity_information, information_type)
+            course = Course()
+            for entity in luis_entities:
+                if entity.type == "Course": #add more if's for different types
+                    if length(entity) < 8 and entity[-4:-1].isnumeric():
+                        course.id = entity
+                        course.user_description = input
+
+                    else:
+                        course.name = entity
+                        course.user_description = input
+
+            #information_type = self.new_information(entity_information)
+            course = self.add_to_student(entity_information)
+            task_manager_information(course)
+            return UserQuery(course, QueryType.new_class_description)
         else:
-            self.schedule_course(entity_information)
 
 
 
     # @params
     # @return
-    def task_manager_information(self, entities):
+    def task_manager_information(self, course):
+
 
     #query the task manager with the entity given by luis
         return 0
@@ -77,17 +92,31 @@ class Conversation:
 
     # @params course to add to student classes
     # @return 0 for added successfully, 1 for not added
-    def schedule_course(self, course):
-        if course in self.student.current_classes:
-            return 1
+    def schedule_course(self, new_course):
+
+        for (course in self.student.previous_classes):
+            if (new_course.id == course.id):
+                return course
+        for (course in self.student.current_classes):
+            if (new_course.id == course.id):
+                return course
         else:
-            self.student.current_classes.append(course)
-            return 0
+            self.student.current_classes.append(new_course)
+            return new_course
+
 
     # @return location in student to store information / check if information is stored
     # @params information (entity) that we are looking to store
-    def add_to_student(self, information, type):
-        return 0
+    def add_to_student(self, new_course, type):
+        for (course in self.student.previous_classes):
+            if (new_course.id == course.id):
+                return course
+        for (course in self.student.current_classes):
+            if (new_course.id == course.id):
+                return course
+        else:
+            self.student.current_classes.append(new_course)
+            return new_course
 
     def course_interest(self, course):
         return 0
