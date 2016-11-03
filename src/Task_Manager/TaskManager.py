@@ -28,7 +28,7 @@ def query_courses(course):
         query_string = query_string + "sec_subject = '" + course.dept
         query_string = query_string + "' AND "
 
-    if course.courseNum != -1:
+    if course.course_num != None:
         query_string = query_string + "sec_course_no = '" \
         + str(course.course_num)
         query_string = query_string + "' AND "
