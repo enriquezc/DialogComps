@@ -2,7 +2,7 @@ import queue
 from nltk.tree import Tree
 from src.Dialog_Manager import Student, Course, User_Query
 import luis
-
+from src.Task_Manager import TaskManager
 
 
 class Conversation:
@@ -24,7 +24,7 @@ class Conversation:
 
     def __init__(self):
         self.priority_queue = queue.PriorityQueue()
-        self.student = Student()
+        self.student = Student.Student()
         self.last_query = 0
 
     # @params
@@ -61,7 +61,7 @@ class Conversation:
 
         #entity_information = self.task_manager_information(luis_entities)
         if luis_intent.intent == "ClassRequest": #right now we will only have one intent and one entity, keeping loop
-            course = Course()               #for future complicated conditions.
+            course = Course.Course()               #for future complicated conditions.
             for entity in luis_entities:
                 if entity.type == "u'COURSE'": #add more if's for different types
                     if len(entity.entity) < 8 and entity.entity[-4:-1].isnumeric():
@@ -74,15 +74,20 @@ class Conversation:
 
             #information_type = self.new_information(entity_information)
             self.task_manager_information(course)
-            return User_Query(course, User_Query.QueryType.class_info_term)
+            return User_Query.UserQuery(course, User_Query.QueryType.class_info_term)
         else:
+            course = Course.Course()
+            course.name = luisAI.query[-4:-1]
+            course.department = luisAI.query[-6:-4]
+            course = self.task_manager_information(course)
+            return User_Query.UserQuery(course, User_Query.QueryType.class_info_term)
 
 
 
     # @params
     # @return
     def task_manager_information(self, course):
-        course.term = "W/16"
+        return TaskManager.query_courses(course)
 
     #query the task manager with the entity given by luis
 

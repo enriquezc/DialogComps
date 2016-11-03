@@ -3,7 +3,7 @@
 # conversation for the Dialogue Manager
 
 import psycopg2
-import src.Dialog_Manager.Course
+#from src.Dialog_Manager import Course
 
 
 def connect_to_db():
@@ -25,12 +25,12 @@ def query_courses(course):
     query_string = "SELECT * FROM COURSE WHERE sec_term = '16/FA' AND "
 
     if course.department != None:
-        query_string = query_string + "sec_subject = '" + course.dept
+        query_string = query_string + "sec_subject = '" + course.department
         query_string = query_string + "' AND "
 
-    if course.course_num != None:
+    if course.name != None:
         query_string = query_string + "sec_course_no = '" \
-        + str(course.course_num)
+        + str(course.name)
         query_string = query_string + "' AND "
 
     query_string = query_string[:-5]

@@ -1,6 +1,6 @@
 import nltk
 import luis
-from src.Dialog_Manager import Student, Conversation
+from src.Dialog_Manager import Student, Conversation, Course
 from src.utils import constants
 import random
 
@@ -8,8 +8,8 @@ class nLUU:
     def __init__(self, luisurl):
         self.luis = luis.Luis(luisurl)
         #Requires a local copy of atis.cfg
-        atis_grammar = nltk.data.load("atis.cfg")
-        self.parser = nltk.ChartParser(atis_grammar)
+        #atis_grammar = nltk.data.load("atis.cfg")
+        #self.parser = nltk.ChartParser(atis_grammar)
 
     def start_conversation(self):
         ''' 
@@ -28,7 +28,7 @@ class nLUU:
                 print("Goodbye")
                 conversing = False
                 break
-            our_response = create_response_string(userQuery)
+            our_response = self.create_response_string(userQuery)
 
 
 
@@ -64,11 +64,12 @@ class nLUU:
         '''
             Takes whatever response from backend and converts to readable string
         '''
-        if type(userQuery.object) == Course:
+        if type(userQuery.object) == Course.Course:
             s = 'Here\'s some data about your course:\n'
             d = userQuery.object.__dict__
-            for k, v in d:
-                if v != 0 and len(v) != 0:
+            print(d)
+            for k, v in d.items():
+                if v != None and v != 0 and not (type(v) == list and len(v) == 0):
                     s += k + ':' + v + '\n'
         elif type(userQuery.object) == Student:
             s = 'Please ask me about a course.'
