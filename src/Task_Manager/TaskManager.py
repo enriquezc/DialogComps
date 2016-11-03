@@ -5,6 +5,7 @@
 import psycopg2
 
 
+
 class Course:
     def __init__(self):
         self.dept = None
@@ -12,14 +13,17 @@ class Course:
         self.section_num = - 1
         self.title = ""
         self.credits = - 1
-        self.meeting_time = []
+        self.meeting_time = ""
         self.course_description = ""
         self.prereqs = []
         self.instructor = ""
 
 def connect_to_db():
-    conn = psycopg2.connect(host = "cmc307-07.mathcs.carleton.edu", \
-    database = "dialogComps", user = "dialogComps", password = "dln!=dialog")
+
+    conn = psycopg2.connect(host = "thacker.mathcs.carleton.edu", \
+    database = "enriquezc", user = "enriquezc", password = "towel784tree")
+
+    return conn
 
 def query_courses(course):
     '''
@@ -28,28 +32,58 @@ def query_courses(course):
     criteria.
     '''
 
-    # binary checking for all these conditions (512 possibilities) at this
-    # point seems super inefficient
-    # have to find a way to share some conditions
+    conn = connect_to_db()
+
+    query_string = "SELECT * FROM COURSE WHERE sec_term = '16/FA' AND "
 
     if course.dept != None:
-        # we know we are working with a specific department?
+        query_string = query_string + "sec_subject = '" + course.dept
+        query_string = query_string + "' AND "
 
-        if course.course_num != None:
-            # we can now make a reasonable query with the intent of finding
-            # a course that exists
+    if course.course_num != -1:
+        query_string = query_string + "sec_course_no = '" \
+        + str(course.course_num)
+        query_string = query_string + "' AND "
 
-    list_courses = []
+    query_string = query_string[:-5]
 
-    return list_courses
+    cur = conn.cursor()
+    cur.execute(query_string)
+    result = cur.fetchone()
 
-def query_by_string(course_description):
+    course.title = result[16]
+    course.course_description = result[6]
+    classroom_str = result[24]
+    print(classroom_str)
+    classroom_str = classroom_str.split()
+    print(classroom_str)
+    classroom = classroom_str[0] + " " + classroom_str[1]
+    course.meeting_time = classroom
+
+    #list_courses = []
+
+    return course
+
+def query_by_string(course_description, connection):
     '''
     Returns a list of course objects based on a string containing keywords
     about the course which were not parsed into a set of specific criteria.
     General search algorithm for courses based on a string description.
     '''
+    conn = connection
 
     list_courses = []
 
     return list_courses
+
+if __name__ == "__main__":
+    conn = connect_to_db()
+    cur = conn.cursor()
+
+    test_course = Course()
+    test_course.dept = "CS"
+    test_course.course_num = 252
+    course = query_courses(test_course)
+    print(course.title)
+    print(course.course_description)
+    print(course.meeting_time)
