@@ -16,18 +16,19 @@ class nLUU:
             Starts conversation through command line interface. 
             To be called as first interaction with client.
         ''' 
-        #student = Student.Student()
-        #conversation = Conversation.Conversation()
+        conversation = Conversation.Conversation()
         conversing = True
         our_response = "Hello. Welcome to my lair. How can I be of service?"
         while conversing:
             client_response = input(our_response + "\n")
             luis_analysis = self.get_luis(client_response)
-            tree = self.create_syntax_tree(client_response)
-            our_response_nebulous = dialog_manager.create_response(tree, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
-            our_response = create_response_string(our_response_nebulous)
-            if our_response == "STOP":
+            #tree = self.create_syntax_tree(client_response)
+            userQuery = conversation.get_next_response(client_response, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
+            if userQuery.type == 1:
+                print("Goodbye")
                 conversing = False
+                break
+            our_response = create_response_string(userQuery)
 
 
 
@@ -59,9 +60,20 @@ class nLUU:
         return self.luis.analyze(s)
 
 
-    def create_response_string(self, res_type, res):
+    def create_response_string(self, userQuery):
         '''
             Takes whatever response from backend and converts to readable string
         '''
-        rand = random.randint(0, len(res_type))
-        res_type[0].format(res[0], res[1])
+        if type(userQuery.object) == Course:
+            s = 'Here\'s some data about your course:\n'
+            d = userQuery.object.__dict__
+            for k, v in d:
+                if v != 0 and len(v) != 0:
+                    s += k + ':' + v + '\n'
+        elif type(userQuery.object) == Student:
+            s = 'Please ask me about a course.'
+        else:
+            s = 'Please ask me about a course'
+        '''rand = random.randint(0, len(res_type))
+        res_type[0].format(res[0], res[1])'''
+        return s
