@@ -3,20 +3,8 @@
 # conversation for the Dialogue Manager
 
 import psycopg2
+import src.Dialog_Manager.Course
 
-
-
-class Course:
-    def __init__(self):
-        self.dept = None
-        self.course_num = - 1
-        self.section_num = - 1
-        self.title = ""
-        self.credits = - 1
-        self.meeting_time = ""
-        self.course_description = ""
-        self.prereqs = []
-        self.instructor = ""
 
 def connect_to_db():
 
@@ -36,11 +24,11 @@ def query_courses(course):
 
     query_string = "SELECT * FROM COURSE WHERE sec_term = '16/FA' AND "
 
-    if course.dept != None:
+    if course.department != None:
         query_string = query_string + "sec_subject = '" + course.dept
         query_string = query_string + "' AND "
 
-    if course.course_num != -1:
+    if course.courseNum != -1:
         query_string = query_string + "sec_course_no = '" \
         + str(course.course_num)
         query_string = query_string + "' AND "
@@ -51,14 +39,12 @@ def query_courses(course):
     cur.execute(query_string)
     result = cur.fetchone()
 
-    course.title = result[16]
-    course.course_description = result[6]
+    course.name = result[16]
+    course.description = result[6]
     classroom_str = result[24]
-    print(classroom_str)
     classroom_str = classroom_str.split()
-    print(classroom_str)
     classroom = classroom_str[0] + " " + classroom_str[1]
-    course.meeting_time = classroom
+    course.time = classroom
 
     #list_courses = []
 
@@ -79,11 +65,3 @@ def query_by_string(course_description, connection):
 if __name__ == "__main__":
     conn = connect_to_db()
     cur = conn.cursor()
-
-    test_course = Course()
-    test_course.dept = "CS"
-    test_course.course_num = 252
-    course = query_courses(test_course)
-    print(course.title)
-    print(course.course_description)
-    print(course.meeting_time)
