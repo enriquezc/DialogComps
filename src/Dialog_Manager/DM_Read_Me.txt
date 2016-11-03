@@ -36,3 +36,10 @@ add reccomendation to prio Q.
 9. Send top of prio Q to NLU Unit.
 
 10. Rinse, repeat.
+
+
+
+Current problems:
+How many entities are we getting from NLUU?
+When should we assign values to a new course object?
+When we pass the object

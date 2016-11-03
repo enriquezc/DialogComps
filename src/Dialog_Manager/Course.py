@@ -2,6 +2,7 @@ class Course:
     def __init__(self):
         #name of class
         self.name = None
+        self.id = None
         self.prof = None
         self.term = None
         self.department = None
