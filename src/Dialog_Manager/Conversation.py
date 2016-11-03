@@ -1,6 +1,8 @@
 import queue
 from nltk.tree import Tree
-from src.Dialog_Manager import Student
+from src.Dialog_Manager import Student, Course, User_Query
+import pyluis
+
 
 
 class Conversation:
@@ -71,8 +73,8 @@ class Conversation:
 
             #information_type = self.new_information(entity_information)
             course = self.add_to_student(entity_information)
-            task_manager_information(course)
-            return UserQuery(course, QueryType.new_class_description)
+            self.task_manager_information(course)
+            return User_Query(course, User_Query.QueryType.new_class_description)
         else:
 
 
@@ -94,10 +96,10 @@ class Conversation:
     # @return 0 for added successfully, 1 for not added
     def schedule_course(self, new_course):
 
-        for (course in self.student.previous_classes):
+        for course in self.student.previous_classes:
             if (new_course.id == course.id):
                 return course
-        for (course in self.student.current_classes):
+        for course in self.student.current_classes:
             if (new_course.id == course.id):
                 return course
         else:
@@ -108,10 +110,10 @@ class Conversation:
     # @return location in student to store information / check if information is stored
     # @params information (entity) that we are looking to store
     def add_to_student(self, new_course, type):
-        for (course in self.student.previous_classes):
+        for course in self.student.previous_classes :
             if (new_course.id == course.id):
                 return course
-        for (course in self.student.current_classes):
+        for course in self.student.current_classes :
             if (new_course.id == course.id):
                 return course
         else:
