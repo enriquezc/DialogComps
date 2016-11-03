@@ -1,7 +1,7 @@
 import queue
 from nltk.tree import Tree
 from src.Dialog_Manager import Student, Course, User_Query
-import pyluis
+import luis
 
 
 
@@ -54,27 +54,27 @@ class Conversation:
     # @return
     def get_next_response(self, input, luisAI):
         #self.add_to_PriorityQueue(input)
-        luis_entities = self.classify_entities(luisAI)
-        luis_intent = self.classify_intent(luisAI)
-
+        #luis_entities = self.classify_entities(luisAI)
+        #luis_intent = self.classify_intent(luisAI)
+        luis_entities = luisAI.entities
+        luis_intent = luisAI.intents[0]
 
         #entity_information = self.task_manager_information(luis_entities)
-        if luis_intent == "ClassRequest":
-            course = Course()
+        if luis_intent.intent == "ClassRequest": #right now we will only have one intent and one entity, keeping loop
+            course = Course()               #for future complicated conditions.
             for entity in luis_entities:
-                if entity.type == "Course": #add more if's for different types
-                    if length(entity) < 8 and entity[-4:-1].isnumeric():
-                        course.id = entity
+                if entity.type == "u'COURSE'": #add more if's for different types
+                    if len(entity.entity) < 8 and entity.entity[-4:-1].isnumeric():
+                        course.id = entity.entity
                         course.user_description = input
 
                     else:
-                        course.name = entity
+                        course.name = entity.entity
                         course.user_description = input
 
             #information_type = self.new_information(entity_information)
-            course = self.add_to_student(entity_information)
             self.task_manager_information(course)
-            return User_Query(course, User_Query.QueryType.new_class_description)
+            return User_Query(course, User_Query.QueryType.class_info_term)
         else:
 
 
@@ -82,10 +82,9 @@ class Conversation:
     # @params
     # @return
     def task_manager_information(self, course):
-
+        course.term = "W/16"
 
     #query the task manager with the entity given by luis
-        return 0
 
     # @params intent / entities from the luisAI
     # @return which value in student the information refers to
