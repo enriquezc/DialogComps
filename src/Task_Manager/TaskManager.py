@@ -3,7 +3,7 @@
 # conversation for the Dialogue Manager
 
 import psycopg2
-#from src.Dialog_Manager import Course
+from src.Dialog_Manager import Course
 
 
 def connect_to_db():
@@ -21,8 +21,8 @@ def query_courses(course):
     '''
 
     conn = connect_to_db()
-
-    query_string = "SELECT * FROM COURSE WHERE sec_term = '16/FA' AND "
+    #(sec_term LIKE '16%' OR sec_term LIKE '17%')
+    query_string = "SELECT * FROM COURSE WHERE "
 
     if course.department != None:
         query_string = query_string + "sec_subject = '" + course.department
@@ -30,25 +30,32 @@ def query_courses(course):
 
     if course.name != None:
         query_string = query_string + "sec_course_no = '" \
-        + str(course.name)
+        + str(course.courseNum)
         query_string = query_string + "' AND "
 
     query_string = query_string[:-5]
 
     cur = conn.cursor()
     cur.execute(query_string)
-    result = cur.fetchone()
+    query_results = cur.fetchall()
 
-    course.name = result[16]
-    course.description = result[6]
-    classroom_str = result[24]
-    classroom_str = classroom_str.split()
-    classroom = classroom_str[0] + " " + classroom_str[1]
-    course.time = classroom
+    results = []
+
+    for result in query_results:
+        result_course = Course()
+        result_course.name = result[16]
+        result_course.description = result[6]
+        classroom_str = classroom_str.split()
+        classroom = classroom_str[0] + " " + classroom_str[1]
+        result_course.time = classroom
+
+        results.append(result_course)
+
+
 
     #list_courses = []
 
-    return course
+    return results
 
 def query_by_string(course_description, connection):
     '''
@@ -63,5 +70,9 @@ def query_by_string(course_description, connection):
     return list_courses
 
 if __name__ == "__main__":
-    conn = connect_to_db()
-    cur = conn.cursor()
+    course = Course()
+    course.department = "JAPN"
+    course.courseNum = "245"
+    results = query_courses(course)
+
+    print(results)
