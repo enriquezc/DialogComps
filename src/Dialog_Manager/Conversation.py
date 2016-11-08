@@ -91,10 +91,12 @@ class Conversation:
             return User_Query.UserQuery(course, User_Query.QueryType.class_info_term)
         elif luis_intent.intent == "ScheduleClass":
             course = Course.Course()
+            self.task_manager_information(course)
             return User_Query.UserQuery(course, User_Query.QueryType.new_class_requirements)
 
         elif luis_intent.intent == "ClassSentiment":
             course = Course.Course()
+            self.task_manager_information(course)
             return User_Query.UserQuery(course, User_Query.QueryType.class_info_sentiment)
 
         elif luis_intent.intent == "None":
@@ -102,14 +104,17 @@ class Conversation:
 
         elif luis_intent.intent == "ClassInfoRequest":
             course = Course.Course()
+            self.task_manager_information(course)
             return User_Query.UserQuery(course, User_Query.QueryType.class_info_name)
         elif luis_intent.intent == "WelcomeResponse":
             return User_Query.UserQuery(None, User_Query.QueryType.welcome)
         elif luis_intent.intent == "ScheduleInfoRequest":
             course = Course.Course()
+            self.task_manager_information(course)
             return User_Query.UserQuery(course, User_Query.QueryType.class_info_time)
         elif luis_intent.intent == "ClassInfoResponse":
             course = Course.Course()
+            self.task_manager_information(course)
             return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
 
 
