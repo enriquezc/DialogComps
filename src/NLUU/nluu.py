@@ -103,6 +103,62 @@ class nLUU:
             class_str += course.id + ": " + course.name + "\n"
         return s.format(userQuery.object[0].prof, class_str)
     
-    def create_class_info_name_res(self, userQuery):
-        s = constants.Responses.CLASS_INFO_NAME_RES
+    def create_class_info_name(self, userQuery):
+        s = constants.Responses.CLASS_INFO_NAME[0]
         return s.format(userQuery.object.name)
+    
+    def create_class_info_name_res(self, userQuery):
+        s = constants.Responses.CLASS_INFO_NAME_RES[0]
+        return s.format(userQuery.object.name)
+    
+    def create_class_info_prof(self, userQuery):
+        s = constants.Responses.CLASS_INFO_PROF[0]
+        return s.format(userQuery.object.name) 
+    
+    def create_class_info_prof_res(self, userQuery):
+        s = constants.Responses.CLASS_INFO_PROF_RES[0]
+        return s.format(userQuery.object.prof)
+    
+    def create_class_info_sentiment(self, userQuery):
+        s = constants.Responses.CLASS_INFO_SENTIMENT[0]
+        return s.format(userQuery.object.name)
+    
+    def create_class_info_scrunch(self, userQuery):
+        s = constants.Responses.CLASS_INFO_SCRUNCH[0]
+        return s.format(userQuery.object.name)
+    
+    def create_new_class_dept(self, userQuery):
+        s = constants.Responses.NEW_CLASS_DEPT[0]
+        return s
+    
+    def create_student_info_name(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_NAME[0]
+        return s
+    
+    def create_student_info_major(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_MAJOR[0]
+        return s
+    
+    def create_student_info_previous_classes(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_PREVIOUS_CLASSES[0]
+        return s
+    
+    def create_student_info_interests(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_INTERESTS[0]
+        return s
+    
+    def create_student_info_time_left(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_TIME_LEFT[0]
+        return s
+    
+    def create_student_info_abroad(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_ABROAD[0]
+        return s
+    
+    def create_student_info_requirements(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_REQUIREMENTS[0]
+        return s
+    
+    def create_student_info_major_requirements(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS[0]
+        return s
