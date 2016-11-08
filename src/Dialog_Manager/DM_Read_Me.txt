@@ -43,3 +43,10 @@ Current problems:
 How many entities are we getting from NLUU?
 When should we assign values to a new course object?
 When we pass the object
+
+With respect to time objects:
+Difference between morning, afternoon, night,
+Conversions between 1a, 2a, -> 8:30-9:40, 9:50-11:00
+Conversions between what we get from the TM (in MW 8:30-9:40 F 8:30-9:30)
+
+LUIS: ClassInfoRequest vs ClassRequest ... will we do the same steps for both? Probably, maybe fewer steps for inforequest

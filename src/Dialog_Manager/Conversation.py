@@ -50,6 +50,11 @@ class Conversation:
     def add_to_PriorityQueue(self, input):
         self.priority_queue.put(input)
 
+    # @params: current state of the priority queue
+    # @return: new state of the queue
+    #def update_PriorityQueue(self, priority_queue):
+
+
     # @params
     # @return
     def get_next_response(self, input, luisAI):
@@ -58,29 +63,59 @@ class Conversation:
         #luis_intent = self.classify_intent(luisAI)
         luis_entities = luisAI.entities
         luis_intent = luisAI.intents[0]
-
         #entity_information = self.task_manager_information(luis_entities)
         if luis_intent.intent == "ClassRequest": #right now we will only have one intent and one entity, keeping loop
             course = Course.Course()               #for future complicated conditions.
             for entity in luis_entities:
-                if entity.type == "u'COURSE'": #add more if's for different types
+                if entity.type == "u'CLASS'": #add more if's for different types
                     if len(entity.entity) < 8 and entity.entity[-4:-1].isnumeric():
                         course.id = entity.entity
-                        course.user_description = input
-
+                        course.department = entity.entity[:-3]
+                        course.courseNum = entity.entity[-4:-1]
+                        course.user_description = luisAI.query
                     else:
                         course.name = entity.entity
-                        course.user_description = input
+                        course.user_description = luisAI.query
+                if entity.type == "u'PERSONNAME'":
+                    course.prof = entity.entity
+                if entity.type == "u'TIME'": #time object is a list of lists, first is M-F, second is len 2,
+                    pass                     # with start/end time that day?
+                                            #want a parse tree / relation extraction because we do not know
+                                            #whether it is during, before, or after without context.
+                if entity.type == "u'DEPARTMENT'":
+                    course.department = entity.entity
 
             #information_type = self.new_information(entity_information)
             self.task_manager_information(course)
+
             return User_Query.UserQuery(course, User_Query.QueryType.class_info_term)
-        else:
+        elif luis_intent.intent == "ScheduleClass":
             course = Course.Course()
-            course.name = luisAI.query[-4:-1]
-            course.department = luisAI.query[-6:-4]
-            course = self.task_manager_information(course)
-            return User_Query.UserQuery(course, User_Query.QueryType.class_info_term)
+            return User_Query.UserQuery(course, User_Query.QueryType.new_class_requirements)
+
+        elif luis_intent.intent == "ClassSentiment":
+            course = Course.Course()
+            return User_Query.UserQuery(course, User_Query.QueryType.class_info_sentiment)
+
+        elif luis_intent.intent == "None":
+            return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+
+        elif luis_intent.intent == "ClassInfoRequest":
+            course = Course.Course()
+            return User_Query.UserQuery(course, User_Query.QueryType.class_info_name)
+        elif luis_intent.intent == "WelcomeResponse":
+            return User_Query.UserQuery(None, User_Query.QueryType.welcome)
+        elif luis_intent.intent == "ScheduleInfoRequest":
+            course = Course.Course()
+            return User_Query.UserQuery(course, User_Query.QueryType.class_info_time)
+        elif luis_intent.intent == "ClassInfoResponse":
+            course = Course.Course()
+            return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+
+
+        #else statement will ask for more information
+        else:
+            return User_Query.UserQuery(None, User_Query.QueryType.clarify)
 
 
 

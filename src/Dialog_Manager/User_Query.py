@@ -72,6 +72,8 @@ class QueryType(Enum):
     new_class_description = 36
 
 
+
+
 #This gets passed on to the NLUU, allowing it to decipher
 class UserQuery:
     def __init__(self, object = None, type = QueryType.pleasantry):
