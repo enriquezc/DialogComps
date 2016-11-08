@@ -91,6 +91,18 @@ class nLUU:
     
     def create_welcome_response(self, userQuery):
         return constants.Responses.WELCOME[1]
+
+    def create_goodbye_response(self, userQuery):
+        return constants.Responses.GOODBYE[1]
+
+    def create_clarify_response(self, userQuery):
+        return constants.Responses.CLARIFY[0]
+
+    def create_specify_response(self, userQuery):
+        return constants.Responses.SPECIFY[0]
+
+    def create_pleasantry_response(self, userQuery):
+        return constants.Responses.PLEASANTRY[0]
     
     def create_class_info_term_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_TERM_RES[0]
@@ -162,3 +174,31 @@ class nLUU:
     def create_student_info_major_requirements(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS[0]
         return s
+
+    def create_new_class_name(self, userQuery):
+        return constants.Responses.NEW_CLASS_NAME[0]
+
+    def create_new_class_prof(self, userQuery):
+        return constants.Responses.NEW_CLASS_PROF[0]
+
+    def create_new_class_dept(self, userQuery):
+        return constants.Responses.NEW_CLASS_DEPT[0]
+
+    def create_new_class_sentiment(self, userQuery):
+        s = constants.Responses.NEW_CLASS_SENTIMENT[0]
+        return s.format(userQuery.object.name)
+
+    def create_new_class_requirements(self, userQuery):
+        return constants.Responses.NEW_CLASS_REQUIREMENTS[0]
+
+    def create_new_class_time(self, userQuery):
+        return constants.Responses.NEW_CLASS_TIME[0]
+
+    def create_new_class_description(self, userQuery):
+        s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
+        class_str = ""
+        d = userQuery.object.__dict__
+        for k, v in d.items():
+                if v != None and v != 0 and not (type(v) == list and len(v) == 0):
+                    class_str += k + ':' + v + '\n'
+        return s.format(class_str)
