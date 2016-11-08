@@ -9,3 +9,23 @@ Instructor relation:
     
 Department relation:
     dept_id, department_name
+
+
+
+
+
+Prerecs relation:
+    sec_id, prerec
+
+Yo can we have a student table that we fill out as we ask students about their stuff?
+    student_id, name, major, class_year
+    
+interested_in table:
+    student_id, dept_id
+
+taken table?
+    student_id, sec_id
+    
+    
+Yo can we have a conversation table that stores information about conversations? 
+    student_id, our_response, their_response

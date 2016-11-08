@@ -1,4 +1,4 @@
-def Responses:
+class Responses:
     GREETING = ("Hello, {}, how are you?",
                 "Sup dude")
     BYE = ("Goodbye, {}",
