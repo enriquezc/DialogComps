@@ -11,7 +11,7 @@ class Course:
         self.sentiment = 0
         #how confident are we in this sentiment
         self.confidence = 0
-        self.scrunch = False
+        self.scrunch = None
         self.requirements_fulfilled = []
         #Some way of storing start time, end time, and days of the week. Format undecided as of yet.
         self.time = None
