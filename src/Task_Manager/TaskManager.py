@@ -66,7 +66,7 @@ def query_courses(course):
     cur.execute(course_query)
     course_results = cur.fetchall()
 
-    print(`course_query`)
+    print(course_query)
 
     results = []
 
@@ -77,7 +77,7 @@ def query_courses(course):
         result_course.department = result[17]
         result_course.courseNum = result[2]
         result_course.id = result[13]
-        result_course = result[16]
+        result_course.name = result[16]
         #result_course.comments = result[6]
         result_course.term = result[19]
         classroom_str = result[24]
@@ -114,13 +114,15 @@ def query_courses(course):
 
         reason_query = reason_query[:-5]
 
-        print(`reason_query`)
+        #print(reason_query)
 
         cur = conn.cursor()
         cur.execute(reason_query)
         course_results = cur.fetchone()
 
-        course.description = course_results[9]
+        #print(course_results)
+
+        result.description = course_results[16]
 
     #list_courses = []
 
@@ -141,8 +143,8 @@ def query_by_string(course_description, connection):
 if __name__ == "__main__":
     course = Course()
     course.department = "JAPN"
-    course.courseNum = 101
+    course.courseNum = 245
     results = query_courses(course)
 
     for result in results:
-        print(str(result) + " " + str(result.term) + " " + str(result.description) + " " + str(result.time))
+        print(str(result.name) + " " + str(result.term) + " " + str(result.description) + " " + str(result.time))
