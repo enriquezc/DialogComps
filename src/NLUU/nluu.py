@@ -8,6 +8,41 @@ import random
 class nLUU:
     def __init__(self, luisurl):
         self.luis = luis.Luis(luisurl)
+        self.response_dict = {
+            QueryType.welcome: create_welcome_response,
+            QueryType.goodbye: create_goodbye_response,
+            QueryType.clarify: create_clarify_response,
+            QueryType.specify: create_specify_response,
+            QueryType.pleasantry: create_pleasantry_response,
+            QueryType.class_info_term: create_class_info_term,
+            QueryType.class_info_term_res: create_class_info_term_res,
+            QueryType.class_info_time: create_class_info_time,
+            QueryType.class_info_time_res: create_class_info_time_res,
+            QueryType.classes_info_prof_res: create_class_info_prof_res,
+            QueryType.class_info_name: create_class_info_name,
+            QueryType.class_info_name_res: create_class_info_name_res,
+            QueryType.class_info_prof: create_class_info_prof,
+            QueryType.class_info_prof_res: create_class_info_prof_res,
+            QueryType.class_info_scrunch: create_class_info_scrunch,
+            QueryType.class_info_sentiment: create_class_info_sentiment,
+            QueryType.class_info_sentiment_extended: create_class_info_sentiment,
+            QueryType.new_class_dept: create_new_class_dept,
+            QueryType.student_info_name: create_student_info_name,
+            QueryType.student_info_major: create_student_info_major,
+            QueryType.student_info_previous_classes: create_student_info_previous_classes,
+            QueryType.student_info_interests: create_student_info_interests,
+            QueryType.student_info_time_left: create_student_info_time_left,
+            QueryType.student_info_abroad: create_student_info_abroad,
+            QueryType.student_info_requirements: create_student_info_requirements,
+            QueryType.student_info_major_requirements: create_student_info_major,
+            QueryType.new_class_name: create_new_class_name,
+            QueryType.new_class_prof: create_new_class_prof,
+            QueryType.new_class_dept: create_new_class_dept,
+            QueryType.new_class_sentiment: create_new_class_sentiment,
+            QueryType.new_class_requirements: create_new_class_requirements,
+            QueryType.new_class_time: create_new_class_time,
+            QueryType.new_class_description: create_new_class_description
+        }
         #Requires a local copy of atis.cfg
         #atis_grammar = nltk.data.load("atis.cfg")
         #self.parser = nltk.ChartParser(atis_grammar)
@@ -29,7 +64,7 @@ class nLUU:
                 print("Goodbye")
                 conversing = False
                 break
-            our_response = self.create_response_string(userQuery)
+            our_response = self.create_response(userQuery)
 
 
 
@@ -79,16 +114,10 @@ class nLUU:
         return s
 
     def create_response(self, userQuery):
-        if userQuery.type == QueryType.welcome:
-            return self.create_welcome_response(userQuery)
-        if userQuery.type == QueryType.class_info_term_res:
-            return self.create_class_info_term_res(userQuery)
-        if userQuery.type == QueryType.classes_info_prof_res:
-            return self.create_classes_info_prof_res(userQuery)
-        if userQuery.type == QueryType.class_info_name_res:
-            return self.create_class_info_name_res(userQuery)
-        else:
-            return create_welcome_response(userQuery)
+        fun = self.response_dict[userQuery.type]
+        if fun == None:
+            fun = self.response_dict[QueryType.welcome]
+        return fun(userQuery)
 
     def create_welcome_response(self, userQuery):
         return constants.Responses.WELCOME[1]
@@ -105,6 +134,9 @@ class nLUU:
     def create_pleasantry_response(self, userQuery):
         return constants.Responses.PLEASANTRY[0]
 
+    def create_class_info_term(self, userQuery):
+        return constants.Responses.CLASS_INFO_TERM[0].format(userQuery.object.name)
+
     def create_class_info_term_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_TERM_RES[0]
         return s.format(userQuery.object.name, userQuery.object.term)
@@ -112,8 +144,11 @@ class nLUU:
     def create_classes_info_prof_res(self, userQuery):
         s = constants.Responses.CLASSES_INFO_PROF_RES[0]
         class_str = ""
-        for course in userQuery.object:
-            class_str += course.id + ": " + course.name + "\n"
+        if type(userQuery.object) == list:
+            for course in userQuery.object:
+                class_str += course.id + ": " + course.name + "\n"
+        else:
+            class_str = userQuery.object.id + ": " + userQuery.object.name
         return s.format(userQuery.object[0].prof, class_str)
 
     def create_class_info_name(self, userQuery):
@@ -123,6 +158,14 @@ class nLUU:
     def create_class_info_name_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_NAME_RES[0]
         return s.format(userQuery.object.name)
+
+    def create_class_info_time(self, userQuery):
+        s = constants.Responses.CLASS_INFO_TIME[0]
+        return s.format(userQuery.object.name)
+
+    def create_class_info_time_res(self, userQuery):
+        s = constants.Responses.CLASS_INFO_TIME_RES[0]
+        return s.format(userQuery.object.name, userQuery.object.time)
 
     def create_class_info_prof(self, userQuery):
         s = constants.Responses.CLASS_INFO_PROF[0]
