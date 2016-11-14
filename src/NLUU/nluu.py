@@ -1,10 +1,11 @@
 import nltk
 import luis
-from src.Dialog_Manager import Student, Conversation, Course, User_Query, User_Query.QueryType
+from src.Dialog_Manager import Student, Conversation, Course, User_Query
+from src.Dialog_Manager.User_Query import QueryType
 from src.utils import constants
 import random
 
-class nLUU: 
+class nLUU:
     def __init__(self, luisurl):
         self.luis = luis.Luis(luisurl)
         #Requires a local copy of atis.cfg
@@ -12,10 +13,10 @@ class nLUU:
         #self.parser = nltk.ChartParser(atis_grammar)
 
     def start_conversation(self):
-        ''' 
-            Starts conversation through command line interface. 
+        '''
+            Starts conversation through command line interface.
             To be called as first interaction with client.
-        ''' 
+        '''
         conversation = Conversation.Conversation()
         conversing = True
         our_response = "Hello. Welcome to my lair. How can I be of service?"
@@ -76,7 +77,7 @@ class nLUU:
         else:
             s = 'Please ask me about a course'
         return s
-    
+
     def create_response(self, userQuery):
         if userQuery.type == QueryType.welcome:
             return self.create_welcome_response(userQuery)
@@ -88,7 +89,7 @@ class nLUU:
             return self.create_class_info_name_res(userQuery)
         else:
             return create_welcome_response(userQuery)
-    
+
     def create_welcome_response(self, userQuery):
         return constants.Responses.WELCOME[1]
 
@@ -103,74 +104,74 @@ class nLUU:
 
     def create_pleasantry_response(self, userQuery):
         return constants.Responses.PLEASANTRY[0]
-    
+
     def create_class_info_term_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_TERM_RES[0]
         return s.format(userQuery.object.name, userQuery.object.term)
-    
+
     def create_classes_info_prof_res(self, userQuery):
         s = constants.Responses.CLASSES_INFO_PROF_RES[0]
         class_str = ""
         for course in userQuery.object:
             class_str += course.id + ": " + course.name + "\n"
         return s.format(userQuery.object[0].prof, class_str)
-    
+
     def create_class_info_name(self, userQuery):
         s = constants.Responses.CLASS_INFO_NAME[0]
         return s.format(userQuery.object.name)
-    
+
     def create_class_info_name_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_NAME_RES[0]
         return s.format(userQuery.object.name)
-    
+
     def create_class_info_prof(self, userQuery):
         s = constants.Responses.CLASS_INFO_PROF[0]
-        return s.format(userQuery.object.name) 
-    
+        return s.format(userQuery.object.name)
+
     def create_class_info_prof_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_PROF_RES[0]
         return s.format(userQuery.object.prof)
-    
+
     def create_class_info_sentiment(self, userQuery):
         s = constants.Responses.CLASS_INFO_SENTIMENT[0]
         return s.format(userQuery.object.name)
-    
+
     def create_class_info_scrunch(self, userQuery):
         s = constants.Responses.CLASS_INFO_SCRUNCH[0]
         return s.format(userQuery.object.name)
-    
+
     def create_new_class_dept(self, userQuery):
         s = constants.Responses.NEW_CLASS_DEPT[0]
         return s
-    
+
     def create_student_info_name(self, userQuery):
         s = constants.Responses.STUDENT_INFO_NAME[0]
         return s
-    
+
     def create_student_info_major(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR[0]
         return s
-    
+
     def create_student_info_previous_classes(self, userQuery):
         s = constants.Responses.STUDENT_INFO_PREVIOUS_CLASSES[0]
         return s
-    
+
     def create_student_info_interests(self, userQuery):
         s = constants.Responses.STUDENT_INFO_INTERESTS[0]
         return s
-    
+
     def create_student_info_time_left(self, userQuery):
         s = constants.Responses.STUDENT_INFO_TIME_LEFT[0]
         return s
-    
+
     def create_student_info_abroad(self, userQuery):
         s = constants.Responses.STUDENT_INFO_ABROAD[0]
         return s
-    
+
     def create_student_info_requirements(self, userQuery):
         s = constants.Responses.STUDENT_INFO_REQUIREMENTS[0]
         return s
-    
+
     def create_student_info_major_requirements(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS[0]
         return s

@@ -86,6 +86,7 @@ class Conversation:
                     course.department = entity.entity
 
             #information_type = self.new_information(entity_information)
+
             self.task_manager_information(course)
 
             return User_Query.UserQuery(course, User_Query.QueryType.class_info_term)
@@ -122,6 +123,7 @@ class Conversation:
     # @params
     # @return
     def task_manager_information(self, course):
+        print("Trying to query courses from Conversation.py")
         return TaskManager.query_courses(course)
 
     #query the task manager with the entity given by luis
@@ -161,6 +163,3 @@ class Conversation:
 
     def course_interest(self, course):
         return 0
-
-
-
