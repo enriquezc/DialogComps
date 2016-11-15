@@ -41,7 +41,8 @@ class nLUU:
             QueryType.new_class_sentiment: create_new_class_sentiment,
             QueryType.new_class_requirements: create_new_class_requirements,
             QueryType.new_class_time: create_new_class_time,
-            QueryType.new_class_description: create_new_class_description
+            QueryType.new_class_description: create_new_class_description,
+            QueryType.schedule_class_res: creat_schedule_class_res
         }
         #Requires a local copy of atis.cfg
         #atis_grammar = nltk.data.load("atis.cfg")
@@ -246,3 +247,7 @@ class nLUU:
                 if v != None and v != 0 and not (type(v) == list and len(v) == 0):
                     class_str += k + ':' + v + '\n'
         return s.format(class_str)
+
+    def create_schedule_class_res(self, userQuery):
+        s = constants.Responses.SCHEDULE_CLASS_RES[0]
+        return s.format(userQuery.object.name)
