@@ -26,6 +26,8 @@ class Conversation:
         self.priority_queue = queue.PriorityQueue()
         self.student = Student.Student()
         self.last_query = 0
+        self.add_to_PriorityQueue(User_Query.UserQuery(None, User_Query.QueryType.student_info_name), 1)
+
 
     # @params
     # @return
@@ -78,7 +80,7 @@ class Conversation:
         elif type == 14:
             if userQuery_course.terms_left == 12:
                 return popped_userQuery
-            else
+            else:
                 return self.pop_priority_queue()
         elif type == 15:
             if userQuery_course.abroad == None:
@@ -150,17 +152,17 @@ class Conversation:
         if luis_intent.intent == "ScheduleClass":
             course = Course.Course()
             self.task_manager_information(course)
-            return User_Query.UserQuery(course, User_Query.QueryType.new_class_requirements)
+            self.add_to_PriorityQueue(User_Query.UserQuery(course, User_Query.QueryType.new_class_requirements), 1)
 
         elif luis_intent.intent == "ClassSentiment":
             course = Course.Course()
             self.task_manager_information(course)
-            return User_Query.UserQuery(course, User_Query.QueryType.class_info_sentiment)
+            self.add_to_PriorityQueue(User_Query.UserQuery(course, User_Query.QueryType.class_info_sentiment), 1)
 
         elif luis_intent.intent == "None":
-            return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+            self.add_to_PriorityQueue(User_Query.UserQuery(None, User_Query.QueryType.clarify), 1)
 
-        elif luis_intent.intent == "ClassInfoRequest":
+        elif luis_intent.intent == "ClassDescriptionRequest":
             course = Course.Course()  # for future complicated conditions.
             for entity in luis_entities:
                 if entity.type == "u'CLASS'":  # add more if's for different types
@@ -180,27 +182,137 @@ class Conversation:
                     # whether it is during, before, or after without context.
                 if entity.type == "u'DEPARTMENT'":
                     course.department = entity.entity
+            tm_courses = self.task_manager_information(course)
+            self.student.potential_courses = tm_courses
+            course = tm_courses[0]
+            self.student.all_classes.append(course)
+            self.add_to_PriorityQueue(User_Query.UserQuery(course, User_Query.QueryType.new_class_description), 1)
 
-            self.task_manager_information(course)
-
-            return User_Query.UserQuery(course, User_Query.QueryType.class_info_term)
         elif luis_intent.intent == "WelcomeResponse":
-            return User_Query.UserQuery(None, User_Query.QueryType.welcome)
-        elif luis_intent.intent == "ScheduleInfoRequest":
+            self.add_to_PriorityQueue(User_Query.UserQuery(None, User_Query.QueryType.welcome), 1)
+
+        elif luis_intent.intent == "ScheduleRequest":
+            course = Course.Course()
+            for entity in luis_entities:
+                if entity.type == "u'CLASS'":
+                    for course in self.student.all_classes:
+                        if entity.entity == course.name:
+                            self.student.current_classes.append(self.student.current_classes(course))
+                        else:
+                            if len(entity.entity) < 8 and entity.entity[-4:-1].isnumeric():
+                                course.id = entity.entity
+                                course.department = entity.entity[:-3]
+                                course.courseNum = entity.entity[-4:-1]
+                                course.user_description = luisAI.query
+                            else:
+                                course.name = entity.entity
+                                course.user_description = luisAI.query
+                            tm_courses = self.task_manager_information(course)
+                            course = tm_courses[0]
+                if entity.type == "u'PERSONNAME'":
+                    for course in self.student.all_classes:
+                        if entity.entity == course.prof:
+                            self.student.current_classes.append(self.student.all_classes(course))
+                        else:
+                            course.prof = entity.entity
+                            tm_courses = self.task_manager_information(course)
+                            course = tm_courses[0]
+            for current_course in self.student.current_classes:
+                if not course.name == current_course.name:
+                    self.student.current_classes.append(self.student.current_classes(course))
+                else:
+                    pass
+            self.add_to_PriorityQueue(User_Query.UserQuery(course, User_Query.QueryType.schedule_class_res), 1)
+            #need to add schedule request user query
+
+        elif luis_intent.intent == "ClassDescriptionResponse":
             course = Course.Course()
             self.task_manager_information(course)
-            return User_Query.UserQuery(course, User_Query.QueryType.class_info_time)
-        elif luis_intent.intent == "ClassInfoResponse":
+            self.add_to_PriorityQueue(User_Query.UserQuery(course, User_Query.QueryType.new_class_description), 1)
+
+        elif luis_intent.intent == "ClassProfessorRequest":
+            course = Course.Course()
+            for entity in luis_entities:
+                if entity.type == "u'CLASS":
+                    if len(entity.entity) < 8 and entity.entity[-4:-1].isnumeric():
+                        course.id = entity.entity
+                        course.department = entity.entity[:-3]
+                        course.courseNum = entity.entity[-4:-1]
+                        course.user_description = luisAI.query
+                    else:
+                        course.name = entity.entity
+                        course.user_description = luisAI.query
+                if entity.type == "u'PERSONNAME":
+                    course.prof = entity.entity
+            tm_courses = self.task_manager_information(course)
+            self.student.potential_courses = tm_courses
+            course = tm_courses[0]
+            self.student.all_classes.append(course)
+            self.add_to_PriorityQueue(User_Query.UserQuery(course, User_Query.QueryType.new_class_prof), 1)
+
+        elif luis_intent.intent == "ClassProfessorResponse":
             course = Course.Course()
             self.task_manager_information(course)
             return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
 
+        elif luis_intent.intent == "StudentRequirementRequest":
+            course = Course.Course()
+            self.task_manager_information(course)
+            return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+
+        elif luis_intent.intent == "StudentRequirementResponse":
+            course = Course.Course()
+            self.task_manager_information(course)
+            return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+
+        elif luis_intent.intent == "StudentMajorRequest":
+            self.add_to_PriorityQueue(User_Query.UserQuery(self.student, User_Query.QueryType.student_info_major), 1)
+
+        elif luis_intent.intent == "StudentMajorResponse":
+            for entity in luis_entities:
+                if entity.type == "u'DEPARTMENT":
+                    for major in self.student.major:
+                        if entity.entity == major or len(self.student.major) == 2:
+                            pass
+                        else:
+                            self.student.major.append(entity.entity)
+            self.add_to_PriorityQueue(User_Query.UserQuery(self.student, User_Query.QueryType.student_info_major), 1)
+
+        elif luis_intent.intent == "StudentNameInfo":
+            for entity in luis_entities:
+                if entity.type == "u'PERSONNAME":
+                    self.student.name = entity.entity
+                else:
+                    self.add_to_PriorityQueue(User_Query.UserQuery(self.student, User_Query.QueryType.clarify), 1)
+
+        elif luis_intent.intent == "ClassTimeResponse":
+            course = Course.Course()
+            self.task_manager_information(course)
+            return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+
+        elif luis_intent.intent == "ClassTimeRequest":
+            course = Course.Course()
+            self.task_manager_information(course)
+            return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+
+        elif luis_intent.intent == "ClassTermResponse":
+            course = Course.Course()
+            self.task_manager_information(course)
+            return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+
+        elif luis_intent.intent == "ClassTermRequest":
+            pass
+
+        elif luis_intent.intent == "StudentInterests":
+            for entity in luis_entities:
+                if entity.type == "u'CLASS" or entity.type == "u'DEPARTMENT" or entity.type == "u'SENTIMENT":
+                    self.student.interests.append(entity.entity)
 
         #else statement will ask for more information
         else:
             return User_Query.UserQuery(None, User_Query.QueryType.clarify)
-
-
+        popped_query = self.pop_priority_queue()
+        return popped_query
 
     # @params
     # @return
