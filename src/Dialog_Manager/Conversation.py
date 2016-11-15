@@ -26,7 +26,7 @@ class Conversation:
         self.priority_queue = queue.PriorityQueue()
         self.student = Student.Student()
         self.last_query = 0
-        self.add_to_PriorityQueue(User_Query.UserQuery(None, User_Query.QueryType.student_info_name), 1)
+        self.add_to_PriorityQueue(1, User_Query.UserQuery(None, User_Query.QueryType.student_info_name))
 
 
     # @params
@@ -49,21 +49,22 @@ class Conversation:
 
     # @params
     # @return
-    def add_to_PriorityQueue(self, userQuery, importance):
-        self.priority_queue.put(userQuery, importance)
+    def add_to_PriorityQueue(self, importance, user_query):
+        self.priority_queue.put(importance, user_query)
 
     # @params
     # @return
     def pop_priority_queue(self):
         if self.priority_queue.empty():
             return User_Query.UserQuery(None, User_Query.QueryType.clarify) #will fill in in a second
-        popped_userQuery = self.priority_queue.get()
-        userQuery_course = popped_userQuery.object
-        userQuery_type = popped_userQuery.type
-        if type < 5:
+        popped_userQuery = self.priority_queue.get()[1]
+        print("we get here")
+        if popped_userQuery.type < 5:
             return popped_userQuery
         #for 10-17, we may format it so we only ask these questions once.
-        elif type == 10:
+        userQuery_course = popped_userQuery.object
+        userQuery_type = popped_userQuery.type
+        if type == 10:
             if userQuery_course.name == None:
                 return popped_userQuery
             else:
@@ -152,15 +153,15 @@ class Conversation:
         if luis_intent.intent == "ScheduleClass":
             course = Course.Course()
             self.task_manager_information(course)
-            self.add_to_PriorityQueue(User_Query.UserQuery(course, User_Query.QueryType.new_class_requirements), 1)
+            self.add_to_PriorityQueue(1, User_Query.UserQuery(course, User_Query.QueryType.new_class_requirements))
 
         elif luis_intent.intent == "ClassSentiment":
             course = Course.Course()
             self.task_manager_information(course)
-            self.add_to_PriorityQueue(User_Query.UserQuery(course, User_Query.QueryType.class_info_sentiment), 1)
+            self.add_to_PriorityQueue(1, User_Query.UserQuery(course, User_Query.QueryType.class_info_sentiment))
 
         elif luis_intent.intent == "None":
-            self.add_to_PriorityQueue(User_Query.UserQuery(None, User_Query.QueryType.clarify), 1)
+            self.add_to_PriorityQueue(1, User_Query.UserQuery(None, User_Query.QueryType.clarify))
 
         elif luis_intent.intent == "ClassDescriptionRequest":
             course = Course.Course()  # for future complicated conditions.
@@ -186,10 +187,10 @@ class Conversation:
             self.student.potential_courses = tm_courses
             course = tm_courses[0]
             self.student.all_classes.append(course)
-            self.add_to_PriorityQueue(User_Query.UserQuery(course, User_Query.QueryType.new_class_description), 1)
+            self.add_to_PriorityQueue(1, User_Query.UserQuery(course, User_Query.QueryType.new_class_description))
 
         elif luis_intent.intent == "WelcomeResponse":
-            self.add_to_PriorityQueue(User_Query.UserQuery(None, User_Query.QueryType.welcome), 1)
+            self.add_to_PriorityQueue(1, User_Query.UserQuery(None, User_Query.QueryType.welcome))
 
         elif luis_intent.intent == "ScheduleRequest":
             course = Course.Course()
@@ -222,13 +223,13 @@ class Conversation:
                     self.student.current_classes.append(self.student.current_classes(course))
                 else:
                     pass
-            self.add_to_PriorityQueue(User_Query.UserQuery(course, User_Query.QueryType.schedule_class_res), 1)
+            self.add_to_PriorityQueue(1, User_Query.UserQuery(course, User_Query.QueryType.schedule_class_res))
             #need to add schedule request user query
 
         elif luis_intent.intent == "ClassDescriptionResponse":
             course = Course.Course()
             self.task_manager_information(course)
-            self.add_to_PriorityQueue(User_Query.UserQuery(course, User_Query.QueryType.new_class_description), 1)
+            self.add_to_PriorityQueue(1, User_Query.UserQuery(course, User_Query.QueryType.new_class_description))
 
         elif luis_intent.intent == "ClassProfessorRequest":
             course = Course.Course()
@@ -248,7 +249,7 @@ class Conversation:
             self.student.potential_courses = tm_courses
             course = tm_courses[0]
             self.student.all_classes.append(course)
-            self.add_to_PriorityQueue(User_Query.UserQuery(course, User_Query.QueryType.new_class_prof), 1)
+            self.add_to_PriorityQueue(1, User_Query.UserQuery(course, User_Query.QueryType.new_class_prof))
 
         elif luis_intent.intent == "ClassProfessorResponse":
             course = Course.Course()
@@ -266,7 +267,7 @@ class Conversation:
             return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
 
         elif luis_intent.intent == "StudentMajorRequest":
-            self.add_to_PriorityQueue(User_Query.UserQuery(self.student, User_Query.QueryType.student_info_major), 1)
+            self.add_to_PriorityQueue(1, User_Query.UserQuery(self.student, User_Query.QueryType.student_info_major))
 
         elif luis_intent.intent == "StudentMajorResponse":
             for entity in luis_entities:
@@ -276,14 +277,14 @@ class Conversation:
                             pass
                         else:
                             self.student.major.append(entity.entity)
-            self.add_to_PriorityQueue(User_Query.UserQuery(self.student, User_Query.QueryType.student_info_major), 1)
+            self.add_to_PriorityQueue(1, User_Query.UserQuery(self.student, User_Query.QueryType.student_info_major))
 
         elif luis_intent.intent == "StudentNameInfo":
             for entity in luis_entities:
                 if entity.type == "u'PERSONNAME":
                     self.student.name = entity.entity
                 else:
-                    self.add_to_PriorityQueue(User_Query.UserQuery(self.student, User_Query.QueryType.clarify), 1)
+                    self.add_to_PriorityQueue(1, User_Query.UserQuery(self.student, User_Query.QueryType.clarify))
 
         elif luis_intent.intent == "ClassTimeResponse":
             course = Course.Course()
