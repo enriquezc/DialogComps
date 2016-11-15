@@ -159,20 +159,14 @@ class Conversation:
         if luis_intent.intent == "ScheduleClass":
             course = Course.Course()
             for entity in luis_entities:
-                print(entity.type)
                 if entity.type == "class":  # add more if's for different types
                     if len(entity.entity) < 8 and entity.entity[-3:].isnumeric():
-                        print("in len")
                         course.id = entity.entity
                         print(course.id)
-                        course.department = entity.entity[:-3]
                         course.courseNum = entity.entity[-3:]
                         course.user_description = luisAI.query
-                        print(course.department)
                     else:
-                        print("not in len")
                         course.name = entity.entity
-                        print(course.name)
                         course.user_description = luisAI.query
                 if entity.type == "personname":
                     course.prof = entity.entity
