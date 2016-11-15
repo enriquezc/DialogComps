@@ -57,8 +57,13 @@ class Conversation:
     def pop_priority_queue(self):
         if self.priority_queue.empty():
             return User_Query.UserQuery(None, User_Query.QueryType.clarify) #will fill in in a second
-        popped_userQuery = self.priority_queue.get()[1]
-        print("we get here")
+        while not self.priority_queue.empty():
+            print(self.priority_queue.get())
+        exit(1)
+        popped_userQuery = self.priority_queue.get()
+        second_item = self.priority_queue.get()
+        print(popped_userQuery)
+        print(second_item)
         if popped_userQuery.type < 5:
             return popped_userQuery
         #for 10-17, we may format it so we only ask these questions once.
@@ -150,10 +155,38 @@ class Conversation:
         luis_entities = luisAI.entities
         luis_intent = luisAI.intents[0]
         #entity_information = self.task_manager_information(luis_entities)
+        print(luis_intent)
         if luis_intent.intent == "ScheduleClass":
             course = Course.Course()
-            self.task_manager_information(course)
-            self.add_to_PriorityQueue(1, User_Query.UserQuery(course, User_Query.QueryType.new_class_requirements))
+            for entity in luis_entities:
+                print(entity.type)
+                if entity.type == "class":  # add more if's for different types
+                    if len(entity.entity) < 8 and entity.entity[-3:].isnumeric():
+                        print("in len")
+                        course.id = entity.entity
+                        print(course.id)
+                        course.department = entity.entity[:-3]
+                        course.courseNum = entity.entity[-3:]
+                        course.user_description = luisAI.query
+                        print(course.department)
+                    else:
+                        print("not in len")
+                        course.name = entity.entity
+                        print(course.name)
+                        course.user_description = luisAI.query
+                if entity.type == "personname":
+                    course.prof = entity.entity
+                if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
+                    pass  # with start/end time that day?
+                    # want a parse tree / relation extraction because we do not know
+                    # whether it is during, before, or after without context.
+                if entity.type == "department":
+                    course.department = entity.entity
+            tm_courses = self.task_manager_information(course)
+            self.student.potential_courses = tm_courses
+            course = tm_courses
+            self.student.current_classes.append(course)
+            self.add_to_PriorityQueue(1, User_Query.UserQuery(course, User_Query.QueryType.schedule_class_res))
 
         elif luis_intent.intent == "ClassSentiment":
             course = Course.Course()
@@ -166,7 +199,7 @@ class Conversation:
         elif luis_intent.intent == "ClassDescriptionRequest":
             course = Course.Course()  # for future complicated conditions.
             for entity in luis_entities:
-                if entity.type == "u'CLASS'":  # add more if's for different types
+                if entity.type == "class":  # add more if's for different types
                     if len(entity.entity) < 8 and entity.entity[-4:-1].isnumeric():
                         course.id = entity.entity
                         course.department = entity.entity[:-3]
@@ -175,22 +208,23 @@ class Conversation:
                     else:
                         course.name = entity.entity
                         course.user_description = luisAI.query
-                if entity.type == "u'PERSONNAME'":
+                if entity.type == "personname":
                     course.prof = entity.entity
-                if entity.type == "u'TIME'":  # time object is a list of lists, first is M-F, second is len 2,
+                if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
                     pass  # with start/end time that day?
                     # want a parse tree / relation extraction because we do not know
                     # whether it is during, before, or after without context.
-                if entity.type == "u'DEPARTMENT'":
+                if entity.type == "department":
                     course.department = entity.entity
             tm_courses = self.task_manager_information(course)
             self.student.potential_courses = tm_courses
-            course = tm_courses[0]
+            course = tm_courses
             self.student.all_classes.append(course)
             self.add_to_PriorityQueue(1, User_Query.UserQuery(course, User_Query.QueryType.new_class_description))
 
         elif luis_intent.intent == "WelcomeResponse":
-            self.add_to_PriorityQueue(1, User_Query.UserQuery(None, User_Query.QueryType.welcome))
+            print('adding welcome')
+            self.add_to_PriorityQueue((1, User_Query.UserQuery(None, User_Query.QueryType.welcome)))
 
         elif luis_intent.intent == "ScheduleRequest":
             course = Course.Course()
@@ -209,7 +243,7 @@ class Conversation:
                                 course.name = entity.entity
                                 course.user_description = luisAI.query
                             tm_courses = self.task_manager_information(course)
-                            course = tm_courses[0]
+                            course = tm_courses
                 if entity.type == "u'PERSONNAME'":
                     for course in self.student.all_classes:
                         if entity.entity == course.prof:
@@ -217,7 +251,7 @@ class Conversation:
                         else:
                             course.prof = entity.entity
                             tm_courses = self.task_manager_information(course)
-                            course = tm_courses[0]
+                            course = tm_courses
             for current_course in self.student.current_classes:
                 if not course.name == current_course.name:
                     self.student.current_classes.append(self.student.current_classes(course))
@@ -247,7 +281,7 @@ class Conversation:
                     course.prof = entity.entity
             tm_courses = self.task_manager_information(course)
             self.student.potential_courses = tm_courses
-            course = tm_courses[0]
+            course = tm_courses
             self.student.all_classes.append(course)
             self.add_to_PriorityQueue(1, User_Query.UserQuery(course, User_Query.QueryType.new_class_prof))
 
@@ -311,15 +345,16 @@ class Conversation:
 
         #else statement will ask for more information
         else:
-            return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+            print("in else")
+            self.add_to_PriorityQueue(1, User_Query.UserQuery(self.student, User_Query.QueryType.clarify))
+        print(luis_intent)
         popped_query = self.pop_priority_queue()
         return popped_query
 
     # @params
     # @return
     def task_manager_information(self, course):
-        print("Trying to query courses from Conversation.py")
-        return TaskManager.query_courses(course)
+        return TaskManager.query_courses(course)[0]
 
     #query the task manager with the entity given by luis
 
