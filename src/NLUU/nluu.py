@@ -3,6 +3,7 @@ import luis
 from src.Dialog_Manager import Student, Conversation, Course, User_Query
 from src.Dialog_Manager.User_Query import QueryType
 from src.utils import constants
+from nltk.stem.snowball import SnowballStemmer
 import random
 
 class nLUU:
@@ -43,6 +44,7 @@ class nLUU:
             QueryType.new_class_description: self.create_new_class_description,
             QueryType.schedule_class_res: self.create_schedule_class_res
         }
+        self.stemmer = SnowballStemmer("english")
         #Requires a local copy of atis.cfg
         #atis_grammar = nltk.data.load("atis.cfg")
         #self.parser = nltk.ChartParser(atis_grammar)
@@ -250,3 +252,7 @@ class nLUU:
     def create_schedule_class_res(self, userQuery):
         s = constants.Responses.SCHEDULE_CLASS_RES[0]
         return s.format(userQuery.object.name)
+
+
+    def stem(self, s):
+        return(self.stemmer.stem(s))
