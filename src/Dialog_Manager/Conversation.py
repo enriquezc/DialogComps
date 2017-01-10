@@ -22,11 +22,53 @@ class Conversation:
     "WDT": "Wh-determiner", "WP": "Wh-pronoun", "WP$": "Possessive wh-pronoun",
     "WRB": "Wh-adverb"}
 
+
     def __init__(self):
         self.priority_queue = queue.PriorityQueue()
         self.student = Student.Student()
         self.last_query = 0
-        self.add_to_PriorityQueue(1, User_Query.UserQuery(None, User_Query.QueryType.student_info_name))
+        self.head_node = self.NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify),[],[])
+        self.current_node = self.head_node
+
+    class NodeObject():
+        userQuery = None
+        asked = False
+        answered = False
+        required_questions = []
+        potential_next_questions = []
+
+
+        def __init__(self, userQ, requiredQ, potentialQ):
+            self.userQuery = userQ
+            self.required_questions.extend(requiredQ)
+            self.potential_next_questions.extend(potentialQ)
+
+        def is_answered(self):
+            return False
+       #def answer(self):
+
+        def relavent_course(*args):
+
+        def call_database(self):
+
+
+    class DecisionTree():
+
+        #name
+        #major
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     # @params
@@ -57,13 +99,8 @@ class Conversation:
     def pop_priority_queue(self):
         if self.priority_queue.empty():
             return User_Query.UserQuery(None, User_Query.QueryType.clarify) #will fill in in a second
-        while not self.priority_queue.empty():
-            print(self.priority_queue.get())
-        exit(1)
-        popped_userQuery = self.priority_queue.get()
-        second_item = self.priority_queue.get()
+        popped_userQuery = self.priority_queue.get_nowait()
         print(popped_userQuery)
-        print(second_item)
         if popped_userQuery.type < 5:
             return popped_userQuery
         #for 10-17, we may format it so we only ask these questions once.
@@ -217,7 +254,7 @@ class Conversation:
             self.add_to_PriorityQueue(1, User_Query.UserQuery(course, User_Query.QueryType.new_class_description))
 
         elif luis_intent.intent == "WelcomeResponse":
-            print('adding welcome')
+            #print('adding welcome')
             self.add_to_PriorityQueue((1, User_Query.UserQuery(None, User_Query.QueryType.welcome)))
 
         elif luis_intent.intent == "ScheduleRequest":
@@ -341,14 +378,18 @@ class Conversation:
         else:
             print("in else")
             self.add_to_PriorityQueue(1, User_Query.UserQuery(self.student, User_Query.QueryType.clarify))
-        print(luis_intent)
+        #print(luis_intent)
         popped_query = self.pop_priority_queue()
         return popped_query
 
     # @params
     # @return
     def task_manager_information(self, course):
-        return TaskManager.query_courses(course)[0]
+        tm_courses = TaskManager.query_courses(course)
+        if len(tm_courses) == 1:
+            return tm_courses
+        else:
+            return tm_courses[0]
 
     #query the task manager with the entity given by luis
 
