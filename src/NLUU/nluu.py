@@ -3,11 +3,48 @@ import luis
 from src.Dialog_Manager import Student, Conversation, Course, User_Query
 from src.Dialog_Manager.User_Query import QueryType
 from src.utils import constants
+from nltk.stem.snowball import SnowballStemmer
 import random
 
 class nLUU:
     def __init__(self, luisurl):
         self.luis = luis.Luis(luisurl)
+        self.response_dict = {
+            QueryType.welcome: self.create_welcome_response,
+            QueryType.goodbye: self.create_goodbye_response,
+            QueryType.clarify: self.create_clarify_response,
+            QueryType.specify: self.create_specify_response,
+            QueryType.pleasantry: self.create_pleasantry_response,
+            QueryType.class_info_term: self.create_class_info_term,
+            #QueryType.class_info_term_res: self.create_class_info_term_res,
+            QueryType.class_info_time: self.create_class_info_time,
+            #QueryType.class_info_time_res: self.create_class_info_time_res,
+            #QueryType.classes_info_prof_res: self.create_class_info_prof_res,
+            QueryType.class_info_name: self.create_class_info_name,
+            #QueryType.class_info_name_res: self.create_class_info_name_res,
+            QueryType.class_info_prof: self.create_class_info_prof,
+            #QueryType.class_info_prof_res: self.create_class_info_prof_res,
+            QueryType.class_info_scrunch: self.create_class_info_scrunch,
+            QueryType.class_info_sentiment: self.create_class_info_sentiment,
+            QueryType.class_info_sentiment_extended: self.create_class_info_sentiment,
+            QueryType.new_class_dept: self.create_new_class_dept,
+            QueryType.student_info_name: self.create_student_info_name,
+            QueryType.student_info_major: self.create_student_info_major,
+            QueryType.student_info_previous_classes: self.create_student_info_previous_classes,
+            QueryType.student_info_interests: self.create_student_info_interests,
+            QueryType.student_info_time_left: self.create_student_info_time_left,
+            QueryType.student_info_abroad: self.create_student_info_abroad,
+            QueryType.student_info_requirements: self.create_student_info_requirements,
+            QueryType.student_info_major_requirements: self.create_student_info_major,
+            QueryType.new_class_name: self.create_new_class_name,
+            QueryType.new_class_prof: self.create_new_class_prof,
+            QueryType.new_class_sentiment: self.create_new_class_sentiment,
+            QueryType.new_class_requirements: self.create_new_class_requirements,
+            QueryType.new_class_time: self.create_new_class_time,
+            QueryType.new_class_description: self.create_new_class_description,
+            QueryType.schedule_class_res: self.create_schedule_class_res
+        }
+        self.stemmer = SnowballStemmer("english")
         #Requires a local copy of atis.cfg
         #atis_grammar = nltk.data.load("atis.cfg")
         #self.parser = nltk.ChartParser(atis_grammar)
@@ -29,7 +66,7 @@ class nLUU:
                 print("Goodbye")
                 conversing = False
                 break
-            our_response = self.create_response_string(userQuery)
+            our_response = self.create_response(userQuery)
 
 
 
@@ -79,16 +116,10 @@ class nLUU:
         return s
 
     def create_response(self, userQuery):
-        if userQuery.type == QueryType.welcome:
-            return self.create_welcome_response(userQuery)
-        if userQuery.type == QueryType.class_info_term_res:
-            return self.create_class_info_term_res(userQuery)
-        if userQuery.type == QueryType.classes_info_prof_res:
-            return self.create_classes_info_prof_res(userQuery)
-        if userQuery.type == QueryType.class_info_name_res:
-            return self.create_class_info_name_res(userQuery)
-        else:
-            return create_welcome_response(userQuery)
+        fun = self.response_dict[userQuery.type]
+        if fun == None:
+            fun = self.response_dict[QueryType.welcome]
+        return fun(userQuery)
 
     def create_welcome_response(self, userQuery):
         return constants.Responses.WELCOME[1]
@@ -105,6 +136,9 @@ class nLUU:
     def create_pleasantry_response(self, userQuery):
         return constants.Responses.PLEASANTRY[0]
 
+    def create_class_info_term(self, userQuery):
+        return constants.Responses.CLASS_INFO_TERM[0].format(userQuery.object.name)
+
     def create_class_info_term_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_TERM_RES[0]
         return s.format(userQuery.object.name, userQuery.object.term)
@@ -112,8 +146,11 @@ class nLUU:
     def create_classes_info_prof_res(self, userQuery):
         s = constants.Responses.CLASSES_INFO_PROF_RES[0]
         class_str = ""
-        for course in userQuery.object:
-            class_str += course.id + ": " + course.name + "\n"
+        if type(userQuery.object) == list:
+            for course in userQuery.object:
+                class_str += course.id + ": " + course.name + "\n"
+        else:
+            class_str = userQuery.object.id + ": " + userQuery.object.name
         return s.format(userQuery.object[0].prof, class_str)
 
     def create_class_info_name(self, userQuery):
@@ -123,6 +160,14 @@ class nLUU:
     def create_class_info_name_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_NAME_RES[0]
         return s.format(userQuery.object.name)
+
+    def create_class_info_time(self, userQuery):
+        s = constants.Responses.CLASS_INFO_TIME[0]
+        return s.format(userQuery.object.name)
+
+    def create_class_info_time_res(self, userQuery):
+        s = constants.Responses.CLASS_INFO_TIME_RES[0]
+        return s.format(userQuery.object.name, userQuery.object.time)
 
     def create_class_info_prof(self, userQuery):
         s = constants.Responses.CLASS_INFO_PROF[0]
@@ -203,3 +248,11 @@ class nLUU:
                 if v != None and v != 0 and not (type(v) == list and len(v) == 0):
                     class_str += k + ':' + v + '\n'
         return s.format(class_str)
+
+    def create_schedule_class_res(self, userQuery):
+        s = constants.Responses.SCHEDULE_CLASS_RES[0]
+        return s.format(userQuery.object.name)
+
+
+    def stem(self, s):
+        return(self.stemmer.stem(s))

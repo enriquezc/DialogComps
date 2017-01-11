@@ -18,3 +18,4 @@ class Student:
         self.interests = []
         self.abroad = None
         self.all_classes = []
+        self.potential_courses = []
