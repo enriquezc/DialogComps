@@ -35,8 +35,8 @@ class Course:
 
 def connect_to_db():
 
-    conn = psycopg2.connect(host = "thacker.mathcs.carleton.edu", \
-    database = "enriquezc", user = "enriquezc", password = "towel784tree")
+    conn = psycopg2.connect(host = "cmc307-07.mathcs.carleton.edu", \
+    database = "dialogcomps", user = "dialogcomps", password = "dialog!=comps")
 
     return conn
 
