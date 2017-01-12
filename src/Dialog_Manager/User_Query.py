@@ -34,6 +34,8 @@ class QueryType(Enum):
     student_info_requirements = 16
     #ask about major requirements left
     student_info_major_requirements = 17
+    #ask about concentration
+    student_info_concentration = 18
 
 
 
@@ -53,7 +55,6 @@ class QueryType(Enum):
     class_info_scrunch = 25
     #What time of day the class was
     class_info_time = 26
-
     #ask for more info about a class they want to take
     #If name is given, as if they want to take this class
     #If class object is given, this indicates they have an idea of what they want to take

@@ -30,29 +30,51 @@ class Conversation:
         self.head_node = self.NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify),[],[])
         self.current_node = self.head_node
 
-    class NodeObject():
-        userQuery = None
-        asked = False
-        answered = False
-        required_questions = []
-        potential_next_questions = []
+    def build_Tree(self):
+        listOfEnums = [0, 1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33, 34,
+                       35, 36]
+        numNodes = len(listOfEnums)
+        listOfNodes = []
+        for i in range(numNodes):
+            listOfNodes.append(NodeObject(None, None, [], []))
+
+        #here we go...
+        for i in range(listOfEnums):
+            currentNode = listOfNodes[i]
+            currentNode.userQuery = User_Query(listOfEnums[i])
+        listOfNodes[0].required_questions.append(listOfNodes[6]) #name
+        listOfNodes[6].required_questions.append(listOfNodes[10])#time left / year
+        listOfNodes[10].potential_next_questions.extend([listOfNodes[7], listOfNodes[14], listOfNodes[12], listOfNodes[9]]) #major, concentration, distros, interests
+        listOfNodes[7].required_questions.extend([listOfNodes[14], listOfNodes[13]]) #concentration, major requirements
+        listOfNodes[7].potential_next_questions.append(listOfNodes[12]) #distros
+        listOfNodes[14].potential_next_questions.extend([listOfNodes[13],listOfNodes[12], listOfNodes[9]]) #major reqs, distros, interests
+
+        return
+class NodeObject():
+    userQuery = None
+    asked = False
+    answered = False
+    required_questions = []
+    potential_next_questions = []
 
 
-        def __init__(self, userQ, requiredQ, potentialQ):
-            self.userQuery = userQ
-            self.required_questions.extend(requiredQ)
-            self.potential_next_questions.extend(potentialQ)
+    def __init__(self, userQ, requiredQ, potentialQ):
+        self.userQuery = userQ
+        self.required_questions.extend(requiredQ)
+        self.potential_next_questions.extend(potentialQ)
 
-        def is_answered(self):
-            return False
-       #def answer(self):
+    def is_answered(self):
+        return False
+   #def answer(self):
 
-        def relavent_course(*args):
+    def relevant_course(*args):
+        pass
 
-        def call_database(self):
+    def call_database(self):
+        pass
 
 
-    class DecisionTree():
+   #class DecisionTree():
 
         #name
         #major
