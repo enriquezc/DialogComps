@@ -60,9 +60,7 @@ class Conversation:
         if self.priority_queue.empty():
             return User_Query.UserQuery(None, User_Query.QueryType.clarify) #will fill in in a second
         while not self.priority_queue.empty():
-            print(self.priority_queue.get())
             popped_userQuery = self.priority_queue.get()
-            print(popped_userQuery)
 
             if popped_userQuery.type < 5:
                 return popped_userQuery
@@ -154,30 +152,29 @@ class Conversation:
         #luis_intent = self.classify_intent(luisAI)
         luis_entities = luisAI.entities
         luis_intent = luisAI.intents[0]
-        print(luis_entities)
-        print(luis_intent)
         #entity_information = self.task_manager_information(luis_entities)
         if luis_intent.intent == "ClassDescriptionRequest":
             #if entity.type == "class":  # add more if's for different types
             course = Course.Course()
             course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
-            print("group2 " + course_name.group(2))
-            print("group1 " + course_name.group(1))
+
             course.id = course_name.group(0)
             course.courseNum = course_name.group(2)
             course.department = course_name.group(1)
             course.user_description = luisAI.query
 
             tm_courses = self.task_manager_information(course)
-            self.student.potential_courses = tm_courses
-            return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_description)
+            if not tm_courses:
+                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+            else:
+                tm_course = tm_courses[0]
+                self.student.potential_courses = tm_course
+                return User_Query.UserQuery(tm_course, User_Query.QueryType.new_class_description)
 
         if luis_intent.intent == "ScheduleClass":
             # if entity.type == "class":  # add more if's for different types
             course = Course.Course()
             course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
-            print("group2" + course_name.group(2))
-            print("group1" + course_name.group(1))
 
             course.id = course_name.group(0)
             course.courseNum = course_name.group(2)
@@ -185,8 +182,13 @@ class Conversation:
             course.user_description = luisAI.query
 
             tm_courses = self.task_manager_information(course)
-            self.student.potential_courses = tm_courses
-            return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_description)
+            if tm_courses == None:
+                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+            else:
+                self.student.current_classes.append(tm_courses)
+                #self.student.total_credits += tm_courses.credits
+                #if self.student.total_credits < 12:
+                return User_Query.UserQuery(tm_courses, User_Query.QueryType.schedule_class_res)
 
             """if entity.type == "personname":
                     course.prof = entity.entity
@@ -366,7 +368,7 @@ class Conversation:
     # @params
     # @return
     def task_manager_information(self, course):
-        return TaskManager.query_courses(course)[0]
+        return TaskManager.query_courses(course)
 
     #query the task manager with the entity given by luis
 
