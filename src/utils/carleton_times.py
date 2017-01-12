@@ -16,13 +16,13 @@ class Times(Enum):
 		1: (1,time(8,30), time(9,40)),
 		2: (1,time(9,50), time(11,0)),
 		3: (1,time(11,10), time(12,20)),
-		4: (1,time(12,30), time(1,40)),
-		5: (1,time(1,50), time(3,0)),
-		6: (1,time(3,10), time(4,20)),
+		4: (1,time(12,30), time(13,40)),
+		5: (1,time(13,50), time(15,0)),
+		6: (1,time(15,10), time(16,20)),
 		7: (2,time(8,15), time(10,0)),
 		8: (2,time(10,10), time(11,55)),
-		9: (2,time(1,15), time(3,0)),
-		10: (2,time(3,10), time(4,55)),
+		9: (2,time(13,15), time(15,0)),
+		10: (2,time(15,10), time(16,55)),
 	}
 
 	def describe(self):
