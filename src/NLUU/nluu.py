@@ -242,12 +242,7 @@ class nLUU:
 
     def create_new_class_description(self, userQuery):
         s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
-        class_str = ""
-        d = userQuery.object.__dict__
-        for k, v in d.items():
-                if v != None and v != 0 and not (type(v) == list and len(v) == 0):
-                    class_str += k + ':' + v + '\n'
-        return s.format(class_str)
+        return s.format(userQuery.object.name, userQuery.object.description)
 
     def create_schedule_class_res(self, userQuery):
         s = constants.Responses.SCHEDULE_CLASS_RES[0]
