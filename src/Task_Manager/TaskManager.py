@@ -4,7 +4,7 @@
 
 import psycopg2
 import string
-from src.Dialog_Manager import Course
+#from src.Dialog_Manager import Course
 
 """class Course:
     def __init__(self):
@@ -156,52 +156,53 @@ def makeCooccurenceMatrix():
     dept_dictionaries = []
 
     for dept in dept_results:
-        print("dept: {}".format(dept))
-        courses_query = "select title, long_description from reason where org_id = "
-        courses_query = courses_query + str(dept)
-        cur.execute(courses_query)
-        dept_tuples = cur.fetchall()
+        print("dept: {}".format(dept[0]))
+        if dept[0] != None:
+            courses_query = "select title, long_description from reason where org_id = "
+            courses_query = courses_query + "'" + str(dept[0]) + "'"
+            cur.execute(courses_query)
+            dept_tuples = cur.fetchall()
 
-        punctuationset = set(string.punctuation)
-        dept_dictionary = {}
-        for title, description in dept_tuples:
-            titleArray = title.split()
-            for word in titleArray:
-                w = ''.join(ch for ch in word if ch not in punctuationset)
-                distinct_word.add(w)
-                if w not in dept_dictionary:
-                    dept_dictionary[w] = 1
+            punctuationset = set(string.punctuation)
+            dept_dictionary = {}
+            for title, description in dept_tuples:
+                titleArray = title.split()
+                for word in titleArray:
+                    w = ''.join(ch for ch in word if ch not in punctuationset)
+                    distinct_word.add(w)
+                    if w not in dept_dictionary:
+                        dept_dictionary[w] = 1
+                    else:
+                        dept_dictionary[w] = dept_dictionary[w] + 1
+
+                long_description_array = description.split()
+                for word2 in long_description_array:
+                    w = ''.join(ch for ch in word2 if ch not in punctuationset)
+                    distinct_word.add(w)
+                    if w not in dept_dictionary:
+                        dept_dictionary[w] = 1
+                    else:
+                        dept_dictionary[w] = dept_dictionary[w] + 1
+
+
+            dept_dictionaries.append((str(dept), dept_dictionary))
+        print("Done with that")
+        distinct_word_list = list(distinct_word)
+        matrix = []
+        for (dept_name, d) in dept_dictionaries:
+            print("Dept_name {}".format(dept_name))
+            l = np.zeros(len(distinct_word_list) + 1)
+            l[0] = dept_name
+            for i, word in enumerate(distinct_word_list):
+                r = i + 1
+                if word in d:
+                    l[r] = d[word]
                 else:
-                    dept_dictionary[w] = dept_dictionary[w] + 1
-
-            long_description_array = description.split()
-            for word2 in long_description_array:
-                w = ''.join(ch for ch in word2 if ch not in punctuationset)
-                distinct_word.add(w)
-                if w not in dept_dictionary:
-                    dept_dictionary[w] = 1
-                else:
-                    dept_dictionary[w] = dept_dictionary[w] + 1
+                    l[r] = 0
+            matrix.append(l)
 
 
-        dept_dictionaries.append((str(dept), dept_dictionary))
-    print("Done with that")
-    distinct_word_list = list(distinct_word)
-    matrix = []
-    for (dept_name, d) in dept_dictionaries:
-        print("Dept_name {}".format(dept_name))
-        l = np.zeros(len(distinct_word_list + 1))
-        l[0] = dept_name
-        for i, word in enumerate(distinct_word_list):
-            r = i + 1
-            if word in d:
-                l[r] = d[word]
-            else:
-                l[r] = 0
-        matrix.append(l)
-
-
-
+        print(matrix)
 
 
 
