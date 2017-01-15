@@ -4,9 +4,9 @@
 
 import psycopg2
 import string
-#from src.Dialog_Manager import Course
+from src.Dialog_Manager import Course
 
-class Course:
+"""class Course:
     def __init__(self):
         #name of class
         self.name = None
@@ -32,7 +32,7 @@ class Course:
         #Boolean. Have they taken the class yet?
         self.taken = None
         self.credits = None
-
+"""
 
 def connect_to_db():
 
@@ -53,7 +53,7 @@ def query_courses(course):
     course_query = "SELECT * FROM COURSE WHERE (sec_term LIKE '16%' OR sec_term LIKE '17%') AND "
 
     if course.department != None:
-        course_query = course_query + "sec_subject = '" + course.department
+        course_query = course_query + "sec_subject = '" + course.department.upper()
         course_query = course_query + "' AND "
 
     if course.courseNum != None:
@@ -67,14 +67,14 @@ def query_courses(course):
     cur.execute(course_query)
     course_results = cur.fetchall()
 
-    print(course_query)
+    #print(course_query)
 
     results = []
 
     for result in course_results:
-        print("Getting results from query")
-        print(result)
-        result_course = Course()
+        #print("Getting results from query")
+        #print(result)
+        result_course = Course.Course()
         result_course.department = result[17]
         result_course.courseNum = result[2]
         result_course.id = result[13]
@@ -122,8 +122,8 @@ def query_courses(course):
         course_results = cur.fetchone()
 
         #print(course_results)
-
-        result.description = course_results[16]
+        if  course_results != None:
+            result.description = course_results[16]
 
     #list_courses = []
 
