@@ -32,22 +32,32 @@ class Conversation:
 
     def build_Tree(self):
         listOfEnums = [0, 1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33, 34,
-                       35, 36]
+                       35, 36, 37]
         numNodes = len(listOfEnums)
         listOfNodes = []
         for i in range(numNodes):
             listOfNodes.append(NodeObject(None, None, [], []))
 
         #here we go...
-        for i in range(listOfEnums):
+        for i in range(len(listOfEnums)):
             currentNode = listOfNodes[i]
-            currentNode.userQuery = User_Query(listOfEnums[i])
+            currentNode.userQuery = User_Query.QueryType(listOfEnums[i])
         listOfNodes[0].required_questions.append(listOfNodes[6]) #name
         listOfNodes[6].required_questions.append(listOfNodes[10])#time left / year
         listOfNodes[10].potential_next_questions.extend([listOfNodes[7], listOfNodes[14], listOfNodes[12], listOfNodes[9]]) #major, concentration, distros, interests
         listOfNodes[7].required_questions.extend([listOfNodes[14], listOfNodes[13]]) #concentration, major requirements
         listOfNodes[7].potential_next_questions.append(listOfNodes[12]) #distros
         listOfNodes[14].potential_next_questions.extend([listOfNodes[13],listOfNodes[12], listOfNodes[9]]) #major reqs, distros, interests
+        listOfNodes[12].potential_next_questions.append(listOfNodes[9]) #interests
+        listOfNodes[12].required_questions.append(listOfNodes[24]) #ask if they want to take a course that fills these reqs
+        listOfNodes[13].required_questions.append(listOfNodes[24])  #Ask if they want to take a course that fills these reqs
+        listOfNodes[13].potential_next_questions.append(listOfNodes[9]) #interests
+        listOfNodes[24].potential_next_questions.extend([listOfNodes[9], listOfNodes[27]]) #interests, should we reccomend something?
+        listOfNodes[27].potential_next_questions.append(listOfNodes[20]) #what class would they want to take?
+        listOfNodes[9].potential_next_questions.extend([listOfNodes[22], listOfNodes[21], listOfNodes[27]]) #department, prof, reccomend
+        listOfNodes[22].potential_next_questions.extend([listOfNodes[21], listOfNodes[27]]) #prof, reccomend
+        listOfNodes[21].potential_next_questions.append(listOfNodes[27]) #reccomend
+
 
         return
 class NodeObject():

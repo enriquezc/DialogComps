@@ -73,6 +73,8 @@ class QueryType(Enum):
     new_class_time = 35
     #Return information about a course they've asked for
     new_class_description = 36
+    #Ask if they want us to reccomend a class or if they already have something in mind?
+    new_class_request = 37
 
 
 
