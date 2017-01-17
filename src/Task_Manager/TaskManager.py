@@ -191,7 +191,7 @@ def makeCooccurenceMatrix():
         matrix = []
         for (dept_name, d) in dept_dictionaries:
             print("Dept_name {}".format(dept_name))
-            l = np.zeros(len(distinct_word_list) + 1)
+            l = [None] * (len(distinct_word_list) + 1)
             l[0] = dept_name
             for i, word in enumerate(distinct_word_list):
                 r = i + 1
