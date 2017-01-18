@@ -199,7 +199,7 @@ def makeCooccurenceMatrix():
             else:
                 l[r] = 0
         matrix.append(l)
-
+    
 
 
 
