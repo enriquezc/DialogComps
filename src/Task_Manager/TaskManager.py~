@@ -142,7 +142,6 @@ def query_by_string(course_description, connection):
     return list_courses
 
 def makeCooccurenceMatrix():
-    from ast import literal_eval as make_tuple
     stop_words = set()
     stop_words_file = open('stop_words.txt', 'r')
     for word in stop_words_file:
@@ -198,7 +197,7 @@ def makeCooccurenceMatrix():
     for (dept_name, d) in dept_dictionaries:
         print("Dept_name {}".format(dept_name))
         l = [None] * (len(distinct_word_list) + 1)
-        l[0] = make_tuple(dept_name)[0]
+        l[0] = dept_name
         for i, word in enumerate(distinct_word_list):
             r = i + 1
             if word in d:
@@ -206,7 +205,6 @@ def makeCooccurenceMatrix():
             else:
                 l[r] = 0
         matrix.append(l)
-
     result_file = open('results.csv', 'w')
     transpose = []
     for i in range(len(matrix[0])):
@@ -214,24 +212,12 @@ def makeCooccurenceMatrix():
         for j in range(len(matrix)):
             dept_row.append(matrix[j][i])
         transpose.append(dept_row)
-    numrows = 0
-    for i, row in enumerate(transpose):
-        if i == 0:
-            result_file.write(','.join(row))
-            result_file.write('\n')
-            continue
-        print(row)
-        if sum(row) < 5:
-            continue
-        numrows += 1
+    for row in matrix:
         row_str = [str(d) for d in row]
-        if i > 0:
-            row_str.insert(0, distinct_word_list[i - 1])
         result_file.write(','.join(row_str))
         result_file.write('\n')
     result_file.close()
-    print("Rows: {}".format(numrows))
-
+    print(matrix)
 
 
 
