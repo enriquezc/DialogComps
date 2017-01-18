@@ -3,6 +3,7 @@
 # conversation for the Dialogue Manager
 
 import psycopg2
+import numpy as np
 #from src.Dialog_Manager import Course
 
 class Course:
@@ -35,8 +36,8 @@ class Course:
 
 def connect_to_db():
 
-    conn = psycopg2.connect(host = "thacker.mathcs.carleton.edu", \
-    database = "enriquezc", user = "enriquezc", password = "towel784tree")
+    conn = psycopg2.connect(host = "cmc307-07.mathcs.carleton.edu", \
+    database = "dialogcomps", user = "dialogcomps", password = "dialog!=comps")
 
     return conn
 
@@ -140,11 +141,35 @@ def query_by_string(course_description, connection):
 
     return list_courses
 
-if __name__ == "__main__":
-    course = Course()
-    course.department = "JAPN"
-    course.courseNum = 245
-    results = query_courses(course)
+def smart_department_search(keywords):
+    conn = connect_to_db()
+    recommended_departments = set()
+    keywords_str = " in {}".format(str(tuple(keywords))) if len(keywords) > 1 else " = '{}'".format(keywords[0])
+    query = "SELECT * FROM occurence where words {};".format(keywords_str)
+    cur = conn.cursor()
+    cur.execute(query)
+    for result in cur:
+        r = get_n_best_indices(result, 2)
+        for i in r:
+            recommended_departments.add(i)
+    colnames = [desc[0] for desc in cur.description]    
+    department_names = []
+    for i in recommended_departments - set((0,)):
+        department_names.append(colnames[i])
+    return department_names
 
-    for result in results:
-        print(str(result.name) + " " + str(result.term) + " " + str(result.description) + " " + str(result.time))
+def get_n_best_indices(row, n):
+    res = []
+    arr = np.array(row[1:len(row)])
+    while len(res) < n:
+        i = np.argmax(arr)
+        if arr[i] == 0:
+            return arr
+        res.append(i + 1)
+        arr[i] = 0
+    return res
+
+
+if __name__ == "__main__":
+    print(smart_keyword_search(["physics"]))
+

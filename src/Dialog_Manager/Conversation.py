@@ -278,13 +278,6 @@ class Conversation:
             return new_course
 
 class NodeObject:
-    userQuery = None
-    asked = False
-    answered = False
-    required_questions = []
-    potential_next_questions = []
-    node_function = None
-
 
 
     #have a relavent function for each user query??!?!?!
@@ -294,8 +287,14 @@ class NodeObject:
 
     def __init__(self, userQ, requiredQ, potentialQ):
         self.userQuery = userQ
+        self.required_questions = []
+        requiredQ = requiredQ or []
         self.required_questions.extend(requiredQ)
+        self.asked = False
+        self.answered = False
+        self.potential_next_questions = []
         self.potential_next_questions.extend(potentialQ)
+        self.node_function = None
 
     def answer(self):
         pass
@@ -441,32 +440,26 @@ class DecisionTree:
         listOfEnums = [0, 1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33, 34,
                        35, 36, 37]
         num_nodes = len(listOfEnums)
-        listOfNodes = []
-        for i in range(num_nodes):
-            listOfNodes.append(NodeObject(None, None, []))
-
-        #here we go...
-        for i in range(len(listOfEnums)):
-            current_node = listOfNodes[i]
-            current_node.userQuery = User_Query.QueryType(listOfEnums[i])
-        listOfNodes[0].required_questions.append(listOfNodes[10]) #name
-        listOfNodes[10].required_questions.append(listOfNodes[14])#time left / year
-        listOfNodes[11].required_questions.extend([listOfNodes[18], listOfNodes[17]]) #concentration, major requirements
-        listOfNodes[11].potential_next_questions.append(listOfNodes[18]) #distros
-        listOfNodes[13].potential_next_questions.extend([listOfNodes[27], listOfNodes[26], listOfNodes[32]]) #department, prof, reccomend
-        listOfNodes[14].potential_next_questions.extend([listOfNodes[11], listOfNodes[18], listOfNodes[16], listOfNodes[13]]) #major, concentration, distros, interests
-        listOfNodes[16].potential_next_questions.append(listOfNodes[13]) #interests
-        listOfNodes[16].required_questions.append(listOfNodes[29]) #ask if they want to take a course that fills these reqs
-        listOfNodes[17].required_questions.append(listOfNodes[29])  #Ask if they want to take a course that fills these reqs
-        listOfNodes[17].potential_next_questions.append(listOfNodes[13]) #interests
-        listOfNodes[18].potential_next_questions.extend([listOfNodes[17],listOfNodes[16], listOfNodes[13]]) #major reqs, distros, interests
-        listOfNodes[25].potential_next_questions.append(listOfNodes[0]) #what class would they want to take?
-        listOfNodes[26].potential_next_questions.append(listOfNodes[32]) #reccomend
-        listOfNodes[27].potential_next_questions.extend([listOfNodes[26], listOfNodes[32]]) #prof, reccomend
-        listOfNodes[29].potential_next_questions.extend([listOfNodes[13], listOfNodes[32]]) #interests, should we reccomend something?
-        listOfNodes[32].potential_next_questions.append(listOfNodes[25]) #what class would they want to take?
-        #listOfNodes[0].node_function = node_0()
-        self.the_node = listOfNodes[0]
+        mapOfNodes = {}
+        for i in listOfEnums:
+            mapOfNodes[i] = NodeObject(User_Query.QueryType(i), None, [])
+            
+        mapOfNodes[0].required_questions.append(mapOfNodes[6]) #name
+        mapOfNodes[6].required_questions.append(mapOfNodes[10])#time left / year
+        mapOfNodes[7].required_questions.extend([mapOfNodes[14], mapOfNodes[13]]) #concentration, major requirements
+        mapOfNodes[7].potential_next_questions.append(mapOfNodes[12]) #distros
+        mapOfNodes[9].potential_next_questions.extend([mapOfNodes[22], mapOfNodes[21], mapOfNodes[37]]) #department, prof, reccomend
+        mapOfNodes[10].potential_next_questions.extend([mapOfNodes[7], mapOfNodes[14], mapOfNodes[12], mapOfNodes[9]]) #major, concentration, distros, interests
+        mapOfNodes[12].potential_next_questions.append(mapOfNodes[9]) #interests
+        mapOfNodes[12].required_questions.append(mapOfNodes[24]) #ask if they want to take a course that fills these reqs
+        mapOfNodes[13].required_questions.append(mapOfNodes[24])  #Ask if they want to take a course that fills these reqs
+        mapOfNodes[13].potential_next_questions.append(mapOfNodes[9]) #interests
+        mapOfNodes[14].potential_next_questions.extend([mapOfNodes[13],mapOfNodes[12], mapOfNodes[9]]) #major reqs, distros, interests
+        mapOfNodes[21].potential_next_questions.append(mapOfNodes[37]) #reccomend
+        mapOfNodes[22].potential_next_questions.extend([mapOfNodes[21], mapOfNodes[37]]) #prof, reccomend
+        mapOfNodes[24].potential_next_questions.extend([mapOfNodes[9], mapOfNodes[37]]) #interests, should we reccomend something?
+        mapOfNodes[37].potential_next_questions.append(mapOfNodes[20]) #what class would they want to take?
+        self.the_node = mapOfNodes[0]
 
 
     #@params: the current node of the tree
