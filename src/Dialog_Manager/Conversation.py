@@ -33,272 +33,6 @@ class Conversation:
         self.current_class = None
         self.decision_tree = DecisionTree(self.student_profile)
 
-
-
-
-
-        return
-class NodeObject:
-    userQuery = None
-    asked = False
-    answered = False
-    required_questions = []
-    potential_next_questions = []
-    node_function = None
-
-
-
-    #have a relavent function for each user query??!?!?!
-    #how do we do that? Can we just assign a variable to be a function? That doesn't make any sense tho
-    #What if we have a string that is also the name of a function? Can that work? python is dumb and obtrusive
-
-
-    def __init__(self, userQ, requiredQ, potentialQ):
-        self.userQuery = userQ
-        self.required_questions.extend(requiredQ)
-        self.potential_next_questions.extend(potentialQ)
-
-    def answer(self):
-        pass
-
-
-
-
-    def relevant_course(*args):
-        pass
-
-    def call_database(self):
-        pass
-
-def node_0(self):
-    return 5
-
-class DecisionTree:
-
-    def __init__(self, student):
-        self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify),[],[])
-        self.current_node = self.head_node
-        self.build_Tree()
-        self.the_node = None
-        self.current_course = None
-        self.student = student
-
-    def is_answered(self, node):
-        if node.userQuery == 0:
-            node.answered = True
-            return True
-        elif node.userQuery == 1:
-            node.answered = False
-            return False
-        elif node.userQuery == 2:
-            node.answered = False
-            return False
-        elif node.userQuery == 3:
-            node.answered = False
-            return False
-        elif node.userQuery == 4:
-            node.answered = False
-            return False
-        elif node.userQuery == 5:
-            if self.current_course in self.student.current_classes:
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-        elif node.userQuery == 10:
-            if self.student.name != None:
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-        elif node.userQuery == 11:
-            if self.student.major != []:
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-        elif node.userQuery == 12:
-            if self.student.previous_classes != []:
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-        elif node.userQuery == 13:
-            if self.student.interests != []:
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-        elif node.userQuery == 14:
-            if self.student.terms_left == 0:
-                node.answered = False
-                return False
-            node.answered = True
-            return True
-        elif node.userQuery == 15:
-            if self.student.abroad != None:
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-        elif node.userQuery == 16:
-            if self.student.distributions_needed != []:
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-        elif node.userQuery == 17:
-            if self.student.major_classes_needed != []:
-                node.answered = True
-                return True
-            elif self.student.major == "undeclared":
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-        elif node.userQuery == 18:
-            if self.student.concentration != None:
-                node.answered = True
-                return True
-            elif self.student.major == "undeclared":
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-
-        elif node.userQuery == 30:
-            if self.current_course.name != None and self.current_course.id != None:
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-        elif node.userQuery == 31:
-            if self.current_course.prof != None:
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-        elif node.userQuery == 32:
-            if self.current_course.department != None:
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-        elif node.userQuery == 33:
-            if self.current_course.sentiment != 0:
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-        elif node.userQuery == 35:
-            if self.current_course.time != None:
-                node.answered = True
-                return True
-            node.answered = False
-            return False
-        elif node.userQuery == 37:
-            return False
-    def build_Tree(self):
-        listOfEnums = [0, 1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33, 34,
-                       35, 36, 37]
-        num_nodes = len(listOfEnums)
-        listOfNodes = []
-        for i in range(num_nodes):
-            listOfNodes.append(NodeObject(None, None, []))
-
-        #here we go...
-        for i in range(len(listOfEnums)):
-            current_node = listOfNodes[i]
-            current_node.userQuery = User_Query.QueryType(listOfEnums[i])
-        listOfNodes[0].required_questions.append(listOfNodes[6]) #name
-        listOfNodes[6].required_questions.append(listOfNodes[10])#time left / year
-        listOfNodes[7].required_questions.extend([listOfNodes[14], listOfNodes[13]]) #concentration, major requirements
-        listOfNodes[7].potential_next_questions.append(listOfNodes[12]) #distros
-        listOfNodes[9].potential_next_questions.extend([listOfNodes[22], listOfNodes[21], listOfNodes[27]]) #department, prof, reccomend
-        listOfNodes[10].potential_next_questions.extend([listOfNodes[7], listOfNodes[14], listOfNodes[12], listOfNodes[9]]) #major, concentration, distros, interests
-        listOfNodes[12].potential_next_questions.append(listOfNodes[9]) #interests
-        listOfNodes[12].required_questions.append(listOfNodes[24]) #ask if they want to take a course that fills these reqs
-        listOfNodes[13].required_questions.append(listOfNodes[24])  #Ask if they want to take a course that fills these reqs
-        listOfNodes[13].potential_next_questions.append(listOfNodes[9]) #interests
-        listOfNodes[14].potential_next_questions.extend([listOfNodes[13],listOfNodes[12], listOfNodes[9]]) #major reqs, distros, interests
-        listOfNodes[21].potential_next_questions.append(listOfNodes[27]) #reccomend
-        listOfNodes[22].potential_next_questions.extend([listOfNodes[21], listOfNodes[27]]) #prof, reccomend
-        listOfNodes[24].potential_next_questions.extend([listOfNodes[9], listOfNodes[27]]) #interests, should we reccomend something?
-        listOfNodes[27].potential_next_questions.append(listOfNodes[20]) #what class would they want to take?
-        #listOfNodes[0].node_function = node_0()
-        self.the_node = listOfNodes[0]
-
-
-    #@params: the current node of the tree
-    #@return: the next node of the tree
-    def get_next_node(self, current_node):
-        try:
-            if current_node.answered == 1:
-                for i in range(len(current_node.required_questions)):
-                    if current_node.required_questions[i].asked or current_node.required_questions[i].answered:
-                        pass
-                    else:
-                        current_node = current_node.required_questions[i]
-
-                for i in range(len(current_node.potential_next_questions)):
-                    if current_node.potential_next_questions[i].asked or current_node.potential_next_questions[i].answered:
-                        pass
-                    else:
-                        current_node = current_node.potential_next_questions[i]
-
-                for i in range(len(current_node.required_questions)):
-                    if current_node.required_questions[i].answered:
-                        pass
-                    else:
-                        current_node = current_node.required_questions[i]
-
-                for i in range(len(current_node.required_questions)):
-                    if current_node.potential_next_questions[i].answered:
-                        pass
-                    else:
-                        current_node = current_node.potential_next_questions[i]
-
-            if current_node.answered == 0:
-                for i in range(len(current_node.potential_next_questions)):
-                    if current_node.potential_next_questions[i].asked or current_node.potential_next_questions[i].answered:
-                        pass
-                    else:
-                        current_node = current_node.potential_next_questions[i]
-
-                #have looped through and no node that is asked or answered, now loop to find one that is just not answered
-                for i in range(len(current_node.potential_next_questions)):
-                    if current_node.potential_next_questions[i].answered:
-                        pass
-                    else:
-                        current_node = current_node.potential_next_questions[i]
-
-            if current_node.userQuery > 10 and current_node.userQuery < 20:
-                student_pro = Conversation.student_profile
-                return User_Query.UserQuery(student_pro, current_node.userQuery)
-            elif current_node.userQuery > 18:
-                return User_Query.UserQuery(Conversation.current_class, current_node.userQuery)
-            else:
-                return User_Query.UserQuery(None, current_node.userQuery)
-        except ValueError:
-            print("Unexpected error:", sys.exc_info()[0])
-            raise
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     # @params
     # @return
     def classify_intent(self, luis_input):
@@ -543,96 +277,248 @@ class DecisionTree:
             self.student.current_classes.append(new_course)
             return new_course
 
-    def course_interest(self, course):
-        return 0
+class NodeObject:
+    userQuery = None
+    asked = False
+    answered = False
+    required_questions = []
+    potential_next_questions = []
+    node_function = None
 
 
-    # @params
-    # @return
-    def pop_priority_queue(self):
-        if self.priority_queue.empty():
-            return User_Query.UserQuery(None, User_Query.QueryType.clarify)  # will fill in in a second
-        popped_userQuery = self.priority_queue.get_nowait()
-        print(popped_userQuery)
-        if popped_userQuery.type < 5:
-            return popped_userQuery
-        # for 10-17, we may format it so we only ask these questions once.
-        userQuery_course = popped_userQuery.object
-        userQuery_type = popped_userQuery.type
-        if type == 10:
-            if userQuery_course.name == None:
-                return popped_userQuery
-            else:
-                return self.pop_priority_queue()
-        elif type == 11:
-            if userQuery_course.major == None:
-                return popped_userQuery
-            else:
-                return self.pop_priority_queue()
-        elif type == 12:
-            return self.pop_priority_queue()
-        elif type == 13:
-            return self.pop_priority_queue()
-        elif type == 14:
-            if userQuery_course.terms_left == 12:
-                return popped_userQuery
-            else:
-                return self.pop_priority_queue()
-        elif type == 15:
-            if userQuery_course.abroad == None:
-                return popped_userQuery
-            else:
-                return self.pop_priority_queue()
-        elif type == 16:
-            return popped_userQuery
-        elif type == 17:
-            return popped_userQuery
 
-        elif type == 20 or type == 30:
-            if userQuery_course.name == None:
-                return popped_userQuery
-            else:
-                return self.pop_priority_queue()
+    #have a relavent function for each user query??!?!?!
+    #how do we do that? Can we just assign a variable to be a function? That doesn't make any sense tho
+    #What if we have a string that is also the name of a function? Can that work? python is dumb and obtrusive
 
-        elif type == 21 or type == 31:
-            if userQuery_course.prof == None:
-                return popped_userQuery
-            else:
-                return self.pop_priority_queue()
-        elif type == 22:
-            if userQuery_course.term == None:
-                return popped_userQuery
-            else:
-                return self.pop_priority_queue()
-        elif type == 23 or type == 24 or type == 33:
-            if userQuery_course.sentiment == None:
-                return popped_userQuery
-            else:
-                return self.pop_priority_queue()
-        elif type == 25:
-            if userQuery_course.scrunch == None:
-                return popped_userQuery
-            else:
-                return self.pop_priority_queue()
 
-        elif type == 26 or type == 35:
-            if userQuery_course.time == None:
-                return popped_userQuery
-            else:
-                return self.pop_priority_queue()
-        elif type == 32:
-            if userQuery_course.dept == None:
-                return popped_userQuery
-            else:
-                return self.pop_priority_queue()
-        elif type == 34:
-            if userQuery_course.requirements == None:
-                return popped_userQuery
-            else:
-                return self.pop_priority_queue()
-        elif type == 36:
-            if userQuery_course.prof == "":
-                return popped_userQuery
-            else:
-                return self.pop_priority_queue()
+    def __init__(self, userQ, requiredQ, potentialQ):
+        self.userQuery = userQ
+        self.required_questions.extend(requiredQ)
+        self.potential_next_questions.extend(potentialQ)
 
+    def answer(self):
+        pass
+
+
+
+
+    def relevant_course(*args):
+        pass
+
+    def call_database(self):
+        pass
+
+def node_0(self):
+    return 5
+
+class DecisionTree:
+
+    def __init__(self, student):
+        self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify),[],[])
+        self.current_node = self.head_node
+        self.build_Tree()
+        self.the_node = None
+        self.current_course = None
+        self.student = student
+
+    def is_answered(self, node):
+        if node.userQuery == 0:
+            node.answered = True
+            return True
+        elif node.userQuery == 1:
+            node.answered = False
+            return False
+        elif node.userQuery == 2:
+            node.answered = False
+            return False
+        elif node.userQuery == 3:
+            node.answered = False
+            return False
+        elif node.userQuery == 4:
+            node.answered = False
+            return False
+        elif node.userQuery == 5:
+            if self.current_course in self.student.current_classes:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 10:
+            if self.student.name != None:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 11:
+            if self.student.major != []:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 12:
+            if self.student.previous_classes != []:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 13:
+            if self.student.interests != []:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 14:
+            if self.student.terms_left == 0:
+                node.answered = False
+                return False
+            node.answered = True
+            return True
+        elif node.userQuery == 15:
+            if self.student.abroad != None:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 16:
+            if self.student.distributions_needed != []:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 17:
+            if self.student.major_classes_needed != []:
+                node.answered = True
+                return True
+            elif self.student.major == "undeclared":
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 18:
+            if self.student.concentration != None:
+                node.answered = True
+                return True
+            elif self.student.major == "undeclared":
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+
+        elif node.userQuery == 30:
+            if self.current_course.name != None and self.current_course.id != None:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 31:
+            if self.current_course.prof != None:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 32:
+            if self.current_course.department != None:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 33:
+            if self.current_course.sentiment != 0:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 35:
+            if self.current_course.time != None:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 37:
+            return False
+    def build_Tree(self):
+        listOfEnums = [0, 1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33, 34,
+                       35, 36, 37]
+        num_nodes = len(listOfEnums)
+        listOfNodes = []
+        for i in range(num_nodes):
+            listOfNodes.append(NodeObject(None, None, []))
+
+        #here we go...
+        for i in range(len(listOfEnums)):
+            current_node = listOfNodes[i]
+            current_node.userQuery = User_Query.QueryType(listOfEnums[i])
+        listOfNodes[0].required_questions.append(listOfNodes[10]) #name
+        listOfNodes[10].required_questions.append(listOfNodes[14])#time left / year
+        listOfNodes[11].required_questions.extend([listOfNodes[18], listOfNodes[17]]) #concentration, major requirements
+        listOfNodes[11].potential_next_questions.append(listOfNodes[18]) #distros
+        listOfNodes[13].potential_next_questions.extend([listOfNodes[27], listOfNodes[26], listOfNodes[32]]) #department, prof, reccomend
+        listOfNodes[14].potential_next_questions.extend([listOfNodes[11], listOfNodes[18], listOfNodes[16], listOfNodes[13]]) #major, concentration, distros, interests
+        listOfNodes[16].potential_next_questions.append(listOfNodes[13]) #interests
+        listOfNodes[16].required_questions.append(listOfNodes[29]) #ask if they want to take a course that fills these reqs
+        listOfNodes[17].required_questions.append(listOfNodes[29])  #Ask if they want to take a course that fills these reqs
+        listOfNodes[17].potential_next_questions.append(listOfNodes[13]) #interests
+        listOfNodes[18].potential_next_questions.extend([listOfNodes[17],listOfNodes[16], listOfNodes[13]]) #major reqs, distros, interests
+        listOfNodes[25].potential_next_questions.append(listOfNodes[0]) #what class would they want to take?
+        listOfNodes[26].potential_next_questions.append(listOfNodes[32]) #reccomend
+        listOfNodes[27].potential_next_questions.extend([listOfNodes[26], listOfNodes[32]]) #prof, reccomend
+        listOfNodes[29].potential_next_questions.extend([listOfNodes[13], listOfNodes[32]]) #interests, should we reccomend something?
+        listOfNodes[32].potential_next_questions.append(listOfNodes[25]) #what class would they want to take?
+        #listOfNodes[0].node_function = node_0()
+        self.the_node = listOfNodes[0]
+
+
+    #@params: the current node of the tree
+    #@return: the next node of the tree
+    def get_next_node(self, current_node):
+        try:
+            if current_node.answered == 1:
+                for i in range(len(current_node.required_questions)):
+                    if current_node.required_questions[i].asked or current_node.required_questions[i].answered:
+                        pass
+                    else:
+                        current_node = current_node.required_questions[i]
+
+                for i in range(len(current_node.potential_next_questions)):
+                    if current_node.potential_next_questions[i].asked or current_node.potential_next_questions[i].answered:
+                        pass
+                    else:
+                        current_node = current_node.potential_next_questions[i]
+
+                for i in range(len(current_node.required_questions)):
+                    if current_node.required_questions[i].answered:
+                        pass
+                    else:
+                        current_node = current_node.required_questions[i]
+
+                for i in range(len(current_node.required_questions)):
+                    if current_node.potential_next_questions[i].answered:
+                        pass
+                    else:
+                        current_node = current_node.potential_next_questions[i]
+
+            if current_node.answered == 0:
+                for i in range(len(current_node.potential_next_questions)):
+                    if current_node.potential_next_questions[i].asked or current_node.potential_next_questions[i].answered:
+                        pass
+                    else:
+                        current_node = current_node.potential_next_questions[i]
+
+                #have looped through and no node that is asked or answered, now loop to find one that is just not answered
+                for i in range(len(current_node.potential_next_questions)):
+                    if current_node.potential_next_questions[i].answered:
+                        pass
+                    else:
+                        current_node = current_node.potential_next_questions[i]
+
+            if current_node.userQuery > 10 and current_node.userQuery < 20:
+                student_pro = Conversation.student_profile
+                return User_Query.UserQuery(student_pro, current_node.userQuery)
+            elif current_node.userQuery > 18:
+                return User_Query.UserQuery(Conversation.current_class, current_node.userQuery)
+            else:
+                return User_Query.UserQuery(None, current_node.userQuery)
+        except ValueError:
+            print("Unexpected error:", sys.exc_info()[0])
+            raise
