@@ -451,20 +451,29 @@ class DecisionTree:
         mapOfNodes[35].potential_next_questions.append(mapOfNodes[25]) #what class would they want to take?
         self.the_node = mapOfNodes[0]
 
-
+    #takes in nothing, returns a userquery for asking how they feel about a new class.
+    #The new classes are stored in the student object, under potential courses.
+    def recommend_course(self):
+        self.student.potential_courses = TaskManager.recommend_course(self.student)
+        if len(self.student.potential_courses) > 0:
+            return User_Query(33)
+        else:
+            return User_Query(13)
     #@params: the current node of the tree
     #@return: the next node of the tree
     def get_next_node(self, current_node):
+        current_node.asked = True
         try:
             if current_node.answered == 1:
                 for i in range(len(current_node.required_questions)):
-                    if current_node.required_questions[i].asked or current_node.required_questions[i].answered:
+                    if current_node.required_questions[i].asked or self.is_answered(current_node.required_questions[i]):
                         pass
                     else:
+
                         current_node = current_node.required_questions[i]
 
                 for i in range(len(current_node.potential_next_questions)):
-                    if current_node.potential_next_questions[i].asked or current_node.potential_next_questions[i].answered:
+                    if current_node.potential_next_questions[i].asked or self.is_answered(current_node.potential_next_questions[i]):
                         pass
                     else:
                         current_node = current_node.potential_next_questions[i]
