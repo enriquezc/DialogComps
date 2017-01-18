@@ -31,7 +31,7 @@ class Conversation:
         self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify),[],[])
         self.current_node = self.head_node
         self.current_class = None
-        self.decision_tree = DecisionTree()
+        self.decision_tree = DecisionTree(self.student_profile)
 
 
 
@@ -45,6 +45,9 @@ class NodeObject:
     required_questions = []
     potential_next_questions = []
     node_function = None
+
+
+
     #have a relavent function for each user query??!?!?!
     #how do we do that? Can we just assign a variable to be a function? That doesn't make any sense tho
     #What if we have a string that is also the name of a function? Can that work? python is dumb and obtrusive
@@ -55,11 +58,11 @@ class NodeObject:
         self.required_questions.extend(requiredQ)
         self.potential_next_questions.extend(potentialQ)
 
-    def is_answered(self):
-        return False
-
     def answer(self):
         pass
+
+
+
 
     def relevant_course(*args):
         pass
@@ -72,12 +75,129 @@ def node_0(self):
 
 class DecisionTree:
 
-    def __init__(self):
+    def __init__(self, student):
         self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify),[],[])
         self.current_node = self.head_node
         self.build_Tree()
         self.the_node = None
+        self.current_course = None
+        self.student = student
 
+    def is_answered(self, node):
+        if node.userQuery == 0:
+            node.answered = True
+            return True
+        elif node.userQuery == 1:
+            node.answered = False
+            return False
+        elif node.userQuery == 2:
+            node.answered = False
+            return False
+        elif node.userQuery == 3:
+            node.answered = False
+            return False
+        elif node.userQuery == 4:
+            node.answered = False
+            return False
+        elif node.userQuery == 5:
+            if self.current_course in self.student.current_classes:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 10:
+            if self.student.name != None:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 11:
+            if self.student.major != []:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 12:
+            if self.student.previous_classes != []:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 13:
+            if self.student.interests != []:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 14:
+            if self.student.terms_left == 0:
+                node.answered = False
+                return False
+            node.answered = True
+            return True
+        elif node.userQuery == 15:
+            if self.student.abroad != None:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 16:
+            if self.student.distributions_needed != []:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 17:
+            if self.student.major_classes_needed != []:
+                node.answered = True
+                return True
+            elif self.student.major == "undeclared":
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 18:
+            if self.student.concentration != None:
+                node.answered = True
+                return True
+            elif self.student.major == "undeclared":
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+
+        elif node.userQuery == 30:
+            if self.current_course.name != None and self.current_course.id != None:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 31:
+            if self.current_course.prof != None:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 32:
+            if self.current_course.department != None:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 33:
+            if self.current_course.sentiment != 0:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 35:
+            if self.current_course.time != None:
+                node.answered = True
+                return True
+            node.answered = False
+            return False
+        elif node.userQuery == 37:
+            return False
     def build_Tree(self):
         listOfEnums = [0, 1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33, 34,
                        35, 36, 37]
@@ -261,7 +381,7 @@ class DecisionTree:
             self.add_to_PriorityQueue(1, User_Query.UserQuery(course, User_Query.QueryType.new_class_description))
 
         elif luis_intent.intent == "WelcomeResponse":
-
+            pass
 
         elif luis_intent.intent == "ScheduleRequest":
             course = Course.Course()
@@ -379,7 +499,7 @@ class DecisionTree:
 
         #else statement will ask for more information
         else:
-        popped_query = self.pop_priority_queue()
+            popped_query = self.pop_priority_queue()
         return popped_query
 
 

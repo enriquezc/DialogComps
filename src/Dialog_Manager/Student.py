@@ -9,7 +9,7 @@ class Student:
         self.previous_classes = []
         self.distributions_needed = []
         self.major_classes_needed = []
-        self.terms_left = 12
+        self.terms_left = 0
         self.total_credits = None
         #some way of listing interests. Three proposals so far are:
         #1. Departments and professors they enjoy taking classes in
