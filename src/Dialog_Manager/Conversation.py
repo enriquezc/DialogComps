@@ -1,8 +1,12 @@
 import queue
 import re
+<<<<<<< HEAD
 import sys
+=======
+>>>>>>> master
 from nltk.tree import Tree
 from src.Dialog_Manager import Student, Course, User_Query
+import nltk
 import luis
 from src.Task_Manager import TaskManager
 
@@ -52,6 +56,7 @@ class Conversation:
                 entities[luis_input.entities[key].type] = luis_input.entities[key].score
         return entities
 
+<<<<<<< HEAD
         # @params
     # @return
     def get_next_response(self, input, luisAI):
@@ -66,7 +71,113 @@ class Conversation:
 
 
         if luis_intent == "ScheduleClass":
-            # if entity.type == "class":  # add more if's for different types
+=======
+    # @params
+    # @return
+    def add_to_PriorityQueue(self, importance, user_query):
+        self.priority_queue.put(importance, user_query)
+
+    # @params
+    # @return
+    def pop_priority_queue(self):
+        if self.priority_queue.empty():
+            return User_Query.UserQuery(None, User_Query.QueryType.clarify) #will fill in in a second
+        while not self.priority_queue.empty():
+            popped_userQuery = self.priority_queue.get()
+
+            if popped_userQuery.type < 5:
+                return popped_userQuery
+            #for 10-17, we may format it so we only ask these questions once.
+            userQuery_course = popped_userQuery.object
+            userQuery_type = popped_userQuery.type
+            if type == 10:
+                if userQuery_course.name == None:
+                    return popped_userQuery
+                else:
+                    return self.pop_priority_queue()
+            elif type == 11:
+                if userQuery_course.major == None:
+                    return popped_userQuery
+                else:
+                    return self.pop_priority_queue()
+            elif type == 12:
+                return self.pop_priority_queue()
+            elif type == 13:
+                return self.pop_priority_queue()
+            elif type == 14:
+                if userQuery_course.terms_left == 12:
+                    return popped_userQuery
+                else:
+                    return self.pop_priority_queue()
+            elif type == 15:
+                if userQuery_course.abroad == None:
+                    return popped_userQuery
+                else:
+                    return self.pop_priority_queue()
+            elif type == 16:
+                return popped_userQuery
+            elif type == 17:
+                return popped_userQuery
+
+            elif type == 20 or type == 30:
+                if userQuery_course.name == None:
+                    return popped_userQuery
+                else:
+                    return self.pop_priority_queue()
+
+            elif type == 21 or type == 31:
+                if userQuery_course.prof == None:
+                    return popped_userQuery
+                else:
+                    return self.pop_priority_queue()
+            elif type == 22:
+                if userQuery_course.term == None:
+                    return popped_userQuery
+                else:
+                    return self.pop_priority_queue()
+            elif type == 23 or type == 24 or type == 33:
+                if userQuery_course.sentiment == None:
+                    return popped_userQuery
+                else:
+                    return self.pop_priority_queue()
+            elif type == 25:
+                if userQuery_course.scrunch == None:
+                    return popped_userQuery
+                else:
+                    return self.pop_priority_queue()
+
+            elif type == 26 or type == 35:
+                if userQuery_course.time == None:
+                    return popped_userQuery
+                else:
+                    return self.pop_priority_queue()
+            elif type == 32:
+                if userQuery_course.dept == None:
+                    return popped_userQuery
+                else:
+                    return self.pop_priority_queue()
+            elif type == 34:
+                if userQuery_course.requirements == None:
+                    return popped_userQuery
+                else:
+                    return self.pop_priority_queue()
+            elif type == 36:
+                if userQuery_course.prof == "":
+                    return popped_userQuery
+                else:
+                    return self.pop_priority_queue()
+
+        # @params
+    # @return
+    def get_next_response(self, input, luisAI):
+        #self.add_to_PriorityQueue(input)
+        #luis_entities = self.classify_entities(luisAI)
+        #luis_intent = self.classify_intent(luisAI)
+        luis_entities = luisAI.entities
+        luis_intent = luisAI.intents[0]
+        #entity_information = self.task_manager_information(luis_entities)
+        if luis_intent.intent == "ClassDescriptionRequest":
+            #if entity.type == "class":  # add more if's for different types
             course = Course.Course()
             course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
 
@@ -76,6 +187,35 @@ class Conversation:
             course.user_description = luisAI.query
 
             tm_courses = self.task_manager_information(course)
+            if not tm_courses:
+                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+            else:
+                tm_course = tm_courses[0]
+                self.student.potential_courses = tm_course
+                return User_Query.UserQuery(tm_course, User_Query.QueryType.new_class_description)
+
+        if luis_intent.intent == "ScheduleClass":
+>>>>>>> master
+            # if entity.type == "class":  # add more if's for different types
+            course = Course.Course()
+            course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
+
+            course.id = course_name.group(0)
+            course.courseNum = course_name.group(2)
+            course.department = course_name.group(1)
+            course.user_description = luisAI.query
+
+<<<<<<< HEAD
+            tm_courses = self.task_manager_information(course)
+            if tm_courses == None:
+                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+            else:
+                self.student.current_classes.append(tm_courses)
+                #self.student.total_credits += tm_courses.credits
+                #if self.student.total_credits < 12:
+                return User_Query.UserQuery(tm_courses, User_Query.QueryType.schedule_class_res)
+=======
+            tm_courses = self.task_manager_information(course)
             if tm_courses == None:
                 return User_Query.UserQuery(None, User_Query.QueryType.clarify)
             else:
@@ -84,15 +224,35 @@ class Conversation:
                 #if self.student.total_credits < 12:
                 return User_Query.UserQuery(tm_courses, User_Query.QueryType.schedule_class_res)
 
+            """if entity.type == "personname":
+                    course.prof = entity.entity
+            if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
+                    pass  # with start/end time that day?
+                # want a parse tree / relation extraction because we do not know
+                # whether it is during, before, or after without context.
+            if entity.type == "department":
+                    course.department = entity.entity
+            tm_courses = self.task_manager_information(course)
+            self.student.potential_courses = tm_courses
+            return User_Query.UserQuery(course, User_Query.QueryType.new_class_description)"""
+>>>>>>> master
+
         elif luis_intent == "ClassSentiment":
             course = Course.Course()
             self.task_manager_information(course)
             return User_Query.UserQuery(course, User_Query.QueryType.class_info_sentiment)
 
+<<<<<<< HEAD
         elif luis_intent == "None":
             return User_Query.UserQuery(None, User_Query.QueryType.clarify)
 
         elif luis_intent == "ClassDescriptionRequest":
+=======
+        #elif luis_intent.intent == "None":
+            #self.add_to_PriorityQueue(1, User_Query.UserQuery(None, User_Query.QueryType.clarify))
+
+        """elif luis_intent.intent == "ClassDescriptionRequest":
+>>>>>>> master
             course = Course.Course()  # for future complicated conditions.
             for entity in luis_entities:
                 if entity.type == "class":  # add more if's for different types
@@ -116,7 +276,11 @@ class Conversation:
             self.student.potential_courses = tm_courses
             course = tm_courses
             self.student.all_classes.append(course)
+<<<<<<< HEAD
             return User_Query.UserQuery(course, User_Query.QueryType.new_class_description)
+=======
+
+>>>>>>> master
 
         elif luis_intent == "WelcomeResponse":
             pass
@@ -237,9 +401,22 @@ class Conversation:
 
         #else statement will ask for more information
         else:
+<<<<<<< HEAD
             print(User_Query.UserQuery(None, User_Query.QueryType.clarify).type)
             return User_Query.UserQuery(None, User_Query.QueryType.clarify)
 
+=======
+            print("in else")
+            self.add_to_PriorityQueue(1, User_Query.UserQuery(self.student, User_Query.QueryType.clarify))
+        print(luis_intent)
+        popped_query = self.pop_priority_queue()
+        return popped_query"""
+
+    # @params
+    # @return
+    def task_manager_information(self, course):
+        return TaskManager.query_courses(course)
+>>>>>>> master
 
         # @params
         # @return
