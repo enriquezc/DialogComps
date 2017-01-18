@@ -26,40 +26,15 @@ class Conversation:
 
 
     def __init__(self):
-        self.student = Student.Student()
+        self.student_profile = Student.Student()
         self.last_query = 0
-        self.head_node = self.NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify),[],[])
+        self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify),[],[])
         self.current_node = self.head_node
         self.current_class = None
+        self.decision_tree = DecisionTree()
 
 
-    def build_Tree(self):
-        listOfEnums = [0, 1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33, 34,
-                       35, 36, 37]
-        numNodes = len(listOfEnums)
-        listOfNodes = []
-        for i in range(numNodes):
-            listOfNodes.append(NodeObject(None, None, [], []))
 
-        #here we go...
-        for i in range(len(listOfEnums)):
-            currentNode = listOfNodes[i]
-            currentNode.userQuery = User_Query.QueryType(listOfEnums[i])
-        listOfNodes[0].required_questions.append(listOfNodes[6]) #name
-        listOfNodes[6].required_questions.append(listOfNodes[10])#time left / year
-        listOfNodes[10].potential_next_questions.extend([listOfNodes[7], listOfNodes[14], listOfNodes[12], listOfNodes[9]]) #major, concentration, distros, interests
-        listOfNodes[7].required_questions.extend([listOfNodes[14], listOfNodes[13]]) #concentration, major requirements
-        listOfNodes[7].potential_next_questions.append(listOfNodes[12]) #distros
-        listOfNodes[14].potential_next_questions.extend([listOfNodes[13],listOfNodes[12], listOfNodes[9]]) #major reqs, distros, interests
-        listOfNodes[12].potential_next_questions.append(listOfNodes[9]) #interests
-        listOfNodes[12].required_questions.append(listOfNodes[24]) #ask if they want to take a course that fills these reqs
-        listOfNodes[13].required_questions.append(listOfNodes[24])  #Ask if they want to take a course that fills these reqs
-        listOfNodes[13].potential_next_questions.append(listOfNodes[9]) #interests
-        listOfNodes[24].potential_next_questions.extend([listOfNodes[9], listOfNodes[27]]) #interests, should we reccomend something?
-        listOfNodes[27].potential_next_questions.append(listOfNodes[20]) #what class would they want to take?
-        listOfNodes[9].potential_next_questions.extend([listOfNodes[22], listOfNodes[21], listOfNodes[27]]) #department, prof, reccomend
-        listOfNodes[22].potential_next_questions.extend([listOfNodes[21], listOfNodes[27]]) #prof, reccomend
-        listOfNodes[21].potential_next_questions.append(listOfNodes[27]) #reccomend
 
 
         return
@@ -69,9 +44,13 @@ class NodeObject:
     answered = False
     required_questions = []
     potential_next_questions = []
+    node_function = None
+    #have a relavent function for each user query??!?!?!
+    #how do we do that? Can we just assign a variable to be a function? That doesn't make any sense tho
+    #What if we have a string that is also the name of a function? Can that work? python is dumb and obtrusive
 
 
-    def __init__(self, userQ, requiredQ, potentialQ) -> object:
+    def __init__(self, userQ, requiredQ, potentialQ):
         self.userQuery = userQ
         self.required_questions.extend(requiredQ)
         self.potential_next_questions.extend(potentialQ)
@@ -88,17 +67,47 @@ class NodeObject:
     def call_database(self):
         pass
 
+def node_0(self):
+    return 5
 
 class DecisionTree:
 
-
-
-
-
-
     def __init__(self):
-        Conversation.build_tree()
-        current_node = None
+        self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify),[],[])
+        self.current_node = self.head_node
+        self.build_Tree()
+        self.the_node = None
+
+    def build_Tree(self):
+        listOfEnums = [0, 1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33, 34,
+                       35, 36, 37]
+        num_nodes = len(listOfEnums)
+        listOfNodes = []
+        for i in range(num_nodes):
+            listOfNodes.append(NodeObject(None, None, []))
+
+        #here we go...
+        for i in range(len(listOfEnums)):
+            current_node = listOfNodes[i]
+            current_node.userQuery = User_Query.QueryType(listOfEnums[i])
+        listOfNodes[0].required_questions.append(listOfNodes[6]) #name
+        listOfNodes[6].required_questions.append(listOfNodes[10])#time left / year
+        listOfNodes[7].required_questions.extend([listOfNodes[14], listOfNodes[13]]) #concentration, major requirements
+        listOfNodes[7].potential_next_questions.append(listOfNodes[12]) #distros
+        listOfNodes[9].potential_next_questions.extend([listOfNodes[22], listOfNodes[21], listOfNodes[27]]) #department, prof, reccomend
+        listOfNodes[10].potential_next_questions.extend([listOfNodes[7], listOfNodes[14], listOfNodes[12], listOfNodes[9]]) #major, concentration, distros, interests
+        listOfNodes[12].potential_next_questions.append(listOfNodes[9]) #interests
+        listOfNodes[12].required_questions.append(listOfNodes[24]) #ask if they want to take a course that fills these reqs
+        listOfNodes[13].required_questions.append(listOfNodes[24])  #Ask if they want to take a course that fills these reqs
+        listOfNodes[13].potential_next_questions.append(listOfNodes[9]) #interests
+        listOfNodes[14].potential_next_questions.extend([listOfNodes[13],listOfNodes[12], listOfNodes[9]]) #major reqs, distros, interests
+        listOfNodes[21].potential_next_questions.append(listOfNodes[27]) #reccomend
+        listOfNodes[22].potential_next_questions.extend([listOfNodes[21], listOfNodes[27]]) #prof, reccomend
+        listOfNodes[24].potential_next_questions.extend([listOfNodes[9], listOfNodes[27]]) #interests, should we reccomend something?
+        listOfNodes[27].potential_next_questions.append(listOfNodes[20]) #what class would they want to take?
+        #listOfNodes[0].node_function = node_0()
+        self.the_node = listOfNodes[0]
+
 
     #@params: the current node of the tree
     #@return: the next node of the tree
@@ -144,7 +153,8 @@ class DecisionTree:
                         current_node = current_node.potential_next_questions[i]
 
             if current_node.userQuery > 10 and current_node.userQuery < 20:
-                return User_Query.UserQuery(Conversation.student, current_node.userQuery)
+                student_pro = Conversation.student_profile
+                return User_Query.UserQuery(student_pro, current_node.userQuery)
             elif current_node.userQuery > 18:
                 return User_Query.UserQuery(Conversation.current_class, current_node.userQuery)
             else:
@@ -152,8 +162,6 @@ class DecisionTree:
         except ValueError:
             print("Unexpected error:", sys.exc_info()[0])
             raise
-
-
 
 
 
@@ -188,12 +196,6 @@ class DecisionTree:
             if luis_input.entities[key].score > CUTOFF:
                 entities[luis_input.entities[key].type] = luis_input.entities[key].score
         return entities
-
-    # @params
-    # @return
-    def add_to_PriorityQueue(self, importance, user_query):
-        self.priority_queue.put(importance, user_query)
-
 
         # @params
     # @return
@@ -380,6 +382,51 @@ class DecisionTree:
         popped_query = self.pop_priority_queue()
         return popped_query
 
+
+        # @params
+        # @return
+
+    def task_manager_information(self, course):
+        tm_courses = TaskManager.query_courses(course)
+        if len(tm_courses) == 1:
+            return tm_courses
+        else:
+            return tm_courses[0]
+
+            # @params course to add to student classes
+            # @return 0 for added successfully, 1 for not added
+
+    def schedule_course(self, new_course):
+
+        for course in self.student.previous_classes:
+            if new_course.id == course.id:
+                return course
+        for course in self.student.current_classes:
+            if new_course.id == course.id:
+                return course
+        else:
+            self.student.current_classes.append(new_course)
+            return new_course
+
+
+            # @return location in student to store information / check if information is stored
+            # @params information (entity) that we are looking to store
+
+    def add_to_student(self, new_course, type):
+        for course in self.student.previous_classes:
+            if new_course.id == course.id:
+                return course
+        for course in self.student.current_classes:
+            if new_course.id == course.id:
+                return course
+        else:
+            self.student.current_classes.append(new_course)
+            return new_course
+
+    def course_interest(self, course):
+        return 0
+
+
     # @params
     # @return
     def pop_priority_queue(self):
@@ -469,49 +516,3 @@ class DecisionTree:
             else:
                 return self.pop_priority_queue()
 
-    # @params
-    # @return
-    def task_manager_information(self, course):
-        tm_courses = TaskManager.query_courses(course)
-        if len(tm_courses) == 1:
-            return tm_courses
-        else:
-            return tm_courses[0]
-
-    #query the task manager with the entity given by luis
-
-    # @params intent / entities from the luisAI
-    # @return which value in student the information refers to
-    def new_information(self, intent, entity):
-        return "interests"
-
-    # @params course to add to student classes
-    # @return 0 for added successfully, 1 for not added
-    def schedule_course(self, new_course):
-
-        for course in self.student.previous_classes:
-            if new_course.id == course.id:
-                return course
-        for course in self.student.current_classes:
-            if new_course.id == course.id:
-                return course
-        else:
-            self.student.current_classes.append(new_course)
-            return new_course
-
-
-    # @return location in student to store information / check if information is stored
-    # @params information (entity) that we are looking to store
-    def add_to_student(self, new_course, type):
-        for course in self.student.previous_classes :
-            if new_course.id == course.id:
-                return course
-        for course in self.student.current_classes :
-            if new_course.id == course.id:
-                return course
-        else:
-            self.student.current_classes.append(new_course)
-            return new_course
-
-    def course_interest(self, course):
-        return 0
