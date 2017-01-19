@@ -16,7 +16,7 @@ from src.Dialog_Manager import Course
         self.prof = None
         self.term = None
         self.department = None
-        self.courseNum = None
+        self.course_num = None
         self.term = None
         #A score from 1-10 of how much they liked the class
         self.sentiment = 0
@@ -58,9 +58,9 @@ def query_courses(course):
         course_query = course_query + "sec_subject = '" + course.department.upper()
         course_query = course_query + "' AND "
 
-    if course.courseNum != None:
+    if course.course_num != None:
         course_query = course_query + "sec_course_no = '" \
-        + str(course.courseNum)
+        + str(course.course_num)
         course_query = course_query + "' AND "
 
     course_query = course_query[:-5]
@@ -78,7 +78,7 @@ def query_courses(course):
         #print(result)
         result_course = Course.Course()
         result_course.department = result[17]
-        result_course.courseNum = result[2]
+        result_course.course_num = result[2]
         result_course.id = result[13]
         result_course.name = result[16]
         #result_course.comments = result[6]
@@ -110,9 +110,9 @@ def query_courses(course):
             reason_query = reason_query + "org_id = '" + course.department
             reason_query = reason_query + "' AND "
 
-        elif course.courseNum != None:
+        elif course.course_num != None:
             reason_query = reason_query + "course_number = '" \
-            + str(course.courseNum)
+            + str(course.course_num)
             reason_query = reason_query + "' AND "
 
         reason_query = reason_query[:-5]
