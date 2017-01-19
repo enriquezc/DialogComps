@@ -57,35 +57,35 @@ class Conversation:
     # @params
     # @return
     def get_next_response(self, input, luisAI):
-        luis_entities = self.classify_entities(luisAI)
+        luis_entities = luisAI.entities
         luis_intent = self.classify_intent(luisAI)
-        self.queries.append(input)
         print(luis_intent)
-        print(luisAI.query)
-        #luis_entities = luisAI.entities
-        #luis_intent = luisAI.intents[0]
+        self.queries.append(input)
+        #print(luis_intent)
+        #print(luisAI.query)
         #entity_information = self.task_manager_information(luis_entities)
 
 
         if luis_intent == "ScheduleClass":
             # if entity.type == "class":  # add more if's for different types
-            course = Course.Course()
-            course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
+            for entity in luis_entities:
+                if entity.type == 'class':
+                    course = Course.Course()
+                    course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
 
-            course.id = course_name.group(0)
-            course.courseNum = course_name.group(2)
-            course.department = course_name.group(1)
-            course.user_description = luisAI.query
+                    course.id = course_name.group(0)
+                    course.courseNum = course_name.group(2)
+                    course.department = course_name.group(1)
+                    course.user_description = luisAI.query
 
-            tm_courses = self.task_manager_information(course)
-            if tm_courses == None:
-                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
-            else:
-                self.student.current_classes.append(tm_courses)
-                #self.student.total_credits += tm_courses.credits
-                #if self.student.total_credits < 12:
-                return User_Query.UserQuery(tm_courses, User_Query.QueryType.schedule_class_res)
-
+                    tm_courses = self.task_manager_information(course)
+                    if tm_courses == None:
+                        return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                    else:
+                        self.student_profile.current_classes.append(tm_courses)
+                        #self.student.total_credits += tm_courses.credits
+                        #if self.student.total_credits < 12:
+                        return User_Query.UserQuery(tm_courses, User_Query.QueryType.schedule_class_res)
             """if entity.type == "personname":
                     course.prof = entity.entity
             if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
@@ -98,28 +98,48 @@ class Conversation:
             self.student.potential_courses = tm_courses
             return User_Query.UserQuery(course, User_Query.QueryType.new_class_description)"""
 
+        elif luis_intent == "StudentNameInfo":
 
-        elif luis_intent == "ClassSentiment":
-            course = Course.Course()
-            self.task_manager_information(course)
-            return User_Query.UserQuery(course, User_Query.QueryType.class_info_sentiment)
-
-        #elif luis_intent.intent == "None":
-            #self.add_to_PriorityQueue(1, User_Query.UserQuery(None, User_Query.QueryType.clarify))
-
-        """elif luis_intent.intent == "ClassDescriptionRequest":
->>>>>>> master
-            course = Course.Course()  # for future complicated conditions.
             for entity in luis_entities:
-                if entity.type == "class":  # add more if's for different types
-                    if len(entity.entity) < 8 and entity.entity[-4:-1].isnumeric():
-                        course.id = entity.entity
-                        course.department = entity.entity[:-3]
-                        course.courseNum = entity.entity[-4:-1]
-                        course.user_description = luisAI.query
+                if entity.type == "personname":
+                    self.student_profile.name = entity.entity
+            if self.student_profile.name:
+                return User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
+            else:
+                return User_Query.UserQuery(None, User_Query.QueryType.student_info_name)
+
+
+        #class sentiment only relavent on a prev class
+        elif luis_intent == "ClassSentiment":
+            prev_course = None
+            if self.student_profile.all_classes:
+                if prev_course in self.student_profile.all_classes:
+                    pass
+            else:
+                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+
+            return User_Query.UserQuery(prev_course, User_Query.QueryType.class_info_sentiment)
+
+        elif luis_intent == "ClassDescriptionRequest":
+            course = Course.Course()
+            for entity in luis_entities:
+                print(entity.type)
+                if entity.type == 'class':
+                    print(entity.entity)
+                    course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
+                    course.id = course_name.group(0)
+                    course.courseNum = course_name.group(2)
+                    course.department = course_name.group(1)
+                    course.user_description = luisAI.query
+
+                    tm_courses = self.task_manager_information(course)
+                    if not tm_courses:
+                        return User_Query.UserQuery(None, User_Query.QueryType.clarify)
                     else:
-                        course.name = entity.entity
-                        course.user_description = luisAI.query
+                        self.student_profile.current_classes.append(tm_courses)
+                        #self.student.total_credits += tm_courses.credits
+                        #if self.student.total_credits < 12:
+                        return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_description)
                 if entity.type == "personname":
                     course.prof = entity.entity
                 if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
@@ -129,49 +149,13 @@ class Conversation:
                 if entity.type == "department":
                     course.department = entity.entity
             tm_courses = self.task_manager_information(course)
-            self.student.potential_courses = tm_courses
+            self.student_profile.potential_courses = tm_courses
             course = tm_courses
-            self.student.all_classes.append(course)
-<<<<<<< HEAD
+            self.student_profile.all_classes.append(course)
             return User_Query.UserQuery(course, User_Query.QueryType.new_class_description)
-=======
-
->>>>>>> master
 
         elif luis_intent == "WelcomeResponse":
-            pass
-
-        elif luis_intent == "ScheduleRequest":
-            course = Course.Course()
-            for entity in luis_entities:
-                if entity.type == "u'CLASS'":
-                    for course in self.student.all_classes:
-                        if entity.entity == course.name:
-                            self.student.current_classes.append(self.student.current_classes(course))
-                        else:
-                            if len(entity.entity) < 8 and entity.entity[-4:-1].isnumeric():
-                                course.id = entity.entity
-                                course.department = entity.entity[:-3]
-                                course.courseNum = entity.entity[-4:-1]
-                                course.user_description = luisAI.query
-                            else:
-                                course.name = entity.entity
-                                course.user_description = luisAI.query
-                            tm_courses = self.task_manager_information(course)
-                            course = tm_courses
-                if entity.type == "u'PERSONNAME'":
-                    for course in self.student.all_classes:
-                        if entity.entity == course.prof:
-                            self.student.current_classes.append(self.student.all_classes(course))
-                        else:
-                            course.prof = entity.entity
-                            tm_courses = self.task_manager_information(course)
-                            course = tm_courses
-            for current_course in self.student.current_classes:
-                if not course.name == current_course.name:
-                    self.student.current_classes.append(self.student.current_classes(course))
-                else:
-                    pass
+            return User_Query.UserQuery(None, User_Query.QueryType.welcome)
 
         elif luis_intent == "ClassDescriptionResponse":
             course = Course.Course()
@@ -192,9 +176,9 @@ class Conversation:
                 if entity.type == "u'PERSONNAME":
                     course.prof = entity.entity
             tm_courses = self.task_manager_information(course)
-            self.student.potential_courses = tm_courses
+            self.student_profile.potential_courses = tm_courses
             course = tm_courses
-            self.student.all_classes.append(course)
+            self.student_profile.all_classes.append(course)
             return User_Query.UserQuery(course, User_Query.QueryType.new_class_prof)
 
         elif luis_intent == "ClassProfessorResponse":
@@ -212,23 +196,35 @@ class Conversation:
             self.task_manager_information(course)
             return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
 
+        #done
         elif luis_intent == "StudentMajorRequest":
-            return User_Query.UserQuery(self.student, User_Query.QueryType.student_info_major)
+            for entity in luis_entities:
+                print(entity)
+                if entity.type == "u'DEPARTMENT":
+                    print(entity.entity)
+                    for major in self.student_profile.major:
+                        if entity.entity == major or len(self.student_profile.major) == 2:
+                            pass
+                        else:
+                            self.student_profile.major.append(entity.entity)
+            return User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests)
 
+        #done
         elif luis_intent == "StudentMajorResponse":
             for entity in luis_entities:
                 if entity.type == "u'DEPARTMENT":
-                    for major in self.student.major:
-                        if entity.entity == major or len(self.student.major) == 2:
+                    for major in self.student_profile.major:
+                        if entity.entity == major or len(self.student_profile.major) == 2:
                             pass
                         else:
-                            self.student.major.append(entity.entity)
-            return User_Query.UserQuery(self.student, User_Query.QueryType.student_info_major)
+                            self.student_profile.major.append(entity.entity)
+            return User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests)
+
 
         elif luis_intent == "StudentNameInfo":
             for entity in luis_entities:
                 if entity.type == "u'PERSONNAME":
-                    self.student.name = entity.entity
+                    self.student_profile.name = entity.entity
                 else:
                     return User_Query.UserQuery(None, User_Query.QueryType.clarify)
 
@@ -250,24 +246,19 @@ class Conversation:
         elif luis_intent == "ClassTermRequest":
             pass
 
+        #done
         elif luis_intent == "StudentInterests":
             for entity in luis_entities:
+                print(entity)
                 if entity.type == "u'CLASS" or entity.type == "u'DEPARTMENT" or entity.type == "u'SENTIMENT":
-                    self.student.interests.append(entity.entity)
+                    self.student_profile.interests.append(entity.entity)
+            return User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_name)
 
         #else statement will ask for more information
         else:
-<<<<<<< HEAD
             print(User_Query.UserQuery(None, User_Query.QueryType.clarify).type)
             return User_Query.UserQuery(None, User_Query.QueryType.clarify)
 
-=======
-            print("in else")
-            self.add_to_PriorityQueue(1, User_Query.UserQuery(self.student, User_Query.QueryType.clarify))
-        print(luis_intent)
-        popped_query = self.pop_priority_queue()
-        return popped_query"""
-        
         # @params
         # @return
 
@@ -283,14 +274,14 @@ class Conversation:
 
     def schedule_course(self, new_course):
 
-        for course in self.student.previous_classes:
+        for course in self.student_profile.previous_classes:
             if new_course.id == course.id:
                 return course
-        for course in self.student.current_classes:
+        for course in self.student_profile.current_classes:
             if new_course.id == course.id:
                 return course
         else:
-            self.student.current_classes.append(new_course)
+            self.student_profile.current_classes.append(new_course)
             return new_course
 
 
@@ -298,14 +289,14 @@ class Conversation:
             # @params information (entity) that we are looking to store
 
     def add_to_student(self, new_course, type):
-        for course in self.student.previous_classes:
+        for course in self.student_profile.previous_classes:
             if new_course.id == course.id:
                 return course
-        for course in self.student.current_classes:
+        for course in self.student_profile.current_classes:
             if new_course.id == course.id:
                 return course
         else:
-            self.student.current_classes.append(new_course)
+            self.student_profile.current_classes.append(new_course)
             return new_course
 
 
