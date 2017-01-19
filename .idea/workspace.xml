@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ca933cba-8e37-4384-ad64-6bd0b543153b" name="Default" comment="Merge branch 'master' of https://github.com/enriquezc/DialogComps into master2&#10;&#10;# Conflicts:&#10;#&#9;src/Task_Manager/TaskManager.py&#10;">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Dialog_Manager/Conversation.py" afterPath="$PROJECT_DIR$/src/Dialog_Manager/Conversation.py" />
     </list>
     <list id="d47e6463-6803-49a3-97c4-7b750872a5c3" name="Failed commit: Default" comment="we out?" />
     <ignored path="DialogComps.iws" />
@@ -27,8 +26,8 @@
       <file leaf-file-name="Conversation.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Dialog_Manager/Conversation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="378">
-              <caret line="331" column="57" selection-start-line="331" selection-start-column="57" selection-end-line="331" selection-end-column="57" />
+            <state relative-caret-position="480">
+              <caret line="337" column="0" selection-start-line="337" selection-start-column="0" selection-end-line="337" selection-end-column="0" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -806,8 +805,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Dialog_Manager/Conversation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="331" column="57" selection-start-line="331" selection-start-column="57" selection-end-line="331" selection-end-column="57" />
+        <state relative-caret-position="480">
+          <caret line="337" column="0" selection-start-line="337" selection-start-column="0" selection-end-line="337" selection-end-column="0" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
           </folding>
