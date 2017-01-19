@@ -10,7 +10,8 @@ class Student:
         self.distributions_needed = []
         self.major_classes_needed = []
         self.terms_left = 0
-        self.total_credits = None
+        self.total_credits = 0
+        self.current_credits = 0
         #some way of listing interests. Three proposals so far are:
         #1. Departments and professors they enjoy taking classes in
         #2. Enums of different categories of interests we've thought of, which we can expand as we go

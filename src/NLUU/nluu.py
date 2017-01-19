@@ -249,14 +249,14 @@ class nLUU:
         s = constants.Responses.SCHEDULE_CLASS_RES[0]
         course_list = ""
         for course in userQuery.object.current_classes:
-            course_list.append(course.name + "\n")
+            course_list += (course.name + "\n")
         return s.format(course_list)
 
     def create_full_schedule_check(self, userQuery):
         s = constants.Responses.FULL_SCHEDULE_CHECK[0]
         course_list = ""
         for course in userQuery.object.current_classes:
-            course_list.append(course.name + "\n")
+            course_list += (course.name + "\n")
         return s.format(course_list, userQuery.object.current_credits)
 
     def stem(self, s):

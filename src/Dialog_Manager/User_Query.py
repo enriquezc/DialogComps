@@ -14,6 +14,8 @@ class QueryType(Enum):
     pleasantry = 4
     #successfully scheduled a class
     schedule_class_res = 5
+    #scheduled a class
+    full_schedule_check = 6
 
 
 
