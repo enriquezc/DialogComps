@@ -3,17 +3,11 @@
 # conversation for the Dialogue Manager
 
 import psycopg2
-<<<<<<< HEAD
 import numpy as np
 #from src.Dialog_Manager import Course
-=======
-import string
-<<<<<<< HEAD
 from src.Dialog_Manager import Course
->>>>>>> master
-=======
 #from src.Dialog_Manager import Course
->>>>>>> master
+
 
 """class Course:
     def __init__(self):

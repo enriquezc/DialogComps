@@ -42,7 +42,8 @@ class nLUU:
             QueryType.new_class_requirements: self.create_new_class_requirements,
             QueryType.new_class_time: self.create_new_class_time,
             QueryType.new_class_description: self.create_new_class_description,
-            QueryType.schedule_class_res: self.create_schedule_class_res
+            QueryType.schedule_class_res: self.create_schedule_class_res,
+            QueryType.full_schedule_check : self.create_full_schedule_check
         }
         self.stemmer = SnowballStemmer("english")
         #Requires a local copy of atis.cfg
@@ -246,8 +247,17 @@ class nLUU:
 
     def create_schedule_class_res(self, userQuery):
         s = constants.Responses.SCHEDULE_CLASS_RES[0]
-        return s.format(userQuery.object.name)
+        course_list = ""
+        for course in userQuery.object.current_classes:
+            course_list.append(course.name + "\n")
+        return s.format(course_list)
 
+    def create_full_schedule_check(self, userQuery):
+        s = constants.Responses.FULL_SCHEDULE_CHECK[0]
+        course_list = ""
+        for course in userQuery.object.current_classes:
+            course_list.append(course.name + "\n")
+        return s.format(course_list, userQuery.object.current_credits)
 
     def stem(self, s):
         return(self.stemmer.stem(s))
