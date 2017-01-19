@@ -112,7 +112,7 @@ def query_courses(course):
 
         elif course.course_num != None:
             reason_query = reason_query + "course_number = '" \
-            + str(course.course_num)
+                + str(course.course_num)
             reason_query = reason_query + "' AND "
 
         reason_query = reason_query[:-5]
