@@ -265,8 +265,9 @@ def smart_department_search(keywords):
     query += ")"
 
     cur.execute(query)
+    results = cur.fetchall()
     courses = []
-    for result in cur:
+    for result in results:
         new_course = Course.Course()
         new_course.id = result[0]
         new_course.name = result[1]
