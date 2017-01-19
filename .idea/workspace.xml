@@ -2,20 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ca933cba-8e37-4384-ad64-6bd0b543153b" name="Default" comment="Merge branch 'master' of https://github.com/enriquezc/DialogComps into master2&#10;&#10;# Conflicts:&#10;#&#9;src/Task_Manager/TaskManager.py&#10;">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Task_Manager/example.sql" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/DialogComps.iml" afterPath="$PROJECT_DIR$/.idea/DialogComps.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Dialog_Manager/Course.py" afterPath="$PROJECT_DIR$/src/Dialog_Manager/Course.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Dialog_Manager/Student.py" afterPath="$PROJECT_DIR$/src/Dialog_Manager/Student.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Dialog_Manager/User_Query.py" afterPath="$PROJECT_DIR$/src/Dialog_Manager/User_Query.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/NLUU/nluu.py" afterPath="$PROJECT_DIR$/src/NLUU/nluu.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Task_Manager/TaskManager.py" afterPath="$PROJECT_DIR$/src/Task_Manager/TaskManager.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Task_Manager/results.csv" afterPath="$PROJECT_DIR$/src/Task_Manager/results.csv" />
     </list>
-    <list id="d47e6463-6803-49a3-97c4-7b750872a5c3" name="Failed commit: Default" comment="we out?">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Dialog_Manager/Conversation.py" afterPath="$PROJECT_DIR$/src/Dialog_Manager/Conversation.py" />
-    </list>
+    <list id="d47e6463-6803-49a3-97c4-7b750872a5c3" name="Failed commit: Default" comment="we out?" />
     <ignored path="DialogComps.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -34,7 +23,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Conversation.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Conversation.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Dialog_Manager/Conversation.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="506">
@@ -88,11 +77,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TaskManager.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="TaskManager.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Task_Manager/TaskManager.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
-              <caret line="157" column="28" selection-start-line="157" selection-start-column="28" selection-end-line="157" selection-end-column="28" />
+            <state relative-caret-position="266">
+              <caret line="18" column="23" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="23" />
               <folding>
                 <element signature="e#127#142#0" expanded="true" />
               </folding>
@@ -770,28 +759,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Task_Manager/TaskManager.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="157" column="28" selection-start-line="157" selection-start-column="28" selection-end-line="157" selection-end-column="28" />
-          <folding>
-            <element signature="e#127#142#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Dialog_Manager/User_Query.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
           <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Dialog_Manager/Course.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="8" column="21" selection-start-line="8" selection-start-column="21" selection-end-line="8" selection-end-column="21" />
           <folding />
         </state>
       </provider>
@@ -820,6 +791,24 @@
           <caret line="103" column="47" selection-start-line="103" selection-start-column="47" selection-end-line="103" selection-end-column="47" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Dialog_Manager/Course.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="128">
+          <caret line="8" column="21" selection-start-line="8" selection-start-column="21" selection-end-line="8" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Task_Manager/TaskManager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="18" column="23" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="23" />
+          <folding>
+            <element signature="e#127#142#0" expanded="true" />
           </folding>
         </state>
       </provider>
