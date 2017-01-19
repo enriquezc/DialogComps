@@ -63,11 +63,14 @@ class nLUU:
             luis_analysis = self.get_luis(client_response)
             #tree = self.create_syntax_tree(client_response)
             userQuery = conversation.get_next_response(client_response, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
-            if userQuery.type == QueryType.goodbye:
+            if userQuery is None:
+                our_response = self.create_response(None, QueryType.clarify)
+            elif userQuery.type == QueryType.goodbye:
                 print("Goodbye")
                 conversing = False
                 break
-            our_response = self.create_response(userQuery)
+            else:
+                our_response = self.create_response(userQuery)
 
 
 

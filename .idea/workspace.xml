@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ca933cba-8e37-4384-ad64-6bd0b543153b" name="Default" comment="Merge branch 'master' of https://github.com/enriquezc/DialogComps into master2&#10;&#10;# Conflicts:&#10;#&#9;src/Task_Manager/TaskManager.py&#10;">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/NLUU/nluu.py" afterPath="$PROJECT_DIR$/src/NLUU/nluu.py" />
     </list>
     <list id="d47e6463-6803-49a3-97c4-7b750872a5c3" name="Failed commit: Default" comment="we out?" />
     <ignored path="DialogComps.iws" />
@@ -23,11 +23,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Conversation.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Conversation.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Dialog_Manager/Conversation.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="480">
-              <caret line="337" column="0" selection-start-line="337" selection-start-column="0" selection-end-line="337" selection-end-column="0" />
+            <state relative-caret-position="384">
+              <caret line="315" column="83" selection-start-line="315" selection-start-column="83" selection-end-line="315" selection-end-column="83" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
@@ -55,11 +55,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="nluu.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="nluu.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/NLUU/nluu.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="512">
-              <caret line="45" column="75" selection-start-line="45" selection-start-column="75" selection-end-line="45" selection-end-column="75" />
+            <state relative-caret-position="192">
+              <caret line="67" column="53" selection-start-line="67" selection-start-column="53" selection-end-line="67" selection-end-column="53" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -140,10 +140,10 @@
         <option value="$PROJECT_DIR$/src/Dialog_Manager/Class.py" />
         <option value="$PROJECT_DIR$/src/Dialog_Manager/Student.py" />
         <option value="$PROJECT_DIR$/src/Dialog_Manager/User_Query.py" />
-        <option value="$PROJECT_DIR$/src/NLUU/nluu.py" />
         <option value="$PROJECT_DIR$/src/Dialog_Manager/Course.py" />
         <option value="$PROJECT_DIR$/src/Task_Manager/TaskManager.py" />
         <option value="$PROJECT_DIR$/src/Dialog_Manager/Conversation.py" />
+        <option value="$PROJECT_DIR$/src/NLUU/nluu.py" />
       </list>
     </option>
   </component>
@@ -767,16 +767,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/NLUU/nluu.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="512">
-          <caret line="45" column="75" selection-start-line="45" selection-start-column="75" selection-end-line="45" selection-end-column="75" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/utils/constants.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="576">
@@ -805,10 +795,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Dialog_Manager/Conversation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="337" column="0" selection-start-line="337" selection-start-column="0" selection-end-line="337" selection-end-column="0" />
+        <state relative-caret-position="384">
+          <caret line="315" column="83" selection-start-line="315" selection-start-column="83" selection-end-line="315" selection-end-column="83" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/NLUU/nluu.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="67" column="53" selection-start-line="67" selection-start-column="53" selection-end-line="67" selection-end-column="53" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
