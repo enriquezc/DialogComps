@@ -3,17 +3,10 @@
 # conversation for the Dialogue Manager
 
 import psycopg2
-<<<<<<< HEAD
 import numpy as np
-#from src.Dialog_Manager import Course
-=======
+import io
 import string
-<<<<<<< HEAD
-from src.Dialog_Manager import Course
->>>>>>> master
-=======
 #from src.Dialog_Manager import Course
->>>>>>> master
 
 """class Course:
     def __init__(self):
@@ -183,6 +176,7 @@ def makeCooccurenceMatrix():
                 titleArray = title.split()
                 for word in titleArray:
                     w = ''.join(ch for ch in word if ch not in punctuationset)
+                    w = w.upper()
                     if w not in stop_words:
                         distinct_word.add(w)
                     if w not in dept_dictionary:
@@ -217,7 +211,7 @@ def makeCooccurenceMatrix():
                 l[r] = 0
         matrix.append(l)
 
-    result_file = open('results.csv', 'w')
+    result_file = io.open('results.csv', 'w', 'utf8', 'ignore')
     transpose = []
     for i in range(len(matrix[0])):
         dept_row = []
@@ -256,11 +250,31 @@ def smart_department_search(keywords):
         r = get_n_best_indices(result, 2)
         for i in r:
             recommended_departments.add(i)
-    colnames = [desc[0] for desc in cur.description]    
+    colnames = [desc[0] for desc in cur.description]
     department_names = []
     for i in recommended_departments - set((0,)):
-        department_names.append(colnames[i])
-    return department_names
+        department_names.append(colnames[i].upper())
+
+
+    query = "SELECT c.sec_subject, r.title, r.long_description, c.sec_course_no FROM (SELECT * FROM COURSE c where sec_subject in {} AND (sec_term LIKE '16%' OR sec_term LIKE '17%')) AS c JOIN (SELECT * FROM REASON r WHERE org_id in {}) AS r ON c.sec_name = r.course_number".format(str(tuple(department_names)), str(tuple(department_names)))
+    query += " WHERE (r.long_description LIKE '%{}%'".format(keywords[0])
+    if len(keywords) > 1:
+        for keyword in keywords[1:]:
+            query += "OR r.long_description LIKE '%{}%'".format(keyword)
+
+    query += ")"
+
+    cur.execute(query)
+    courses = []
+    for result in cur:
+        new_course = Course.Course()
+        new_course.id = result[0]
+        new_course.name = result[1]
+        new_course.description = result[2]
+        new_course.course_num = result[3]
+        courses.append(new_course)
+
+    return courses
 
 def get_n_best_indices(row, n):
     res = []
@@ -275,4 +289,4 @@ def get_n_best_indices(row, n):
 
 
 if __name__ == "__main__":
-    print(smart_keyword_search(["physics"]))
+    print(smart_department_search(["physics"]))
