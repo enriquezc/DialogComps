@@ -6,7 +6,7 @@ import psycopg2
 import numpy as np
 import io
 import string
-from src.Dialog_Manager import Course
+#from src.Dialog_Manager import Course
 
 """class Course:
     def __init__(self):
@@ -277,6 +277,18 @@ def smart_department_search(keywords):
 
     return courses
 
+def deparment_match(input):
+    ##TODO: replace truncations, like lit, polysci, etc..
+    dept_dict = {}
+    file = open('course_subjects.txt', 'r')
+    for line in file:
+        line = line.strip()
+        pair = line.split(';')
+
+        dept_dict[pair[0]] = pair[1]
+
+    print(dept_dict)
+
 def get_n_best_indices(row, n):
     res = []
     arr = np.array(row[1:len(row)])
@@ -290,4 +302,6 @@ def get_n_best_indices(row, n):
 
 
 if __name__ == "__main__":
-    print(smart_department_search(["physics"]))
+    deparment_match('none')
+    #makeCooccurenceMatrix()
+    #print(smart_department_search(["physics"]))

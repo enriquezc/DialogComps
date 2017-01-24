@@ -2,6 +2,7 @@ from enum import Enum
 from datetime import time
 
 class Times(Enum):
+    OTHER = 0
 	ONEA = 1
 	TWOA = 2
 	THREEA = 3
@@ -13,6 +14,7 @@ class Times(Enum):
 	FSC = 10
 
 	times = {
+        0: (None),
 		1: (1,time(8,30), time(9,40)),
 		2: (1,time(9,50), time(11,0)),
 		3: (1,time(11,10), time(12,20)),
