@@ -54,6 +54,7 @@ class Conversation:
     # @params
     # @return
     def get_next_response(self, input, luisAI):
+        self.last_query = input
         luis_entities = luisAI.entities
         luis_intent = self.classify_intent(luisAI)
         print(luis_intent)
@@ -94,14 +95,18 @@ class Conversation:
 
                         tm_courses = self.task_manager_information(course)
                         self.student_profile.current_classes.append(tm_courses)
-                        self.student_profile.current_credits += tm_courses.credits
+                        self.student_profile.current_credits =+ 6
                         self.student_profile.total_credits += tm_courses.credits
                         print(self.student_profile.current_credits)
                         if self.student_profile.current_credits < 12:
-                            return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                            self.current_class, self.decision_tree.current_course = course, course
+                            self.decision_tree.get_next_node()
+                            #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
                         else:
                             print(self.student_profile.current_credits)
-                            return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
+                            self.current_class, self.decision_tree.current_course = course, course
+                            self.decision_tree.get_next_node()
+                            #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
                     if entity.type == "personname":
                         course.prof = entity.entity
                         tm_courses = self.task_manager_information(course)
@@ -112,12 +117,16 @@ class Conversation:
                             for pot_course in self.student_profile.potential_courses:
                                 if pot_course.name or pot_course.id:
                                     self.student_profile.current_classes.append(tm_courses)
-                                    self.student_profile.current_credits += tm_courses.credits
+                                    self.student_profile.current_credits += 6
                                     self.student_profile.total_credits += tm_courses.credits
                                     if self.student_profile.current_credits < 12:
-                                        return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                                        self.current_class, self.decision_tree.current_course = course, course
+                                        self.decision_tree.get_next_node()
+                                        #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
                                     else:
-                                        return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
+                                        self.current_class, self.decision_tree.current_course = course, course
+                                        self.decision_tree.get_next_node()
+                                        #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
                     if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
                         pass  # with start/end time that day?
                     # want a parse tree / relation extraction because we do not know
@@ -126,7 +135,9 @@ class Conversation:
                         course.department = entity.entity
                         tm_courses = self.task_manager_information(course)
                         self.student_profile.potential_courses = tm_courses
-                        return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                        self.current_class, self.decision_tree.current_course = course, course
+                        self.decision_tree.get_next_node()
+                        #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
 
             # done
             elif luis_intent == "StudentNameInfo":
@@ -167,11 +178,14 @@ class Conversation:
                             course.name = entity.entity
 
                         tm_courses = self.task_manager_information(course)
+                        print(tm_courses)
                         if not tm_courses:
                             return User_Query.UserQuery(None, User_Query.QueryType.clarify)
                         else:
                             self.student_profile.current_classes.append(tm_courses)
-                            return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_description)
+                            self.current_class, self.decision_tree.current_course = course, course
+                            self.decision_tree.get_next_node()
+                            #return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_description)
                     if entity.type == "personname":
                         course.prof = entity.entity
                         # query on previous courses with professors
@@ -185,7 +199,9 @@ class Conversation:
                         self.student_profile.potential_courses = tm_courses
                         course = tm_courses
                         self.student_profile.all_classes.append(course)
-                        return User_Query.UserQuery(course, User_Query.QueryType.new_class_description)
+                        self.current_class, self.decision_tree.current_course = course, course
+                        #return User_Query.UserQuery(course, User_Query.QueryType.new_class_description)
+                        self.decision_tree.get_next_node(self)
 
             # done
             elif luis_intent == "WelcomeResponse":
@@ -305,10 +321,12 @@ class Conversation:
                             print(self.student_profile.current_credits)
 
                             if self.student_profile.current_credits < 12:
-                                return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                                #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                                self.decision_tree.get_next_node()
                             else:
                                 print(self.student_profile.current_credits)
-                                return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
+                                self.decision_tree.get_next_node()
+                                #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
                         if entity.type == "personname":
                             course.prof = entity.entity
                             tm_courses = self.task_manager_information(course)
@@ -319,12 +337,14 @@ class Conversation:
                                 for pot_course in self.student_profile.potential_courses:
                                     if pot_course.name or pot_course.id:
                                         self.student_profile.current_classes.append(tm_courses)
-                                        self.student_profile.current_credits += tm_courses.credits
+                                        self.student_profile.current_credits += 6
                                         self.student_profile.total_credits += tm_courses.credits
                                         if self.student_profile.current_credits < 12:
-                                            return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                                            self.decision_tree.get_next_node()
+                                            #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
                                         else:
-                                            return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
+                                            self.decision_tree.get_next_node()
+                                            #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
                         if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
                             pass  # with start/end time that day?
                         # want a parse tree / relation extraction because we do not know
@@ -333,7 +353,8 @@ class Conversation:
                             course.department = entity.entity
                             tm_courses = self.task_manager_information(course)
                             self.student_profile.potential_courses = tm_courses
-                            return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                            #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                            self.decision_tree.get_next_node()
                 else:
                     return User_Query.UserQuery(None, User_Query.QueryType.clarify)
 
@@ -341,17 +362,20 @@ class Conversation:
                 print(User_Query.UserQuery(None, User_Query.QueryType.clarify).type)
                 return User_Query.UserQuery(None, User_Query.QueryType.clarify)
         else:
+            self.decision_tree.get_next_node()
             return User_Query.UserQuery(None, User_Query.QueryType.clarify)
             # @params
             # @return
 
     def task_manager_information(self, course):
         tm_courses = TaskManager.query_courses(course)
-        if len(tm_courses) == 1:
-            return tm_courses
-        else:
-            return tm_courses[0]
-
+        if tm_courses:
+            if len(tm_courses) == 1:
+                return tm_courses
+            else:
+                return tm_courses[0]
+        if not tm_courses:
+            return User_Query.UserQuery(None, User_Query.QueryType.clarify)
             # @params course to add to student classes
             # @return 0 for added successfully, 1 for not added
 
@@ -409,85 +433,80 @@ class NodeObject:
     def call_database(self):
         pass
 
-
-def node_0(self):
-    return 5
-
-
 class DecisionTree:
     def __init__(self, student):
         self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify), [], [])
-        self.current_node = self.head_node
+        self.current_node = None
         self.build_Tree()
-        self.the_node = None
+        self.current_node = self.head_node
         self.current_course = None
         self.student = student
 
     def is_answered(self, node):
-        if node.userQuery == 0:
+        if node.userQuery.type== 0:
             node.answered = True
             return True
-        elif node.userQuery == 1:
+        elif node.userQuery.type== 1:
             node.answered = False
             return False
-        elif node.userQuery == 2:
+        elif node.userQuery.type== 2:
             node.answered = False
             return False
-        elif node.userQuery == 3:
+        elif node.userQuery.type== 3:
             node.answered = False
             return False
-        elif node.userQuery == 4:
+        elif node.userQuery.type== 4:
             node.answered = False
             return False
-        elif node.userQuery == 5:
+        elif node.userQuery.type== 5:
             if self.current_course in self.student.current_classes:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery == 10:
+        elif node.userQuery.type== 10:
             if self.student.name != None:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery == 11:
+        elif node.userQuery.type== 11:
             if self.student.major != []:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery == 12:
+        elif node.userQuery.type== 12:
             if self.student.previous_classes != []:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery == 13:
+        elif node.userQuery.type== 13:
             if self.student.interests != []:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery == 14:
+        elif node.userQuery.type== 14:
             if self.student.terms_left == 0:
                 node.answered = False
                 return False
             node.answered = True
             return True
-        elif node.userQuery == 15:
+        elif node.userQuery.type== 15:
             if self.student.abroad != None:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery == 16:
+        elif node.userQuery.type== 16:
             if self.student.distributions_needed != []:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery == 17:
+        elif node.userQuery.type== 17:
             if self.student.major_classes_needed != []:
                 node.answered = True
                 return True
@@ -496,7 +515,7 @@ class DecisionTree:
                 return True
             node.answered = False
             return False
-        elif node.userQuery == 18:
+        elif node.userQuery.type== 18:
             if self.student.concentration != None:
                 node.answered = True
                 return True
@@ -506,37 +525,37 @@ class DecisionTree:
             node.answered = False
             return False
 
-        elif node.userQuery == 30:
+        elif node.userQuery.type== 30:
             if self.current_course.name != None and self.current_course.id != None:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery == 31:
+        elif node.userQuery.type== 31:
             if self.current_course.prof != None:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery == 32:
+        elif node.userQuery.type == 32:
             if self.current_course.department != None:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery == 33:
+        elif node.userQuery.type == 33:
             if self.current_course.sentiment != 0:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery == 35:
+        elif node.userQuery.type == 35:
             if self.current_course.time != None:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery == 37:
+        elif node.userQuery.type== 37:
             return False
 
     def build_Tree(self):
@@ -570,7 +589,7 @@ class DecisionTree:
         mapOfNodes[32].potential_next_questions.extend(
             [mapOfNodes[13], mapOfNodes[35]])  # interests, should we reccomend something?
         mapOfNodes[35].potential_next_questions.append(mapOfNodes[25])  # what class would they want to take?
-        self.the_node = mapOfNodes[0]
+        self.head_node = mapOfNodes[0]
 
     # takes in nothing, returns a userquery for asking how they feel about a new class.
     # The new classes are stored in the student object, under potential courses.
@@ -583,58 +602,57 @@ class DecisionTree:
 
     # @params: the current node of the tree
     # @return: the next node of the tree
-    def get_next_node(self, current_node):
-        current_node.asked = True
+    def get_next_node(self):
+        self.current_node.asked = True
         try:
-            if current_node.answered == 1:
-                for i in range(len(current_node.required_questions)):
-                    if current_node.required_questions[i].asked or self.is_answered(current_node.required_questions[i]):
+            if self.current_node.answered == 1:
+                for i in range(len(self.current_node.required_questions)):
+                    if self.current_node.required_questions[i].asked or self.is_answered(self.current_node.required_questions[i]):
                         pass
                     else:
 
-                        current_node = current_node.required_questions[i]
+                        self.current_node = self.current_node.required_questions[i]
 
-                for i in range(len(current_node.potential_next_questions)):
-                    if current_node.potential_next_questions[i].asked or self.is_answered(
-                            current_node.potential_next_questions[i]):
+                for i in range(len(self.current_node.potential_next_questions)):
+                    if self.current_node.potential_next_questions[i].asked or self.is_answered(
+                            self.current_node.potential_next_questions[i]):
                         pass
                     else:
-                        current_node = current_node.potential_next_questions[i]
+                        self.current_node = self.current_node.potential_next_questions[i]
 
-                for i in range(len(current_node.required_questions)):
-                    if current_node.required_questions[i].answered:
+                for i in range(len(self.current_node.required_questions)):
+                    if self.current_node.required_questions[i].answered:
                         pass
                     else:
-                        current_node = current_node.required_questions[i]
+                        self.current_node = self.current_node.required_questions[i]
 
-                for i in range(len(current_node.required_questions)):
-                    if current_node.potential_next_questions[i].answered:
+                for i in range(len(self.current_node.required_questions)):
+                    if self.current_node.potential_next_questions[i].answered:
                         pass
                     else:
-                        current_node = current_node.potential_next_questions[i]
+                        self.current_node = self.current_node.potential_next_questions[i]
 
-            if current_node.answered == 0:
-                for i in range(len(current_node.potential_next_questions)):
-                    if current_node.potential_next_questions[i].asked or current_node.potential_next_questions[
+            if self.current_node.answered == 0:
+                for i in range(len(self.current_node.potential_next_questions)):
+                    if self.current_node.potential_next_questions[i].asked or self.current_node.potential_next_questions[
                         i].answered:
                         pass
                     else:
-                        current_node = current_node.potential_next_questions[i]
+                        self.current_node = self.current_node.potential_next_questions[i]
 
                 # have looped through and no node that is asked or answered, now loop to find one that is just not answered
-                for i in range(len(current_node.potential_next_questions)):
-                    if current_node.potential_next_questions[i].answered:
+                for i in range(len(self.current_node.potential_next_questions)):
+                    if self.current_node.potential_next_questions[i].answered:
                         pass
                     else:
-                        current_node = current_node.potential_next_questions[i]
+                        self.current_node = self.current_node.potential_next_questions[i]
 
-            if current_node.userQuery > 10 and current_node.userQuery < 20:
-                student_pro = Conversation.student_profile
-                return User_Query.UserQuery(student_pro, current_node.userQuery)
-            elif current_node.userQuery > 18:
-                return User_Query.UserQuery(Conversation.current_class, current_node.userQuery)
+            if self.current_node.userQuery > 10 and self.current_node.userQuery < 20:
+                return User_Query.UserQuery(self.student, self.current_node.userQuery)
+            elif self.current_node.userQuery > 18:
+                return User_Query.UserQuery(self.current_course, self.current_node.userQuery)
             else:
-                return User_Query.UserQuery(None, current_node.userQuery)
+                return User_Query.UserQuery(None, self.current_node.userQuery)
         except ValueError:
             print("Unexpected error:", sys.exc_info()[0])
             raise

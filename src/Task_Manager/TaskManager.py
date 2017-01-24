@@ -6,7 +6,7 @@ import psycopg2
 import numpy as np
 import io
 import string
-#from src.Dialog_Manager import Course
+from src.Dialog_Manager import Course
 
 """class Course:
     def __init__(self):
