@@ -38,8 +38,8 @@ class Conversation:
         TaskManager.init()
 
     def start_conversation(self):
-        self.conversing = True
 
+        self.conversing = True        
         our_str_response = "Hello young eager mind! What can I help you with?"
         while self.conversing:
             client_response = input(our_str_response + "\n")

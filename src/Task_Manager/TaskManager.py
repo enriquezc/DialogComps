@@ -12,7 +12,7 @@ import string
 conn = None
 dept_dict = {}
 
-"""class Course:
+class Course:
     def __init__(self):
         #name of class
         self.name = None
@@ -38,7 +38,8 @@ dept_dict = {}
         #Boolean. Have they taken the class yet?
         self.taken = None
         self.credits = None
-"""
+        self.relevance = None
+
 def init():
     connect_to_db()
     create_dept_dict()
@@ -196,6 +197,7 @@ def makeCooccurenceMatrix():
                 long_description_array = description.split()
                 for word2 in long_description_array:
                     w = ''.join(ch for ch in word2 if ch not in punctuationset)
+                    w = w.upper()
                     if w not in stop_words:
                         distinct_word.add(w)
                     if w not in dept_dictionary:
@@ -220,7 +222,7 @@ def makeCooccurenceMatrix():
                 l[r] = 0
         matrix.append(l)
 
-    result_file = io.open('results.csv', 'w', 'utf8', 'ignore')
+    result_file = io.open('results.csv', 'w', encoding='utf8')
     transpose = []
     for i in range(len(matrix[0])):
         dept_row = []
@@ -266,6 +268,8 @@ def smart_description_search(description):
 
 def smart_department_search(keywords):
     recommended_departments = set()
+    for i in range(len(keywords)):
+        keywords[i] = keywords[i].upper()
     keywords_str = " in {}".format(str(tuple(keywords))) if len(keywords) > 1 else " = '{}'".format(keywords[0])
     query = "SELECT * FROM occurence where words {};".format(keywords_str)
     global conn
@@ -282,31 +286,37 @@ def smart_department_search(keywords):
         department_names.append(colnames[i].upper())
 
     print(department_names)
-    query = "SELECT c.sec_subject, r.title, r.long_description, c.sec_course_no FROM (SELECT * FROM COURSE c where sec_subject in {} AND (sec_term LIKE '16%' OR sec_term LIKE '17%')) AS c JOIN (SELECT * FROM REASON r WHERE org_id in {}) AS r ON c.sec_name = r.course_number".format(str(tuple(department_names)), str(tuple(department_names)))
-    query += " WHERE (r.long_description LIKE '%{}%'".format(keywords[0])
+    query = "SELECT DISTINCT c.sec_subject, r.title, r.long_description, c.sec_course_no FROM (SELECT * FROM COURSE c where UPPER(sec_subject) in {} AND (sec_term LIKE '16%' OR sec_term LIKE '17%')) AS c JOIN (SELECT * FROM REASON r WHERE UPPER(org_id) in {}) AS r ON c.sec_name = r.course_number".format(str(tuple(department_names)), str(tuple(department_names)))
+    query += " WHERE (UPPER(r.long_description) LIKE '%{}%'".format(keywords[0])
     if len(keywords) > 1:
         for keyword in keywords[1:]:
-            query += "OR r.long_description LIKE '%{}%'".format(keyword)
+            query += "OR UPPER(r.long_description) LIKE '%{}%'".format(keyword)
 
     query += ")"
-
+    print(cur.mogrify(query))
     cur.execute(query)
     results = cur.fetchall()
     courses = []
+    print(len(results))
     for result in results:
-        #new_course = Course.Course()
-        #new_course.id = result[0]
-        #new_course.name = result[1]
-        #new_course.description = result[2]
-        #new_course.course_num = result[3]
-        #courses.append(new_course)
-        print(result[1])
+        new_course = Course.Course()
+        new_course.id = result[0]
+        new_course.name = result[1]
+        new_course.description = result[2]
+        new_course.course_num = result[3]
+        punctuationset = set(string.punctuation)
+        description = ''.join(ch for ch in new_course.description if ch not in punctuationset)
+        words = description.split()
+        for word in words:
+
+        courses.append(new_course)
+        #print(result[1])
 
     return courses
 
 def create_dept_dict():
     global dept_dict
-    file = open('course_subjects.txt', 'r')
+    file = open('./src/Task_Manager/course_subjects.txt', 'r')
     for line in file:
         line = line.strip()
         pair = line.split(';')
@@ -368,7 +378,8 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
+    #makeCooccurenceMatrix()
     #print(smart_description_search(''))
     #edit_distance('ent', 'PHIL')
-    smart_department_search(['Japanese'])
+    smart_department_search(['japanese','manga'])
     #print(deparment_match('cogsci'))

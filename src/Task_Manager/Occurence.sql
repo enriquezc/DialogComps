@@ -1,0 +1,3 @@
+CREATE TABLE OCCURENCE (WORDS varchar(64), PHTOP int, CHEM int, PHIL int, CHINA int, CSBIO int, ENGL int, FRST int, NEUR int, ARTH int, RELG int, ASST int, THEA int, WGST int, GEOL int, LING int, COGSC int, EDUC int, AFAM int, CS int, SPAN int, CHIN int, EUST int, JAPAN int, AMST int, PHYS int, ECON int, HEBR int, RUSS int, ARCN int, ARTS int, HIST int, MUSC int, LTAM int, POSC int, GERM int, PSYC int, JAPN int, DANCE int, ANBEH int, DANC int, MELA int, CGSC int, BIOL int, ASTR int, SOAN int, CCST int, IDSC int, PE int, CAMS int, MATH int, LCST int, ARBC int, ASLN int, CLAS int, FREN int, ENTS int, GRK int, LATN int);
+
+\copy OCCURENCE FROM './results.csv' WITH DELIMITER AS ',' NULL AS 'NULL' CSV HEADER
