@@ -1,6 +1,6 @@
 import nltk
 import luis
-from src.Dialog_Manager import Student, Conversation, Course, User_Query
+from src.Dialog_Manager import Student, Course, User_Query
 from src.Dialog_Manager.User_Query import QueryType
 from src.utils import constants
 from nltk.stem.snowball import SnowballStemmer

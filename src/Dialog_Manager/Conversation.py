@@ -38,7 +38,6 @@ class Conversation:
         TaskManager.init()
 
     def start_conversation(self):
-
         self.conversing = True
         our_str_response = "Hello young eager mind! What can I help you with?"
         while self.conversing:
@@ -46,6 +45,7 @@ class Conversation:
             luis_analysis = self.nluu.get_luis(client_response)
             print("luis: {}".format(luis_analysis))
             userQuery = self.get_next_response(client_response, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
+            
             print("userQuery: {}".format(userQuery))
             if userQuery.type == User_Query.QueryType.goodbye:
                 print("Goodbye")
@@ -318,7 +318,6 @@ class Conversation:
 
             # else statement will ask for more information
             elif luis_intent == "None":
-                            elif luis_intent == "None":
                 # if entity.type == "class":  # add more if's for different types
                 if self.decision_tree.current_node.userQuery.type.value == 10:
                     if luis_entities:
