@@ -3,17 +3,12 @@
 # conversation for the Dialogue Manager
 
 import psycopg2
-<<<<<<< HEAD
 import numpy as np
 #from src.Dialog_Manager import Course
-=======
 import string
-<<<<<<< HEAD
-from src.Dialog_Manager import Course
->>>>>>> master
-=======
+# from src.Dialog_Manager import Course
+
 #from src.Dialog_Manager import Course
->>>>>>> master
 
 """class Course:
     def __init__(self):
@@ -243,6 +238,21 @@ def makeCooccurenceMatrix():
     print("Rows: {}".format(numrows))
 
 
+def smart_description_search(description):
+    newDescription=""
+    conn = connect_to_db()
+    cur = conn.cursor()
+    for word in description.split():
+        query = "select * from shorthands where lower(short)=lower('{}')".format(word)
+        cur.execute(query)
+        res = cur.fetchone()
+        if res != None:
+            s, l = res
+            newDescription += " {}".format(l)
+        else:
+            newDescription += " {}".format(word)
+    return newDescription
+
 
 
 def smart_department_search(keywords):
@@ -275,4 +285,4 @@ def get_n_best_indices(row, n):
 
 
 if __name__ == "__main__":
-    print(smart_keyword_search(["physics"]))
+    print(smart_description_search("Bio comps"))
