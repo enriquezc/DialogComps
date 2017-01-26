@@ -318,7 +318,6 @@ class Conversation:
 
             # else statement will ask for more information
             elif luis_intent == "None":
-                            elif luis_intent == "None":
                 # if entity.type == "class":  # add more if's for different types
                 if self.decision_tree.current_node.userQuery.type.value == 10:
                     if luis_entities:
