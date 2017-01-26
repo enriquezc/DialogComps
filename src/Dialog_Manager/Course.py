@@ -23,4 +23,4 @@ class Course:
         #Boolean. Have they taken the class yet?
         self.taken = None
         self.credits = 0
-        self.relevance = 0
+        self.relevance = None

@@ -7,12 +7,12 @@ import numpy as np
 import string
 import io
 import string
-from src.Dialog_Manager import Course
+#from src.Dialog_Manager import Course
 
 conn = None
 dept_dict = {}
 
-"""class Course:
+class Course:
     def __init__(self):
         #name of class
         self.name = None
@@ -38,7 +38,8 @@ dept_dict = {}
         #Boolean. Have they taken the class yet?
         self.taken = None
         self.credits = None
-"""
+        self.relevance = None
+
 def init():
     connect_to_db()
     create_dept_dict()
@@ -298,13 +299,18 @@ def smart_department_search(keywords):
     courses = []
     print(len(results))
     for result in results:
-        #new_course = Course.Course()
-        #new_course.id = result[0]
-        #new_course.name = result[1]
-        #new_course.description = result[2]
-        #new_course.course_num = result[3]
-        #courses.append(new_course)
-        print(result[1])
+        new_course = Course.Course()
+        new_course.id = result[0]
+        new_course.name = result[1]
+        new_course.description = result[2]
+        new_course.course_num = result[3]
+        punctuationset = set(string.punctuation)
+        description = ''.join(ch for ch in new_course.description if ch not in punctuationset)
+        words = description.split()
+        for word in words:
+
+        courses.append(new_course)
+        #print(result[1])
 
     return courses
 
