@@ -196,6 +196,7 @@ def makeCooccurenceMatrix():
                 long_description_array = description.split()
                 for word2 in long_description_array:
                     w = ''.join(ch for ch in word2 if ch not in punctuationset)
+                    w = w.upper()
                     if w not in stop_words:
                         distinct_word.add(w)
                     if w not in dept_dictionary:
@@ -220,7 +221,7 @@ def makeCooccurenceMatrix():
                 l[r] = 0
         matrix.append(l)
 
-    result_file = io.open('results.csv', 'w', 'utf8', 'ignore')
+    result_file = io.open('results.csv', 'w', encoding='utf8')
     transpose = []
     for i in range(len(matrix[0])):
         dept_row = []
@@ -368,7 +369,8 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
+    makeCooccurenceMatrix()
     #print(smart_description_search(''))
     #edit_distance('ent', 'PHIL')
-    smart_department_search(['Japanese'])
+    #smart_department_search(['japanese'])
     #print(deparment_match('cogsci'))
