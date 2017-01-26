@@ -100,7 +100,6 @@ class nLUU:
         fun = self.response_dict[userQuery.type]
         if fun == None:
             fun = self.response_dict[QueryType.welcome]
-        print("This is the object: " + str(userQuery.object))
         return fun(userQuery)
 
     def create_welcome_response(self, userQuery):
@@ -137,35 +136,35 @@ class nLUU:
 
     def create_class_info_name(self, userQuery):
         s = constants.Responses.CLASS_INFO_NAME[0]
-        return s.format(userQuery.object.relevant_class.name)
+        return s.format(userQuery.object.relevant_class[0].name)
 
     def create_class_info_name_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_NAME_RES[0]
-        return s.format(userQuery.object.relevant_class.name)
+        return s.format(userQuery.object.relevant_class[0].name)
 
     def create_class_info_time(self, userQuery):
         s = constants.Responses.CLASS_INFO_TIME[0]
-        return s.format(userQuery.object.relevant_class.name)
+        return s.format(userQuery.object.relevant_class[0].name)
 
     def create_class_info_time_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_TIME_RES[0]
-        return s.format(userQuery.object.relevant_class.name, userQuery.object.relevant_class.time)
+        return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].time)
 
     def create_class_info_prof(self, userQuery):
         s = constants.Responses.CLASS_INFO_PROF[0]
-        return s.format(userQuery.object.relevant_class.name)
+        return s.format(userQuery.object.relevant_class[0].name)
 
     def create_class_info_prof_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_PROF_RES[0]
-        return s.format(userQuery.object.relevant_class.prof)
+        return s.format(userQuery.object.relevant_class[0].prof)
 
     def create_class_info_sentiment(self, userQuery):
         s = constants.Responses.CLASS_INFO_SENTIMENT[0]
-        return s.format(userQuery.object.relevant_class.name)
+        return s.format(userQuery.object.relevant_class[0].name)
 
     def create_class_info_scrunch(self, userQuery):
         s = constants.Responses.CLASS_INFO_SCRUNCH[0]
-        return s.format(userQuery.object.relevant_class.name)
+        return s.format(userQuery.object.relevant_class[0].name)
 
     def create_new_class_dept(self, userQuery):
         s = constants.Responses.NEW_CLASS_DEPT[0]
@@ -214,7 +213,7 @@ class nLUU:
 
     def create_new_class_sentiment(self, userQuery):
         s = constants.Responses.NEW_CLASS_SENTIMENT[0]
-        return s.format(userQuery.object.relevant_class.name)
+        return s.format(userQuery.object.relevant_class[0].name)
 
     def create_new_class_requirements(self, userQuery):
         return constants.Responses.NEW_CLASS_REQUIREMENTS[0]
@@ -224,7 +223,7 @@ class nLUU:
 
     def create_new_class_description(self, userQuery):
         s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
-        return s.format(userQuery.object.relevant_class.name, userQuery.object.relevant_class.description)
+        return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description)
 
     def create_schedule_class_res(self, userQuery):
         s = constants.Responses.SCHEDULE_CLASS_RES[0]
