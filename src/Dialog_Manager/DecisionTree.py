@@ -249,12 +249,8 @@ class DecisionTree:
                     else:
                         self.current_node = self.current_node.potential_next_questions[i]
 
-            if self.current_node.userQuery.value > 10 and self.current_node.userQuery.value < 20:
-                return User_Query.UserQuery(self.student, self.current_node.userQuery)
-            elif self.current_node.userQuery.value > 18:
-                return User_Query.UserQuery(self.current_course, self.current_node.userQuery)
-            else:
-                return User_Query.UserQuery(None, self.current_node.userQuery)
+            return User_Query.UserQuery(self.student, self.current_node.userQuery)
+
         except ValueError:
             print("Unexpected error:", sys.exc_info()[0])
             raise
