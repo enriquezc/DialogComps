@@ -35,14 +35,16 @@ class Conversation:
         self.queries = []
         self.conversing = False
         self.nluu = nluu.nLUU(luis_url)
+        TaskManager.init()
 
     def start_conversation(self):
         self.conversing = True        
-        our_str_response = "Hello there, eager young mind! How can I be of service?"
+
+        our_str_response = "Hello young eager mind! What can I help you with?"
         while self.conversing:
             client_response = input(our_str_response + "\n")
             luis_analysis = self.nluu.get_luis(client_response)
-            #tree = self.create_syntax_tree(client_response)
+            print("luis: {}".format(luis_analysis))
             userQuery = self.get_next_response(client_response, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
             print("userQuery: {}".format(userQuery))
             if userQuery.type == User_Query.QueryType.goodbye:
@@ -83,8 +85,6 @@ class Conversation:
             # print(luis_intent)
             # print(luisAI.query)
             # entity_information = self.task_manager_information(luis_entities)
-
-
             # done
             if luis_intent == "StudentMajorRequest":
                 for entity in luis_entities:

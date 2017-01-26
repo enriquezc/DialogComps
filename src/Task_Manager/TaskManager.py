@@ -7,7 +7,7 @@ import numpy as np
 import string
 import io
 import string
-#from src.Dialog_Manager import Course
+from src.Dialog_Manager import Course
 
 conn = None
 dept_dict = {}
@@ -306,7 +306,7 @@ def smart_department_search(keywords):
 
 def create_dept_dict():
     global dept_dict
-    file = open('course_subjects.txt', 'r')
+    file = open('./src/Task_Manager/course_subjects.txt', 'r')
     for line in file:
         line = line.strip()
         pair = line.split(';')
