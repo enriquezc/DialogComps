@@ -33,4 +33,5 @@ class Responses:
     NEW_CLASS_REQUIREMENTS = ("Which requirements would you like to complete?",)
     NEW_CLASS_TIME = ("What time of day would you like your classes to be?",)
     NEW_CLASS_DESCRIPTION = ("Here's some more information about the class you asked about:\n {}:\n {}.",)
-    SCHEDULE_CLASS_RES = ("I scheduled you for {}.",)
+    SCHEDULE_CLASS_RES = ("Here are the classes you're currently registered for:\n {}.",)
+    FULL_SCHEDULE_CHECK = ("Here are the classes you're currently registered for:\n {} You're registered for {} credits, do you want to register for more classes?",)

@@ -6,7 +6,7 @@ class Course:
         self.prof = None
         self.term = None
         self.department = None
-        self.courseNum = None
+        self.course_num = None
         #A score from 1-10 of how much they liked the class
         self.sentiment = 0
         #how confident are we in this sentiment
@@ -22,4 +22,4 @@ class Course:
         self.user_description = ""
         #Boolean. Have they taken the class yet?
         self.taken = None
-        self.credits = None
+        self.credits = 0

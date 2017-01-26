@@ -9,6 +9,10 @@ import string
 # from src.Dialog_Manager import Course
 
 #from src.Dialog_Manager import Course
+import io
+import string
+from src.Dialog_Manager import Course
+
 
 """class Course:
     def __init__(self):
@@ -18,7 +22,7 @@ import string
         self.prof = None
         self.term = None
         self.department = None
-        self.courseNum = None
+        self.course_num = None
         self.term = None
         #A score from 1-10 of how much they liked the class
         self.sentiment = 0
@@ -60,9 +64,9 @@ def query_courses(course):
         course_query = course_query + "sec_subject = '" + course.department.upper()
         course_query = course_query + "' AND "
 
-    if course.courseNum != None:
+    if course.course_num != None:
         course_query = course_query + "sec_course_no = '" \
-        + str(course.courseNum)
+        + str(course.course_num)
         course_query = course_query + "' AND "
 
     course_query = course_query[:-5]
@@ -80,7 +84,7 @@ def query_courses(course):
         #print(result)
         result_course = Course.Course()
         result_course.department = result[17]
-        result_course.courseNum = result[2]
+        result_course.course_num = result[2]
         result_course.id = result[13]
         result_course.name = result[16]
         #result_course.comments = result[6]
@@ -112,9 +116,9 @@ def query_courses(course):
             reason_query = reason_query + "org_id = '" + course.department
             reason_query = reason_query + "' AND "
 
-        elif course.courseNum != None:
+        elif course.course_num != None:
             reason_query = reason_query + "course_number = '" \
-            + str(course.courseNum)
+                + str(course.course_num)
             reason_query = reason_query + "' AND "
 
         reason_query = reason_query[:-5]
@@ -178,6 +182,7 @@ def makeCooccurenceMatrix():
                 titleArray = title.split()
                 for word in titleArray:
                     w = ''.join(ch for ch in word if ch not in punctuationset)
+                    w = w.upper()
                     if w not in stop_words:
                         distinct_word.add(w)
                     if w not in dept_dictionary:
@@ -212,7 +217,7 @@ def makeCooccurenceMatrix():
                 l[r] = 0
         matrix.append(l)
 
-    result_file = open('results.csv', 'w')
+    result_file = io.open('results.csv', 'w', 'utf8', 'ignore')
     transpose = []
     for i in range(len(matrix[0])):
         dept_row = []
@@ -266,11 +271,44 @@ def smart_department_search(keywords):
         r = get_n_best_indices(result, 2)
         for i in r:
             recommended_departments.add(i)
-    colnames = [desc[0] for desc in cur.description]    
+    colnames = [desc[0] for desc in cur.description]
     department_names = []
     for i in recommended_departments - set((0,)):
-        department_names.append(colnames[i])
-    return department_names
+        department_names.append(colnames[i].upper())
+
+
+    query = "SELECT c.sec_subject, r.title, r.long_description, c.sec_course_no FROM (SELECT * FROM COURSE c where sec_subject in {} AND (sec_term LIKE '16%' OR sec_term LIKE '17%')) AS c JOIN (SELECT * FROM REASON r WHERE org_id in {}) AS r ON c.sec_name = r.course_number".format(str(tuple(department_names)), str(tuple(department_names)))
+    query += " WHERE (r.long_description LIKE '%{}%'".format(keywords[0])
+    if len(keywords) > 1:
+        for keyword in keywords[1:]:
+            query += "OR r.long_description LIKE '%{}%'".format(keyword)
+
+    query += ")"
+
+    cur.execute(query)
+    results = cur.fetchall()
+    courses = []
+    for result in results:
+        new_course = Course.Course()
+        new_course.id = result[0]
+        new_course.name = result[1]
+        new_course.description = result[2]
+        new_course.course_num = result[3]
+        courses.append(new_course)
+
+    return courses
+
+def deparment_match(input):
+    ##TODO: replace truncations, like lit, polysci, etc..
+    dept_dict = {}
+    file = open('course_subjects.txt', 'r')
+    for line in file:
+        line = line.strip()
+        pair = line.split(';')
+
+        dept_dict[pair[0]] = pair[1]
+
+    print(dept_dict)
 
 def get_n_best_indices(row, n):
     res = []
@@ -286,3 +324,7 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     print(smart_description_search("Bio comps"))
+    deparment_match('none')
+    #makeCooccurenceMatrix()
+    #print(smart_department_search(["physics"]))
+
