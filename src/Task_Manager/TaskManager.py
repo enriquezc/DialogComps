@@ -7,12 +7,12 @@ import numpy as np
 import string
 import io
 import string
-#from src.Dialog_Manager import Course
+from src.Dialog_Manager import Course
 
 conn = None
 dept_dict = {}
 
-class Course:
+"""class Course:
     def __init__(self):
         #name of class
         self.name = None
@@ -39,7 +39,7 @@ class Course:
         self.taken = None
         self.credits = None
         self.relevance = None
-
+"""
 def init():
     connect_to_db()
     create_dept_dict()
@@ -86,6 +86,7 @@ def query_courses(course):
         #print("Getting results from query")
         #print(result)
         result_course = Course.Course()
+        #result_course = Course()
         result_course.department = result[17]
         result_course.course_num = result[2]
         result_course.id = result[13]
@@ -139,18 +140,6 @@ def query_courses(course):
     #list_courses = []
 
     return results
-
-def query_by_string(course_description, connection):
-    '''
-    Returns a list of course objects based on a string containing keywords
-    about the course which were not parsed into a set of specific criteria.
-    General search algorithm for courses based on a string description.
-    '''
-    conn = connection
-
-    list_courses = []
-
-    return list_courses
 
 
 def makeCooccurenceMatrix():
@@ -285,7 +274,7 @@ def smart_department_search(keywords):
     for i in recommended_departments - set((0,)):
         department_names.append(colnames[i].upper())
 
-    print(department_names)
+    #print(department_names)
     query = "SELECT DISTINCT c.sec_subject, r.title, r.long_description, c.sec_course_no FROM (SELECT * FROM COURSE c where UPPER(sec_subject) in {} AND (sec_term LIKE '16%' OR sec_term LIKE '17%')) AS c JOIN (SELECT * FROM REASON r WHERE UPPER(org_id) in {}) AS r ON c.sec_name = r.course_number".format(str(tuple(department_names)), str(tuple(department_names)))
     query += " WHERE (UPPER(r.long_description) LIKE '%{}%'".format(keywords[0])
     if len(keywords) > 1:
@@ -293,30 +282,41 @@ def smart_department_search(keywords):
             query += "OR UPPER(r.long_description) LIKE '%{}%'".format(keyword)
 
     query += ")"
-    print(cur.mogrify(query))
     cur.execute(query)
     results = cur.fetchall()
     courses = []
-    print(len(results))
+    #print(len(results))
     for result in results:
+        #new_course = Course()
         new_course = Course.Course()
         new_course.id = result[0]
         new_course.name = result[1]
         new_course.description = result[2]
         new_course.course_num = result[3]
+        new_course.relevance = [0,0]
         punctuationset = set(string.punctuation)
-        description = ''.join(ch for ch in new_course.description if ch not in punctuationset)
+        description = new_course.description
+        description = description + ' ' + new_course.name
+        description = ''.join(ch for ch in description if ch not in punctuationset)
         words = description.split()
+        distinct_keywords = set([])
         for word in words:
-
+            if word.upper() in keywords:
+                new_course.relevance[1] = new_course.relevance[1] + 1
+                distinct_keywords.add(word.upper())
+        new_course.relevance[0] = len(distinct_keywords)
         courses.append(new_course)
         #print(result[1])
+        #print(new_course.relevance)
 
+    courses.sort(key = lambda course: (course.relevance[0], course.relevance[1]))
+    courses.reverse()
     return courses
 
 def create_dept_dict():
     global dept_dict
     file = open('./src/Task_Manager/course_subjects.txt', 'r')
+    #file = open('course_subjects.txt', 'r')
     for line in file:
         line = line.strip()
         pair = line.split(';')
@@ -381,5 +381,7 @@ if __name__ == "__main__":
     #makeCooccurenceMatrix()
     #print(smart_description_search(''))
     #edit_distance('ent', 'PHIL')
-    smart_department_search(['japanese','manga'])
+    list_o_courses = smart_department_search(['japanese','manga'])
+    for course in list_o_courses:
+        print(course.name)
     #print(deparment_match('cogsci'))
