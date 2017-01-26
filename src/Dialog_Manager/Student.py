@@ -20,3 +20,4 @@ class Student:
         self.abroad = None
         self.all_classes = []
         self.potential_courses = []
+        self.relevant_class = None
