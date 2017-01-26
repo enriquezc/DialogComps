@@ -356,4 +356,3 @@ if __name__ == "__main__":
     list_o_courses = smart_department_search(['japanese','manga'])
     for course in list_o_courses:
         print(course.name)
-    #print(deparment_match('cogsci'))
