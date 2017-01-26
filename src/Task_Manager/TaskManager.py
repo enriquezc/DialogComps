@@ -7,10 +7,10 @@ import numpy as np
 import string
 import io
 import string
-from src.Dialog_Manager import Course
+#from src.Dialog_Manager import Course
 
 conn = None
-dept_dict = None
+dept_dict = {}
 
 """class Course:
     def __init__(self):
@@ -45,8 +45,8 @@ def init():
 
 
 def connect_to_db():
-
-    global conn = psycopg2.connect(host = "cmc307-07.mathcs.carleton.edu", \
+    global conn
+    conn = psycopg2.connect(host = "cmc307-07.mathcs.carleton.edu", \
     database = "dialogcomps", user = "dialogcomps", password = "dialog!=comps")
 
 
@@ -71,7 +71,9 @@ def query_courses(course):
 
     course_query = course_query[:-5]
 
-    cur = global conn.cursor()
+    global conn
+
+    cur = conn.cursor()
     cur.execute(course_query)
     course_results = cur.fetchall()
 
@@ -125,7 +127,7 @@ def query_courses(course):
 
         #print(reason_query)
 
-        cur = global conn.cursor()
+        cur = conn.cursor()
         cur.execute(reason_query)
         course_results = cur.fetchone()
 
@@ -156,7 +158,9 @@ def makeCooccurenceMatrix():
     stop_words_file = open('stop_words.txt', 'r')
     for word in stop_words_file:
         stop_words.add(word.strip())
-    cur = global con.cursor()
+    global conn
+
+    cur = conn.cursor()
 
     depts_query = "select distinct org_id from reason"
 
@@ -243,8 +247,8 @@ def makeCooccurenceMatrix():
 
 
 def smart_description_search(description):
-    newDescription=""
-    conn = connect_to_db()
+    global conn
+    new_description = ""
     cur = conn.cursor()
     for word in description.split():
         query = "select * from shorthands where lower(short)=lower('{}')".format(word)
@@ -252,20 +256,23 @@ def smart_description_search(description):
         res = cur.fetchone()
         if res != None:
             s, l = res
-            newDescription += " {}".format(l)
+            new_description += " {}".format(l)
         else:
-            newDescription += " {}".format(word)
-    return newDescription
-
+            new_description += " {}".format(word)
+    if new_description[0] == ' ':
+        new_description = new_description[1:]
+    return new_descriptions
 
 
 def smart_department_search(keywords):
     recommended_departments = set()
     keywords_str = " in {}".format(str(tuple(keywords))) if len(keywords) > 1 else " = '{}'".format(keywords[0])
     query = "SELECT * FROM occurence where words {};".format(keywords_str)
-    cur = global conn.cursor()
+    global conn
+    cur = conn.cursor()
     cur.execute(query)
-    for result in cur:
+    results = cur.fetchall()
+    for result in results:
         r = get_n_best_indices(result, 2)
         for i in r:
             recommended_departments.add(i)
@@ -274,7 +281,7 @@ def smart_department_search(keywords):
     for i in recommended_departments - set((0,)):
         department_names.append(colnames[i].upper())
 
-
+    print(department_names)
     query = "SELECT c.sec_subject, r.title, r.long_description, c.sec_course_no FROM (SELECT * FROM COURSE c where sec_subject in {} AND (sec_term LIKE '16%' OR sec_term LIKE '17%')) AS c JOIN (SELECT * FROM REASON r WHERE org_id in {}) AS r ON c.sec_name = r.course_number".format(str(tuple(department_names)), str(tuple(department_names)))
     query += " WHERE (r.long_description LIKE '%{}%'".format(keywords[0])
     if len(keywords) > 1:
@@ -287,17 +294,18 @@ def smart_department_search(keywords):
     results = cur.fetchall()
     courses = []
     for result in results:
-        new_course = Course.Course()
-        new_course.id = result[0]
-        new_course.name = result[1]
-        new_course.description = result[2]
-        new_course.course_num = result[3]
-        courses.append(new_course)
+        #new_course = Course.Course()
+        #new_course.id = result[0]
+        #new_course.name = result[1]
+        #new_course.description = result[2]
+        #new_course.course_num = result[3]
+        #courses.append(new_course)
+        print(result[1])
 
     return courses
 
 def create_dept_dict():
-    global dept_dict = {}
+    global dept_dict
     file = open('course_subjects.txt', 'r')
     for line in file:
         line = line.strip()
@@ -305,10 +313,45 @@ def create_dept_dict():
 
         dept_dict[pair[0]] = pair[1]
 
-    print(dept_dict)
+## Taken from wiki/Algorithm_Implementation ##
+def edit_distance(s1, s2):
+    if len(s1) < len(s2):
+        return edit_distance(s2, s1)
 
-def deparment_match(input):
+    # len(s1) >= len(s2)
+    if len(s2) == 0:
+        return len(s1)
+
+    previous_row = range(len(s2) + 1)
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[j + 1] + 1
+            deletions = current_row[j] + 1
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+
+    return previous_row[-1]
+
+def deparment_match(str_in):
     ##TODO: replace truncations, like lit, polysci, etc..
+    ## comp, bio, sci,
+    global dept_dict
+    cur_match = None
+    cur_best = 100
+    if str_in.upper() in dept_dict.keys():
+        return str_in.upper()
+    for key in dept_dict:
+        dist = edit_distance(key,str_in.upper())
+        if dist < cur_best:
+            cur_match = key
+            cur_best = dist
+        dist = edit_distance(dept_dict[key],str_in)
+        if dist < cur_best:
+            cur_match = dept_dict[key]
+            cur_best = dist
+    return cur_match
 
 
 def get_n_best_indices(row, n):
@@ -324,7 +367,8 @@ def get_n_best_indices(row, n):
 
 
 if __name__ == "__main__":
-    print(smart_description_search("Bio comps"))
-    deparment_match('none')
-    #makeCooccurenceMatrix()
-    #print(smart_department_search(["physics"]))
+    init()
+    #print(smart_description_search(''))
+    #edit_distance('ent', 'PHIL')
+    smart_department_search(['Japanese'])
+    #print(deparment_match('cogsci'))

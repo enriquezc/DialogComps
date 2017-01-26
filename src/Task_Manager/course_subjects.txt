@@ -1,148 +1,147 @@
 AFAM;African/African American Studies
-AFDEV;Spec:African Developmental Studies
+AFDEV;African Developmental Studies
 AMMU;American Music Concentration
 AMST;American Studies
-ANBEH;Spec:Animal Behavior
+ANBEH;Animal Behavior
 ANTLN;Anthropological Linguistics
-APBIOL;Biology
-APLOG;Spec:Applied Logic
+APLOG;Applied Logic
 ARBC;Arabic
-ARCHL;Spec:Archaeology
+ARCHL;Archaeology
 ARCN;Archaeology
 ARTH;Art History
 ARTS;Studio Art
 ASLN;Asian Languages & Literatures
 ASST;Asian Studies
 ASTR;Astronomy
-BICHM;Spec:Biochemistry
+BICHM;Biochemistry
 BIOL;Biology
-BLDNC;Spec:Black Cultural Identity & Dance
-BRIST;Spec:British Studies
+BLDNC;Black Cultural Identity & Dance
+BRIST;British Studies
 CAMS;Cinema and Media Studies
 CCST;Cross Cultural Studies
 CGSC;Cognitive Science
 CGST;Cognitive Studies
-CHCST;Spec:Chicano Studies
+CHCST;Chicano Studies
 CHEM;Chemistry
 CHIN;Chinese
-CHINA;Spec:Chinese
+CHINA;Chinese
 CLAS;Classics
 CLLN;Classical Languages
-CMPLT;Spec:Comparative Literature
-COGSC;Spec:Cognitive Science
-COGST;Spec:Cognitive Studies
+CMPLT;Comparative Literature
+COGSC;Cognitive Science
+COGST;Cognitive Studies
 COST;Cognitive Studies
-CRCST;Spec:Cross-Cultural Studies
+CRCST;Cross-Cultural Studies
 CS;Computer Science
-CSBIO;Spec:Computational Biology
+CSBIO;Computational Biology
 DANC;Dance
-DANCE;Spec:Dance
-DGART;Spec:Digital Arts
-DMSED;Spec:Dance, Music & Education
-DRAMA;Spec:Dramatic Arts
+DANCE;Dance
+DGART;Digital Arts
+DMSED;Dance, Music & Education
+DRAMA;Dramatic Arts
 EATS;Environment & Technology Studies
 ECON;Economics
-ECOSY;Spec:Ecosystem Science
+ECOSY;Ecosystem Science
 EDUC;Educational Studies
-EGECH;Spec:Environmental Geo-Chemisty
+EGECH;Environmental Geo-Chemisty
 ENGL;English
 ENTS;Environmental Studies
-ENVST;Spec:Environmental St
-ERSCI;Spec:Environmental Science
-ESYSC;Spec:Earth System Science
-ETHBO;Spec:Ethnobotany
+ENVST;Environmental St
+ERSCI;Environmental Science
+ESYSC;Earth System Science
+ETHBO;Ethnobotany
 ETHIC;Ethics
-ETHMU;Spec:Ethnomusicology
-EUPEC;Spec:European Political Economics
+ETHMU;Ethnomusicology
+EUPEC;European Political Economics
 EURST;European Asian Studies
 EUST;European Studies
 FREN;French and Francophone Studies
-FRNST;Spec:French Studies
+FRNST;French Studies
 FRST;French & Francophone Studies
 GENSC;Genome Science
 GEOL;Geology
 GERM;German
 GLETH;Global Ethics
 GRK;Greek
-GRMST;Spec:German Studies
+GRMST;German Studies
 HEBR;Hebrew
 HIST;History
-HMNCI;Spec:Human-Computer Interaction
-HMNEC;Spec:Human Ecology
+HMNCI;Human-Computer Interaction
+HMNEC;Human Ecology
 HUMN;Humanities
 IBBIOL;Biology
 IDSC;Interdisciplinary
 IGS;Integrated Generational Studies
-INDVP;Spec:International Development
-INTRL;Spec:International Relations
-IPOEC;Spec:International Political Economics
-ISLST;Spec:Islamic Studies
-JAPAN;Spec:Japanese
+INDVP;International Development
+INTRL;International Relations
+IPOEC;International Political Economics
+ISLST;Islamic Studies
+JAPAN;Japanese
 JAPN;Japanese
-JPNLG;Spec:Japanese Lang
-JPNLT;Spec:Japanese Literature
-JPNST;Spec:Japanese Cultural Studies
+JPNLG;Japanese Lang
+JPNLT;Japanese Literature
+JPNST;Japanese Cultural Studies
 LATN;Latin
 LCST;Literature & Cultural Studies
 LING;Linguistics
 LIST;Literary Studies
-LNGCS;Spec:Linguistics/Computer Science
-LNGUI;Spec:Linguistics
+LNGCS;Linguistics/Computer Science
+LNGUI;Linguistics
 LTAM;Latin American Studies
-LTNME;Spec:Latin American/Media Studies
+LTNME;Latin American/Media Studies
 MARS;Medieval and Renaissance St
 MATH;Mathematics
 MEDA;Media Studies
-MEDAR;Spec:Media/Studio Art
-MEDIA;Spec:Media Studies
+MEDAR;Media/Studio Art
+MEDIA;Media Studies
 MELA;Middle Eastern Languages
 MLNG;Modern Languages & Literature
 MRST;Medieval & Renaissance Studies
 MUSC;Music
-MUSTH;Spec:Music Theory
-NARST;Spec:Narrative Studies
+MUSTH;Music Theory
+NARST;Narrative Studies
 NATH;Natural History
-NATHI;Spec:Natural History
-NATHS;Spec:Natural History
-NATRE;Spec:Natural Resources
+NATHI;Natural History
+NATHS;Natural History
+NATRE;Natural Resources
 NEUR;Neuroscience
 NORW;Norwegian
-NROLG;Spec:Neurolinguistics
-NROSC;Spec:Neuroscience
-NRTAR;Spec:Narrative Arts
+NROLG;Neurolinguistics
+NROSC;Neuroscience
+NRTAR;Narrative Arts
 OCP;Off-Campus Studies
 PE;Physical-Education, Athleticism/Recreation
 PHIL;Philosophy
-PHLEW;Spec:Philosophy East West
-PHSCI;Spec:Philosophy of Science
+PHLEW;Philosophy East West
+PHSCI;Philosophy of Science
 PHTOP;Photography & Optics
 PHYS;Physics
-POLEC;Spec:Political Economics
-POLPH;Spec:Political Philosophy
+POLEC;Political Economics
+POLPH;Political Philosophy
 PORT;Portfolio (writing)
 POSC;Political Science
-POSOC;Spec:Political Sociology
+POSOC;Political Sociology
 PSYC;Psychology
 RELG;Religion
-RESMG;Spec:Resource Management
+RESMG;Resource Management
 RLNG;Romance Languages
 RMLL;Romance Language & Literature
-RMNLL;Spec:Romance Languages & Lit
+RMNLL;Romance Languages & Lit
 RUSS;Russian
-SECOI;Spec:Self, Community & Interpretation
+SECOI;Self, Community & Interpretation
 SOAN;Sociology/Anthropology
-SOCEC;Spec:Social Ecology
-SOCED;Spec:Social Theory of Education
+SOCEC;Social Ecology
+SOCED;Social Theory of Education
 SPAN;Spanish
-SPSYC;Spec:Social Psychology
+SPSYC;Social Psychology
 TAPS;Technology & Policy Studies
-THART;Spec:Theater Arts
+THART;Theater Arts
 THDN;Theater and Dance
 THEA;Theater Arts
-THEAR;Spec:Theater
-THEST;Spec:Theatre Studies
-URBST;Spec:Urban Studies
-URMED;Spec:Urban Media
+THEAR;Theater
+THEST;Theatre Studies
+URBST;Urban Studies
+URMED;Urban Media
 WGST;Women's and Gender Studies
 WMST;Women's Studies
-WOMST;Spec:Women's Studies
+WOMST;Women's Studies
