@@ -99,7 +99,6 @@ class nLUU:
         '''
         return self.luis.analyze(s)
 
-
     def create_response_string(self, userQuery):
         '''
             Takes whatever response from backend and converts to readable string

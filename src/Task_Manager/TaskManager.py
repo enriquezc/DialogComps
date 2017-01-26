@@ -4,6 +4,7 @@
 
 import psycopg2
 import numpy as np
+import string
 import io
 import string
 from src.Dialog_Manager import Course
@@ -241,6 +242,21 @@ def makeCooccurenceMatrix():
     print("Rows: {}".format(numrows))
 
 
+def smart_description_search(description):
+    newDescription=""
+    conn = connect_to_db()
+    cur = conn.cursor()
+    for word in description.split():
+        query = "select * from shorthands where lower(short)=lower('{}')".format(word)
+        cur.execute(query)
+        res = cur.fetchone()
+        if res != None:
+            s, l = res
+            newDescription += " {}".format(l)
+        else:
+            newDescription += " {}".format(word)
+    return newDescription
+
 
 
 def smart_department_search(keywords):
@@ -308,6 +324,7 @@ def get_n_best_indices(row, n):
 
 
 if __name__ == "__main__":
+    print(smart_description_search("Bio comps"))
     deparment_match('none')
     #makeCooccurenceMatrix()
     #print(smart_department_search(["physics"]))
