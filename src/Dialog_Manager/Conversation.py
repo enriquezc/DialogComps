@@ -112,6 +112,8 @@ class Conversation:
                             course.name = entity.entity
 
                         tm_courses = self.task_manager_information(course)
+                        if type(tm_courses) == list:
+                            tm_courses = tm_courses[0]
                         self.student_profile.relevant_class = tm_courses
                         self.student_profile.current_classes.append(tm_courses)
                         self.student_profile.current_credits =+ 6
@@ -119,11 +121,11 @@ class Conversation:
                         print(self.student_profile.current_credits)
                         if self.student_profile.current_credits < 12:
                             self.current_class, self.decision_tree.current_course = course, course
-                            self.decision_tree.get_next_node(5)
+                            return self.decision_tree.get_next_node(5)
                             #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
                         else:
                             self.current_class, self.decision_tree.current_course = course, course
-                            self.decision_tree.get_next_node(5)
+                            return self.decision_tree.get_next_node(5)
                             #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
                     if entity.type == "personname":
                         course.prof = entity.entity
@@ -143,7 +145,7 @@ class Conversation:
                                         #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
                                     else:
                                         self.current_class, self.decision_tree.current_course = course, course
-                                        self.decision_tree.get_next_node(5)
+                                        return self.decision_tree.get_next_node(5)
                                         #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
                     if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
                         pass  # with start/end time that day?
