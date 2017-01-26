@@ -267,6 +267,8 @@ def smart_description_search(description):
 
 def smart_department_search(keywords):
     recommended_departments = set()
+    for i in range(len(keywords)):
+        keywords[i] = keywords[i].upper()
     keywords_str = " in {}".format(str(tuple(keywords))) if len(keywords) > 1 else " = '{}'".format(keywords[0])
     query = "SELECT * FROM occurence where words {};".format(keywords_str)
     global conn
@@ -283,17 +285,18 @@ def smart_department_search(keywords):
         department_names.append(colnames[i].upper())
 
     print(department_names)
-    query = "SELECT c.sec_subject, r.title, r.long_description, c.sec_course_no FROM (SELECT * FROM COURSE c where sec_subject in {} AND (sec_term LIKE '16%' OR sec_term LIKE '17%')) AS c JOIN (SELECT * FROM REASON r WHERE org_id in {}) AS r ON c.sec_name = r.course_number".format(str(tuple(department_names)), str(tuple(department_names)))
-    query += " WHERE (r.long_description LIKE '%{}%'".format(keywords[0])
+    query = "SELECT DISTINCT c.sec_subject, r.title, r.long_description, c.sec_course_no FROM (SELECT * FROM COURSE c where UPPER(sec_subject) in {} AND (sec_term LIKE '16%' OR sec_term LIKE '17%')) AS c JOIN (SELECT * FROM REASON r WHERE UPPER(org_id) in {}) AS r ON c.sec_name = r.course_number".format(str(tuple(department_names)), str(tuple(department_names)))
+    query += " WHERE (UPPER(r.long_description) LIKE '%{}%'".format(keywords[0])
     if len(keywords) > 1:
         for keyword in keywords[1:]:
-            query += "OR r.long_description LIKE '%{}%'".format(keyword)
+            query += "OR UPPER(r.long_description) LIKE '%{}%'".format(keyword)
 
     query += ")"
-
+    print(cur.mogrify(query))
     cur.execute(query)
     results = cur.fetchall()
     courses = []
+    print(len(results))
     for result in results:
         #new_course = Course.Course()
         #new_course.id = result[0]
@@ -369,8 +372,8 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
-    makeCooccurenceMatrix()
+    #makeCooccurenceMatrix()
     #print(smart_description_search(''))
     #edit_distance('ent', 'PHIL')
-    #smart_department_search(['japanese'])
+    smart_department_search(['japanese','manga'])
     #print(deparment_match('cogsci'))
