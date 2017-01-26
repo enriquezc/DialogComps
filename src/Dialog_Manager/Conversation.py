@@ -199,6 +199,11 @@ class Conversation:
                         if not tm_courses:
                             return User_Query.UserQuery(None, User_Query.QueryType.clarify)
                         else:
+                            if type(tm_courses) is list:
+                                self.student_profile.relevant_class = tm_courses
+                            else:
+                                self.student_profile.relevant_class.append(tm_courses)
+
                             self.student_profile.current_classes.append(tm_courses)
                             self.student_profile.current_class, self.decision_tree.current_course = course, course
                             return self.decision_tree.get_next_node(36)
