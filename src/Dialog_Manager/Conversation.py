@@ -34,22 +34,24 @@ class Conversation:
         self.decision_tree = DecisionTree.DecisionTree(self.student_profile)
         self.queries = []
         self.conversing = False
-        self.nlw = nluu.nLUU(luis_url)
+        self.nluu = nluu.nLUU(luis_url)
+        TaskManager.init()
 
     def start_conversation(self):
-        self.conversing = True        
-        our_str_response = "Hello there, eager young mind! How can I be of service?"
+        self.conversing = True
+
+        our_str_response = "Hello young eager mind! What can I help you with?"
         while self.conversing:
             client_response = input(our_str_response + "\n")
-            luis_analysis = self.nlw.get_luis(client_response)
-            #tree = self.create_syntax_tree(client_response)
+            luis_analysis = self.nluu.get_luis(client_response)
+            print("luis: {}".format(luis_analysis))
             userQuery = self.get_next_response(client_response, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
             print("userQuery: {}".format(userQuery))
             if userQuery.type == User_Query.QueryType.goodbye:
                 print("Goodbye")
                 self.conversing = False
                 break
-            our_str_response = self.nlw.create_response(userQuery)
+            our_str_response = self.nluu.create_response(userQuery)
 
     # @params
     # @return
@@ -83,8 +85,6 @@ class Conversation:
             # print(luis_intent)
             # print(luisAI.query)
             # entity_information = self.task_manager_information(luis_entities)
-
-
             # done
             if luis_intent == "StudentMajorRequest":
                 for entity in luis_entities:
@@ -423,5 +423,3 @@ class Conversation:
         else:
             self.student_profile.current_classes.append(new_course)
             return new_course
-
-

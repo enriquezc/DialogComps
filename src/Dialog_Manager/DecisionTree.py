@@ -35,13 +35,13 @@ class NodeObject:
 
 class DecisionTree:
     def __init__(self, student):
+        self.mapOfNodes = {}
         self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify), [], [])
         self.current_node = None
         self.build_Tree()
         self.current_node = self.head_node
         self.current_course = None
         self.student = student
-        self.mapOfNodes = {}
 
 
     def is_answered(self, node):
@@ -190,7 +190,7 @@ class DecisionTree:
         self.mapOfNodes[32].potential_next_questions.extend(
             [self.mapOfNodes[13], self.mapOfNodes[35]])  # interests, should we reccomend something?
         self.mapOfNodes[35].potential_next_questions.append(self.mapOfNodes[25])  # what class would they want to take?
-        self.head_node = self.mapOfNodes[10]
+        self.head_node = self.mapOfNodes[0]
 
     # takes in nothing, returns a userquery for asking how they feel about a new class.
     # The new classes are stored in the student object, under potential courses.
