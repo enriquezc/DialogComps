@@ -199,7 +199,7 @@ class Conversation:
                         if not tm_courses:
                             return User_Query.UserQuery(None, User_Query.QueryType.clarify)
                         else:
-                            if len(tm_courses) > 1:
+                            if type(tm_courses) is list:
                                 self.student_profile.relevant_class = tm_courses
                             else:
                                 self.student_profile.relevant_class.append(tm_courses)
