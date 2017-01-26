@@ -8,6 +8,9 @@ import io
 import string
 from src.Dialog_Manager import Course
 
+conn = None
+dept_dict = None
+
 """class Course:
     def __init__(self):
         #name of class
@@ -35,13 +38,16 @@ from src.Dialog_Manager import Course
         self.taken = None
         self.credits = None
 """
+def init():
+    connect_to_db()
+    create_dept_dict()
+
 
 def connect_to_db():
 
-    conn = psycopg2.connect(host = "cmc307-07.mathcs.carleton.edu", \
+    global conn = psycopg2.connect(host = "cmc307-07.mathcs.carleton.edu", \
     database = "dialogcomps", user = "dialogcomps", password = "dialog!=comps")
 
-    return conn
 
 def query_courses(course):
     '''
@@ -50,7 +56,6 @@ def query_courses(course):
     criteria.
     '''
 
-    conn = connect_to_db()
     #(sec_term LIKE '16%' OR sec_term LIKE '17%')
     course_query = "SELECT * FROM COURSE WHERE (sec_term LIKE '16%' OR sec_term LIKE '17%') AND "
 
@@ -65,7 +70,7 @@ def query_courses(course):
 
     course_query = course_query[:-5]
 
-    cur = conn.cursor()
+    cur = global conn.cursor()
     cur.execute(course_query)
     course_results = cur.fetchall()
 
@@ -119,7 +124,7 @@ def query_courses(course):
 
         #print(reason_query)
 
-        cur = conn.cursor()
+        cur = global conn.cursor()
         cur.execute(reason_query)
         course_results = cur.fetchone()
 
@@ -150,8 +155,7 @@ def makeCooccurenceMatrix():
     stop_words_file = open('stop_words.txt', 'r')
     for word in stop_words_file:
         stop_words.add(word.strip())
-    con = connect_to_db()
-    cur = con.cursor()
+    cur = global con.cursor()
 
     depts_query = "select distinct org_id from reason"
 
@@ -240,11 +244,10 @@ def makeCooccurenceMatrix():
 
 
 def smart_department_search(keywords):
-    conn = connect_to_db()
     recommended_departments = set()
     keywords_str = " in {}".format(str(tuple(keywords))) if len(keywords) > 1 else " = '{}'".format(keywords[0])
     query = "SELECT * FROM occurence where words {};".format(keywords_str)
-    cur = conn.cursor()
+    cur = global conn.cursor()
     cur.execute(query)
     for result in cur:
         r = get_n_best_indices(result, 2)
@@ -277,9 +280,8 @@ def smart_department_search(keywords):
 
     return courses
 
-def deparment_match(input):
-    ##TODO: replace truncations, like lit, polysci, etc..
-    dept_dict = {}
+def create_dept_dict():
+    global dept_dict = {}
     file = open('course_subjects.txt', 'r')
     for line in file:
         line = line.strip()
@@ -288,6 +290,10 @@ def deparment_match(input):
         dept_dict[pair[0]] = pair[1]
 
     print(dept_dict)
+
+def deparment_match(input):
+    ##TODO: replace truncations, like lit, polysci, etc..
+
 
 def get_n_best_indices(row, n):
     res = []
