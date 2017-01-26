@@ -3,6 +3,7 @@ import re
 import sys
 from nltk.tree import Tree
 from src.Dialog_Manager import Student, Course, User_Query
+from src.NLUU import nluu
 import nltk
 import luis
 from src.Task_Manager import TaskManager
@@ -24,7 +25,7 @@ class Conversation:
                       "WDT": "Wh-determiner", "WP": "Wh-pronoun", "WP$": "Possessive wh-pronoun",
                       "WRB": "Wh-adverb"}
 
-    def __init__(self):
+    def __init__(self, luis_url):
         self.student_profile = Student.Student()
         self.last_query = 0
         self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify), [], [])
@@ -32,6 +33,23 @@ class Conversation:
         self.current_class = None
         self.decision_tree = DecisionTree(self.student_profile)
         self.queries = []
+        self.conversing = False
+        self.nluu = nluu.nLUU(luis_url)
+
+    def start_conversation(self):
+        self.conversing = True        
+        our_str_response = "Hello there, eager young mind! How can I be of service?"
+        while self.conversing:
+            client_response = input(our_str_response + "\n")
+            luis_analysis = self.nluu.get_luis(client_response)
+            #tree = self.create_syntax_tree(client_response)
+            userQuery = self.get_next_response(client_response, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
+            print("userQuery: {}".format(userQuery))
+            if userQuery.type == User_Query.QueryType.goodbye:
+                print("Goodbye")
+                self.conversing = False
+                break
+            our_str_response = self.nluu.create_response(userQuery)
 
     # @params
     # @return
@@ -121,7 +139,7 @@ class Conversation:
                                     self.student_profile.total_credits += tm_courses.credits
                                     if self.student_profile.current_credits < 12:
                                         self.current_class, self.decision_tree.current_course = course, course
-                                        self.decision_tree.get_next_node()
+                                        return self.decision_tree.get_next_node()
                                         #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
                                     else:
                                         self.current_class, self.decision_tree.current_course = course, course
@@ -136,8 +154,8 @@ class Conversation:
                         tm_courses = self.task_manager_information(course)
                         self.student_profile.potential_courses = tm_courses
                         self.current_class, self.decision_tree.current_course = course, course
-                        self.decision_tree.get_next_node()
-                        #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                        return self.decision_tree.get_next_node()
+                        # return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
 
             # done
             elif luis_intent == "StudentNameInfo":
@@ -184,7 +202,7 @@ class Conversation:
                         else:
                             self.student_profile.current_classes.append(tm_courses)
                             self.current_class, self.decision_tree.current_course = course, course
-                            self.decision_tree.get_next_node()
+                            return self.decision_tree.get_next_node()
                             #return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_description)
                     if entity.type == "personname":
                         course.prof = entity.entity
@@ -647,9 +665,9 @@ class DecisionTree:
                     else:
                         self.current_node = self.current_node.potential_next_questions[i]
 
-            if self.current_node.userQuery > 10 and self.current_node.userQuery < 20:
+            if self.current_node.userQuery.value > 10 and self.current_node.userQuery.value < 20:
                 return User_Query.UserQuery(self.student, self.current_node.userQuery)
-            elif self.current_node.userQuery > 18:
+            elif self.current_node.userQuery.value > 18:
                 return User_Query.UserQuery(self.current_course, self.current_node.userQuery)
             else:
                 return User_Query.UserQuery(None, self.current_node.userQuery)

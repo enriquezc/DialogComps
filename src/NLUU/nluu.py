@@ -50,26 +50,6 @@ class nLUU:
         #atis_grammar = nltk.data.load("atis.cfg")
         #self.parser = nltk.ChartParser(atis_grammar)
 
-    def start_conversation(self):
-        '''
-            Starts conversation through command line interface.
-            To be called as first interaction with client.
-        '''
-        conversation = Conversation.Conversation()
-        conversing = True
-        our_response = "Hello. Welcome to my lair. How can I be of service?"
-        while conversing:
-            client_response = input(our_response + "\n")
-            luis_analysis = self.get_luis(client_response)
-            #tree = self.create_syntax_tree(client_response)
-            userQuery = conversation.get_next_response(client_response, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
-            print(userQuery.type)
-            if userQuery.type == QueryType.goodbye:
-                print("Goodbye")
-                conversing = False
-                break
-            our_response = self.create_response(userQuery)
-
 
 
     def tokenize(self, s):
@@ -261,3 +241,20 @@ class nLUU:
 
     def stem(self, s):
         return(self.stemmer.stem(s))
+
+# if __name__ == '__main__':
+#     nluu = nLUU("https://api.projectoxford.ai/luis/v1/application?id=fc7758f9-4d40-4079-84d3-72d6ccbb3ad2&subscription-key=c18a6e7119874249927033e72b01aeea")
+#     res = nluu.get_luis("when is Intro CS this year?")
+#     print("res1:{}".format(res))
+#     intents = res.intents
+#     results = []
+#     if intents[0].intent == 'StudentMajorResponse' or intents[0].intent == 'None':
+#         line = res.query
+#         pos = nluu.pos_tag(nluu.tokenize(line))
+#         for word, p in pos:
+#             if p == 'JJ' or p == 'NNP':
+#                 results.append(word)
+
+#     if intents[0].intent == 'ClassDescriptionRequest':
+#         pass
+#     print("res: {}".format(" ".join(results)))
