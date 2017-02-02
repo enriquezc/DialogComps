@@ -247,6 +247,11 @@ class nLUU:
         pos = nltk.pos_tag(tokens)
         return [word for word,p in pos if p in ['JJ','NNP','NN']]
 
+    def find_name(self, utterance):
+        tokens = nltk.word_tokenize(utterance)
+        pos = nltk.pos_tag(tokens)
+        return [word for word,p in pos if p == 'NNP']
+
 # if __name__ == '__main__':
 #     nluu = nLUU("https://api.projectoxford.ai/luis/v1/application?id=fc7758f9-4d40-4079-84d3-72d6ccbb3ad2&subscription-key=c18a6e7119874249927033e72b01aeea")
 #     res = nluu.get_luis("when is Intro CS this year?")
