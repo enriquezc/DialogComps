@@ -102,8 +102,8 @@ class Conversation:
                         pass
                     else:
                         self.student_profile.major.append(entity.entity)
-        return User_Query.UserQuery(self.student_profile, User_Query.QueryType.pleasantry)
-
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
+, self.decision_tree.get_next_node()]
 
     def handleScheduleClass(self, input, luisAI, luis_intent, luis_entities):
         # if entity.type == "class":  # add more if's for different types
@@ -116,9 +116,11 @@ class Conversation:
             print("tm_courses: {}".format(tm_courses))
             self.student_profile.relevant_class = tm_courses
             if self.student_profile.current_credits < 18:
-                return self.decision_tree.get_next_node(5)
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                    , self.decision_tree.get_next_node()]
             else:
-                return self.decision_tree.get_next_node(6)
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
+                    , self.decision_tree.get_next_node()]
         for entity in luis_entities:
             if entity.type == 'class':
                 course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
@@ -140,18 +142,19 @@ class Conversation:
                 print(self.student_profile.current_credits)
                 if self.student_profile.current_credits < 12:
                     self.current_class, self.decision_tree.current_course = course, course
-                    return self.decision_tree.get_next_node(5)
-                    # return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                        , self.decision_tree.get_next_node()]
                 else:
                     self.current_class, self.decision_tree.current_course = course, course
-                    return self.decision_tree.get_next_node(5)
-                    # return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
+                        , self.decision_tree.get_next_node()]
+
             if entity.type == "personname":
                 course.prof = entity.entity
                 tm_courses = self.task_manager_information(course)
                 self.student_profile.potential_courses = tm_courses
                 if not tm_courses:
-                    return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                    return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
                 else:
                     for pot_course in self.student_profile.potential_courses:
                         if pot_course.name or pot_course.id:
@@ -160,12 +163,12 @@ class Conversation:
                             self.student_profile.total_credits += tm_courses.credits
                             if self.student_profile.current_credits < 12:
                                 self.current_class, self.decision_tree.current_course = course, course
-                                return self.decision_tree.get_next_node(5)
-                                # return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                                    , self.decision_tree.get_next_node()]
                             else:
                                 self.current_class, self.decision_tree.current_course = course, course
-                                return self.decision_tree.get_next_node(5)
-                                # return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
+                                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
+                                    , self.decision_tree.get_next_node()]
             if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
                 pass  # with start/end time that day?
             # want a parse tree / relation extraction because we do not know
@@ -175,9 +178,8 @@ class Conversation:
                 tm_courses = self.task_manager_information(course)
                 self.student_profile.potential_courses = tm_courses
                 self.current_class, self.decision_tree.current_course = course, course
-                return self.decision_tree.get_next_node(5)
-                # return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
-
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                    , self.decision_tree.get_next_node()]
 
     def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
@@ -185,11 +187,13 @@ class Conversation:
             print("We're here")
             possibilities = self.nluu.find_course(luisAI.query)
             if len(possibilities) == 0:
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)
+                    , self.decision_tree.get_next_node()]
             tm_courses = self.task_manager_keyword(possibilities)
             print("tm_courses: {}".format(tm_courses))
             self.student_profile.relevant_class = tm_courses
-            return self.decision_tree.get_next_node(36)
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)
+                , self.decision_tree.get_next_node()]
         for entity in luis_entities:
             print(entity.type)
             if entity.type == 'class':
@@ -205,6 +209,7 @@ class Conversation:
                 tm_courses = self.task_manager_information(course)
                 if not tm_courses:
                     return self.decision_tree.get_next_node(2)
+
                 else:
                     if type(tm_courses) is list:
                         self.student_profile.relevant_class = tm_courses
@@ -213,8 +218,8 @@ class Conversation:
 
                     self.student_profile.current_classes.append(tm_courses)
                     self.student_profile.current_class, self.decision_tree.current_course = course, course
-                    return self.decision_tree.get_next_node(36)
-                    # return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_description)
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
+,self.decision_tree.get_next_node()]
             if entity.type == "personname":
                 course.prof = entity.entity
                 # query on previous courses with professors
@@ -229,8 +234,8 @@ class Conversation:
                 course = tm_courses
                 self.student_profile.all_classes.append(course)
                 self.current_class, self.decision_tree.current_course = course, course
-                # return User_Query.UserQuery(course, User_Query.QueryType.new_class_description)
-                return self.decision_tree.get_next_node(36)
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
+                    , self.decision_tree.get_next_node()]
 
 
     def handleStudentNameInfo(self, input, luisAI, luis_intent, luis_entities):
@@ -244,21 +249,22 @@ class Conversation:
         if self.student_profile.name:
             return self.decision_tree.get_next_node(10)
         else:
-            return User_Query.UserQuery(None, User_Query.QueryType.student_info_major)
+            return [User_Query.UserQuery(None, User_Query.QueryType.student_info_major)]
 
 
     def handleClassSentiment(self, input, luisAI, luis_intent, luis_entities):
-        prev_course = None
+        '''prev_course = None
         if self.student_profile.all_classes:
             if prev_course in self.student_profile.all_classes:
-        else:
-            return User_Query.UserQuery(None, User_Query.QueryType.clarify)
 
-        return User_Query.UserQuery(prev_course, User_Query.QueryType.class_info_sentiment)
+        else:
+            return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
+
+        return [User_Query.UserQuery(prev_course, User_Query.QueryType.class_info_sentiment)]'''
 
 
     def handleWelcomeResponse(self, input, luisAI, luis_intent, luis_entities):
-        return User_Query.UserQuery(None, User_Query.QueryType.name)
+        return [User_Query.UserQuery(None, User_Query.QueryType.name)]
 
 
     def handleClassDescriptionResponse(self, input, luisAI, luis_intent, luis_entities):
@@ -281,12 +287,12 @@ class Conversation:
 
                 tm_courses = self.task_manager_information(course)
                 if not tm_courses:
-                    return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                    return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
                 else:
                     self.student_profile.current_classes.append(tm_courses)
-                    return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_prof)
+                    return [User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_prof)]
 
-    def ClassProfessorResponse(self, input, luisAI, luis_intent, luis_entities):
+    def handleClassProfessorResponse(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
         for entity in luis_entities:
             print(entity.type)
@@ -302,22 +308,21 @@ class Conversation:
 
                 tm_courses = self.task_manager_information(course)
                 if not tm_courses:
-                    return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                    return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
                 else:
                     self.student_profile.current_classes.append(tm_courses)
-                    return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_prof)
+                    return [User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_prof)]
 
     def handleStudentRequirementRequest(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
         self.task_manager_information(course)
-        return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+        return [User_Query.UserQuery(course, User_Query.QueryType.class_info_description)]
 
     def handleStudentRequirementResponse(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
         self.task_manager_information(course)
-        return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+        return [User_Query.UserQuery(course, User_Query.QueryType.class_info_description)]
 
-    # done
     def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities):
         if len(luis_entities) == 0:
             tokens = nltk.word_tokenize(luisAI.query)
@@ -328,48 +333,51 @@ class Conversation:
                 self.student_profile.major = dept_answer
             else:
                 self.student_profile.major = department
-        return self.decision_tree.get_next_node(13)
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
+            , self.decision_tree.get_next_node()]
 
     # done
     def handleClassTimeResponse(self, input, luisAI, luis_intent, luis_entities):
         for entity in luis_entities:
             for course in self.student_profile.all_classes:
                 if entity == course:
-                    return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+                    return [User_Query.UserQuery(course, User_Query.QueryType.class_info_description)]
 
 
     def handleClassTimeRequest(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
         self.task_manager_information(course)
-        return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+        return [User_Query.UserQuery(course, User_Query.QueryType.class_info_description)]
 
     def handleClassTermResponse(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
         self.task_manager_information(course)
-        return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+        return [User_Query.UserQuery(course, User_Query.QueryType.class_info_description)]
 
     def handleClassTermRequest(self, input, luisAI, luis_intent, luis_entities):
         pass
 
     # done
-    def StudentInterests(self, input, luisAI, luis_intent, luis_entities):
+    def handleStudentInterests(self, input, luisAI, luis_intent, luis_entities):
         if len(luis_entities) == 0:
             tokens = nltk.word_tokenize(luisAI.query)
             pos = nltk.pos_tag(tokens)
             interests = [word for word,p in pos if p in ['NNP','NNS','JJ','VBG']]
             self.student_profile.interests.extend(interests)
-
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests)
+                , self.decision_tree.get_next_node()]
         for entity in luis_entities:
             print(entity)
             if entity.type == "u'CLASS" or entity.type == "u'DEPARTMENT" or entity.type == "u'SENTIMENT":
                 self.student_profile.interests.append(entity.entity)
-        return User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_name)
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests)
+            , self.decision_tree.get_next_node()]
 
 
 
 
 
-    # @params
+        # @params
     # @return
     def get_next_response(self, input, luisAI):
         self.last_query = input
@@ -397,7 +405,7 @@ class Conversation:
                     self.student_profile.name = self.last_query
                     return self.decision_tree.get_next_node()
                 else:
-                    return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                    return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
             if self.decision_tree.current_node.userQuery.value == 14:
                 cur_term = "fall"
                 if datetime.now().month < 4:
@@ -437,7 +445,7 @@ class Conversation:
                     elif cur_term == "winter":
                         self.student_profile.terms_left = 3
                 else:
-                    return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                    return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
                 return self.decision_tree.get_next_node()
 
             elif self.decision_tree.current_node.userQuery.value == 11:
@@ -453,7 +461,7 @@ class Conversation:
                     self.student_profile.major = self.last_query
                     return self.decision_tree.get_next_node()
                 else:
-                    return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                    return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
             elif self.decision_tree.current_node.userQuery.value == 17:
                 if "nothing" in self.last_query or "none" in self.last_query:
                     self.decision_tree.current_node.answered = True
@@ -472,7 +480,7 @@ class Conversation:
                     if len(self.student_profile.major_classes_needed) != 0:
                         return self.decision_tree.get_next_node()
 
-                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
             elif self.decision_tree.current_node.userQuery.value == 16:
                 if "nothing" in self.last_query or "none" in self.last_query:
                     self.decision_tree.current_node.answered = True
@@ -491,7 +499,7 @@ class Conversation:
                     if len(self.student_profile.distributions_needed) != 0:
                         return self.decision_tree.get_next_node()
 
-                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
 
             elif self.decision_tree.current_node.userQuery.value == 13:
                 listOfWords = self.last_query
@@ -509,7 +517,7 @@ class Conversation:
                         self.student_profile.interests.append(smallerWord)
                 if len(self.student_profile.interests) != 0:
                     return self.decision_tree.get_next_node()
-                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
 
             elif self.decision_tree.current_node.userQuery.value == 32:
                 if luis_entities:
@@ -525,7 +533,7 @@ class Conversation:
                     c.department = self.last_query
                     self.student_profile.potential_courses.append(c)
                     return self.decision_tree.get_next_node()
-                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
 
             elif self.decision_tree.current_node.userQuery.value == 31:
                 if luis_entities:

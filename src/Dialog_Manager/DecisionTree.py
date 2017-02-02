@@ -171,13 +171,14 @@ class DecisionTree:
 
         # here we go...
         self.mapOfNodes[0].required_questions.append(self.mapOfNodes[10])  # name
-        self.mapOfNodes[10].required_questions.extend([self.mapOfNodes[11], self.mapOfNodes[14]])  # time left / year
+        self.mapOfNodes[10].required_questions.extend([self.mapOfNodes[11], self.mapOfNodes[13]])  # time left / year
+        self.mapOfNodes[10].potential_next_questions.extend([self.mapOfNodes[11], self.mapOfNodes[13]])  # time left / year
         self.mapOfNodes[11].required_questions.extend([self.mapOfNodes[12], self.mapOfNodes[18]])
-        self.mapOfNodes[11].potential_next_questions.extend([self.mapOfNodes[13],self.mapOfNodes[12]])
+        self.mapOfNodes[11].potential_next_questions.extend([self.mapOfNodes[13],self.mapOfNodes[12],self.mapOfNodes[16]])
         self.mapOfNodes[12].potential_next_questions.extend(
             [self.mapOfNodes[13],self.mapOfNodes[16], self.mapOfNodes[17], self.mapOfNodes[20]])
+        self.mapOfNodes[13].potential_next_questions.extend([self.mapOfNodes[20], self.mapOfNodes[30]])  # time left / year
         self.mapOfNodes[15].required_questions.extend([self.mapOfNodes[18], self.mapOfNodes[17]])  # concentration, major requirements
-        self.mapOfNodes[11].potential_next_questions.append(self.mapOfNodes[16])  # distros
         self.mapOfNodes[17].potential_next_questions.extend(
             [self.mapOfNodes[30], self.mapOfNodes[20], self.mapOfNodes[36]])  # department, prof, reccomend
         self.mapOfNodes[14].potential_next_questions.extend([self.mapOfNodes[11], self.mapOfNodes[18], self.mapOfNodes[16],
@@ -252,10 +253,10 @@ class DecisionTree:
                     else:
                         self.current_node = node
                 if past_node == self.current_node:
-                    self.get_next_node(0)
+                    return self.current_node
 
 
-            return [User_Query.UserQuery(self.student, past_node.userQuery)]
+            return [User_Query.UserQuery(self.student, self.current_node.userQuery)]
 
         except ValueError:
             print("Unexpected error:", sys.exc_info()[0])
