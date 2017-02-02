@@ -41,6 +41,11 @@ def query_courses(course):
         + str(course.course_num)
         course_query = course_query + "' AND "
 
+    if course.name != None:
+        course_query = course_query + "sec_short_title = '" \
+        + str(course.name)
+        course_query = course_query + "' AND "
+
     course_query = course_query[:-5]
 
     global conn
