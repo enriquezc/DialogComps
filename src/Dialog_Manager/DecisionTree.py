@@ -39,7 +39,7 @@ class DecisionTree:
     def __init__(self, student):
         self.mapOfNodes = {}
         self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify), [], [])
-        self.current_node = None
+        #self.current_node = None
         self.build_Tree()
         self.current_node = self.head_node
         self.current_course = None
@@ -208,11 +208,50 @@ class DecisionTree:
 
     # @params: the current node of the tree
     # @return: the next node of the tree
-    def get_next_node(self, query_number):
-        past_node = self.mapOfNodes[query_number]
-        self.current_node = self.mapOfNodes[query_number]
+    def get_next_node(self, query_number = self.current_node):
+        past_node = self.current_node
+        if query_number != self.current_node:
+            past_node = self.mapOfNodes[query_number]
+
+
+        #self.current_node = self.mapOfNodes[query_number]
         self.current_node.asked = True
-        try:
+        if self.is_answered(past_node):
+            for node in past_node.required_questions:
+                if not self.is_answered(node):
+                    if not node.asked:
+                        self.current_node  = node
+                        return node
+        for node in past_node.potential_next_questions:
+            if not self.is_answered(node):
+                if not node.asked:
+                    self.current_course = node
+                    return node
+        if self.is_answered(past_node):
+            for node in past_node.required_questions:
+                if not self.is_answered(node):
+                    #if not node.asked:
+                    self.current_node = node
+                    return node
+
+        for node in past_node.potential_next_questions:
+            if not self.is_answered(node):
+                #   if not node.asked:
+                self.current_course = node
+                return node
+        if not self.is_answered(past_node):
+            return past_node
+
+        if len(past_node.required_questions) > 0:
+            self.current_node = past_node.required_questions[0]
+            return self.get_next_node()
+        if len(past_node.potential_next_questions) > 0:
+            self.current_node = past_node.required_questions[0]
+            return self.get_next_node()
+        self.current_node = self.mapOfNodes[0]
+        return self.get_next_node()
+
+        '''try:
             if self.current_node.answered == 1:
                 for node in self.current_node.required_questions:
                     if node.asked or self.is_answered(node):
@@ -261,7 +300,7 @@ class DecisionTree:
         except ValueError:
             print("Unexpected error:", sys.exc_info()[0])
             raise
-
+    '''
     '''if __name__ == "__main__":
         student = Student.Student()
         decision_tree = DecisionTree.DecisionTree(student)
