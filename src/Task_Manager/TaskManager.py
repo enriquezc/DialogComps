@@ -1,7 +1,6 @@
 # Task Manager.py
 # Serves to decide what actions need to be taken next to facilitate
 # conversation for the Dialogue Manager
-
 import psycopg2
 import numpy as np
 import string
@@ -227,7 +226,7 @@ def smart_description_search(description):
     return new_descriptions
 
 
-def smart_department_search(keywords):
+def smart_department_search(keywords, threshold=None):
     recommended_departments = set()
     for i in range(len(keywords)):
         keywords[i] = keywords[i].upper()
@@ -277,12 +276,17 @@ def smart_department_search(keywords):
                 new_course.relevance[1] = new_course.relevance[1] + 1
                 distinct_keywords.add(word.upper())
         new_course.relevance[0] = len(distinct_keywords)
+        new_course.weighted_score = 10 * new_course.relevance[0] + new_course.relevance[1]
         courses.append(new_course)
         #print(result[1])
         #print(new_course.relevance)
 
     courses.sort(key = lambda course: (course.relevance[0], course.relevance[1]))
     courses.reverse()
+    if threshold != None:
+        for course in courses:
+            if course.weighted_score < threshold:
+                courses.remove(course)
     return courses
 
 def create_dept_dict():
