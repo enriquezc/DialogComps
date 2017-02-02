@@ -7,6 +7,8 @@ from src.NLUU import nluu
 import nltk
 import luis
 from src.Task_Manager import TaskManager
+
+
 class NodeObject:
     # have a relavent function for each user query??!?!?!
     # how do we do that? Can we just assign a variable to be a function? That doesn't make any sense tho
@@ -212,49 +214,55 @@ class DecisionTree:
         self.current_node.asked = True
         try:
             if self.current_node.answered == 1:
-                for i in range(len(self.current_node.required_questions)):
-                    if self.current_node.required_questions[i].asked or self.is_answered(self.current_node.required_questions[i]):
+                for node in self.current_node.required_questions:
+                    if node.asked or self.is_answered(node):
                         pass
                     else:
 
-                        self.current_node = self.current_node.required_questions[i]
-
-                for i in range(len(self.current_node.potential_next_questions)):
-                    if self.current_node.potential_next_questions[i].asked or self.is_answered(
-                            self.current_node.potential_next_questions[i]):
+                        self.current_node = self.current_node.required_questions
+                for node in self.current_node.potential_next_questions:
+                    if node.asked or self.is_answered(node):
                         pass
                     else:
-                        self.current_node = self.current_node.potential_next_questions[i]
+                        self.current_node = node
 
-                for i in range(len(self.current_node.required_questions)):
-                    if self.current_node.required_questions[i].answered:
+                for node in self.current_node.required_questions:
+                    if self.is_answered(node):
                         pass
                     else:
-                        self.current_node = self.current_node.required_questions[i]
+                        self.current_node = node
 
-                for i in range(len(self.current_node.required_questions)):
-                    if self.current_node.potential_next_questions[i].answered:
+                for node in self.current_node.required_questions:
+                    if self.is_answered(node):
                         pass
                     else:
-                        self.current_node = self.current_node.potential_next_questions[i]
+                        self.current_node = node
 
             if self.current_node.answered == 0:
-                for i in range(len(self.current_node.potential_next_questions)):
-                    if self.current_node.potential_next_questions[i].asked or self.current_node.potential_next_questions[
-                        i].answered:
+                for node in self.current_node.potential_next_questions:
+                    if node.asked or node.answered:
                         pass
                     else:
-                        self.current_node = self.current_node.potential_next_questions[i]
+                        self.current_node = node
 
                 # have looped through and no node that is asked or answered, now loop to find one that is just not answered
-                for i in range(len(self.current_node.potential_next_questions)):
-                    if self.current_node.potential_next_questions[i].answered:
+                for node in self.current_node.potential_next_questions:
+                    if node.answered:
                         pass
                     else:
-                        self.current_node = self.current_node.potential_next_questions[i]
+                        self.current_node = node
+                if past_node == self.current_node:
+                    self.current_node = self.current_node.potential_next_questions[0]
 
             return [User_Query.UserQuery(self.student, past_node.userQuery), User_Query.UserQuery(self.student, self.current_node.userQuery)]
 
         except ValueError:
             print("Unexpected error:", sys.exc_info()[0])
             raise
+
+    '''if __name__ == "__main__":
+        student = Student.Student()
+        decision_tree = DecisionTree.DecisionTree(student)
+        next_node = decision_tree.get_next_node(36)
+        print(next_node.type)'''
+

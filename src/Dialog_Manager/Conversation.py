@@ -252,7 +252,8 @@ class Conversation:
                 if entity.type == "personname":
                     self.student_profile.name = entity.entity
             if self.student_profile.name:
-                return User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
+                return self.decision_tree.get_next_node(11)
+
             else:
                 return User_Query.UserQuery(None, User_Query.QueryType.student_info_major)
 
