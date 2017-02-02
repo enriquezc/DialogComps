@@ -65,7 +65,7 @@ class Conversation:
     # @return
     def classify_intent(self, luis_input):
         # input is a luis dictionary
-        if luis_input.intents[0].score >= .2:
+        if luis_input.intents[0].score >= .15:
             return luis_input.intents[0].intent
         return "None"
 
@@ -83,293 +83,292 @@ class Conversation:
     def get_current_node(self):
         return User_Query.UserQuery(self.student_profile, self.current_node.userQuery)
 
+
+    def handleStudentMajorRequest(self, input, luisAI, luis_intent, luis_entities):
+        if len(luis_entities) == 0:
+            print("We're here")
+            tokens = nltk.word_tokenize(luisAI.query)
+            pos = nltk.pos_tag(tokens)
+            major = [word for word, p in pos if p in ['NNP']]
+            self.student_profile.major = major[0]
+            possibilities = self.nluu.find_course(luisAI.query)
+            possibilities_str = " ".join(possibilities)
+            self.last_query = 11
+            return self.decision_tree.get_next_node(11)
+        for entity in luis_entities:
+            if entity.type == "u'DEPARTMENT":
+                for major in self.student_profile.major:
+                    if entity.entity == major or len(self.student_profile.major) == 2:
+                        pass
+                    else:
+                        self.student_profile.major.append(entity.entity)
+        return User_Query.UserQuery(self.student_profile, User_Query.QueryType.pleasantry)
+
+
+    def handleScheduleClass(self, input, luisAI, luis_intent, luis_entities):
+        # if entity.type == "class":  # add more if's for different types
+        course = Course.Course()
+        if len(luis_entities) == 0:
+            print("We're here")
+            possibilities = self.nluu.find_course(luisAI.query)
+            possibilities_str = " ".join(possibilities)
+            tm_courses = self.task_manager_keyword(possibilities)
+            print("tm_courses: {}".format(tm_courses))
+            self.student_profile.relevant_class = tm_courses
+            if self.student_profile.current_credits < 18:
+                return self.decision_tree.get_next_node(5)
+            else:
+                return self.decision_tree.get_next_node(6)
+        for entity in luis_entities:
+            if entity.type == 'class':
+                course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
+                course.user_description = luisAI.query
+                if course_name:
+                    course.id = course_name.group(0)
+                    course.course_num = course_name.group(2)
+                    course.department = course_name.group(1)
+                else:
+                    course.name = entity.entity
+
+                tm_courses = self.task_manager_information(course)
+                if type(tm_courses) == list:
+                    tm_courses = tm_courses[0]
+                self.student_profile.relevant_class = tm_courses
+                self.student_profile.current_classes.append(tm_courses)
+                self.student_profile.current_credits = + 6
+                self.student_profile.total_credits += tm_courses.credits
+                print(self.student_profile.current_credits)
+                if self.student_profile.current_credits < 12:
+                    self.current_class, self.decision_tree.current_course = course, course
+                    return self.decision_tree.get_next_node(5)
+                    # return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                else:
+                    self.current_class, self.decision_tree.current_course = course, course
+                    return self.decision_tree.get_next_node(5)
+                    # return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
+            if entity.type == "personname":
+                course.prof = entity.entity
+                tm_courses = self.task_manager_information(course)
+                self.student_profile.potential_courses = tm_courses
+                if not tm_courses:
+                    return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                else:
+                    for pot_course in self.student_profile.potential_courses:
+                        if pot_course.name or pot_course.id:
+                            self.student_profile.current_classes.append(tm_courses)
+                            self.student_profile.current_credits += 6
+                            self.student_profile.total_credits += tm_courses.credits
+                            if self.student_profile.current_credits < 12:
+                                self.current_class, self.decision_tree.current_course = course, course
+                                return self.decision_tree.get_next_node(5)
+                                # return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                            else:
+                                self.current_class, self.decision_tree.current_course = course, course
+                                return self.decision_tree.get_next_node(5)
+                                # return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
+            if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
+                pass  # with start/end time that day?
+            # want a parse tree / relation extraction because we do not know
+            # whether it is during, before, or after without context.
+            if entity.type == "department":
+                course.department = entity.entity
+                tm_courses = self.task_manager_information(course)
+                self.student_profile.potential_courses = tm_courses
+                self.current_class, self.decision_tree.current_course = course, course
+                return self.decision_tree.get_next_node(5)
+                # return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+
+
+    def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities):
+        course = Course.Course()
+        if len(luis_entities) == 0:
+            print("We're here")
+            possibilities = self.nluu.find_course(luisAI.query)
+            if len(possibilities) == 0:
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
+            tm_courses = self.task_manager_keyword(possibilities)
+            print("tm_courses: {}".format(tm_courses))
+            self.student_profile.relevant_class = tm_courses
+            return self.decision_tree.get_next_node(36)
+        for entity in luis_entities:
+            print(entity.type)
+            if entity.type == 'class':
+                course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
+                course.user_description = luisAI.query
+                if course_name:
+                    course.id = course_name.group(0)
+                    course.course_num = course_name.group(2)
+                    course.department = course_name.group(1)
+                else:
+                    course.name = entity.entity
+
+                tm_courses = self.task_manager_information(course)
+                if not tm_courses:
+                    return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                else:
+                    if type(tm_courses) is list:
+                        self.student_profile.relevant_class = tm_courses
+                    else:
+                        self.student_profile.relevant_class.append(tm_courses)
+
+                    self.student_profile.current_classes.append(tm_courses)
+                    self.student_profile.current_class, self.decision_tree.current_course = course, course
+                    return self.decision_tree.get_next_node(36)
+                    # return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_description)
+            if entity.type == "personname":
+                course.prof = entity.entity
+                # query on previous courses with professors
+            if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
+                pass  # with start/end time that day?
+                # want a parse tree / relation extraction because we do not know
+                # whether it is during, before, or after without context.
+            if entity.type == "department":
+                course.department = entity.entity
+                tm_courses = self.task_manager_information(course)
+                self.student_profile.potential_courses = tm_courses
+                course = tm_courses
+                self.student_profile.all_classes.append(course)
+                self.current_class, self.decision_tree.current_course = course, course
+                # return User_Query.UserQuery(course, User_Query.QueryType.new_class_description)
+                return self.decision_tree.get_next_node(36)
+
+
+    def handleStudentNameInfo(self, input, luisAI, luis_intent, luis_entities):
+        for entity in luis_entities:
+            if entity.type == "personname":
+                self.student_profile.name = entity.entity
+        if self.student_profile.name:
+            return self.decision_tree.get_next_node(11)
+
+        else:
+            return User_Query.UserQuery(None, User_Query.QueryType.student_info_major)
+
+
+    def handleClassSentiment(self, input, luisAI, luis_intent, luis_entities):
+        prev_course = None
+        if self.student_profile.all_classes:
+            if prev_course in self.student_profile.all_classes:
+                pass
+        else:
+            return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+
+        return User_Query.UserQuery(prev_course, User_Query.QueryType.class_info_sentiment)
+
+
+    def handleWelcomeResponse(self, input, luisAI, luis_intent, luis_entities):
+        return User_Query.UserQuery(None, User_Query.QueryType.name)
+
+
+    def handleClassDescriptionResponse(self, input, luisAI, luis_intent, luis_entities):
+        course = Course.Course()
+        self.task_manager_information(course)
+
+    def handleClassProfessorRequest(self, input, luisAI, luis_intent, luis_entities):
+        course = Course.Course()
+        for entity in luis_entities:
+            print(entity.type)
+            if entity.type == 'class':
+                course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
+                course.user_description = luisAI.query
+                if course_name:
+                    course.id = course_name.group(0)
+                    course.course_num = course_name.group(2)
+                    course.department = course_name.group(1)
+                else:
+                    course.name = entity.entity
+
+                tm_courses = self.task_manager_information(course)
+                if not tm_courses:
+                    return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                else:
+                    self.student_profile.current_classes.append(tm_courses)
+                    return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_prof)
+
+    def ClassProfessorResponse(self, input, luisAI, luis_intent, luis_entities):
+        course = Course.Course()
+        for entity in luis_entities:
+            print(entity.type)
+            if entity.type == 'class':
+                course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
+                course.user_description = luisAI.query
+                if course_name:
+                    course.id = course_name.group(0)
+                    course.course_num = course_name.group(2)
+                    course.department = course_name.group(1)
+                else:
+                    course.name = entity.entity
+
+                tm_courses = self.task_manager_information(course)
+                if not tm_courses:
+                    return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                else:
+                    self.student_profile.current_classes.append(tm_courses)
+                    return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_prof)
+
+    def handleStudentRequirementRequest(self, input, luisAI, luis_intent, luis_entities):
+        course = Course.Course()
+        self.task_manager_information(course)
+        return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+
+    def handleStudentRequirementResponse(self, input, luisAI, luis_intent, luis_entities):
+        course = Course.Course()
+        self.task_manager_information(course)
+        return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+
+    # done
+    def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities):
+        return User_Query.UserQuery(self.student_profile.major, User_Query.QueryType.student_info_interests)
+
+    # done
+    def handleClassTimeResponse(self, input, luisAI, luis_intent, luis_entities):
+        for entity in luis_entities:
+            for course in self.student_profile.all_classes:
+                if entity == course:
+                    return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+
+
+    def handleClassTimeRequest(self, input, luisAI, luis_intent, luis_entities):
+        course = Course.Course()
+        self.task_manager_information(course)
+        return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+
+    def handleClassTermResponse(self, input, luisAI, luis_intent, luis_entities):
+        course = Course.Course()
+        self.task_manager_information(course)
+        return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
+
+    def handleClassTermRequest(self, input, luisAI, luis_intent, luis_entities):
+        pass
+
+    # done
+    def StudentInterests(self, input, luisAI, luis_intent, luis_entities):
+        for entity in luis_entities:
+            print(entity)
+            if entity.type == "u'CLASS" or entity.type == "u'DEPARTMENT" or entity.type == "u'SENTIMENT":
+                self.student_profile.interests.append(entity.entity)
+        return User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_name)
+
+
+
+
+
     # @params
     # @return
     def get_next_response(self, input, luisAI):
         self.last_query = input
         luis_entities = luisAI.entities
         luis_intent = self.classify_intent(luisAI)
-        print(luis_intent)
-        for entity in luis_entities:
-            print(entity)
 
-        self.queries.append(input)
-        # print(luis_intent)
-        # print(luisAI.query)
-        # entity_information = self.task_manager_information(luis_entities)
-        # done
-        if luis_intent == "StudentMajorRequest":
-            if len(luis_entities) == 0:
-                print("We're here")
-                tokens = nltk.word_tokenize(luisAI.query)
-                pos = nltk.pos_tag(tokens)
-                major = [word for word, p in pos if p in ['NNP']]
-                self.student_profile.major = major[0]
-                possibilities = self.nluu.find_course(luisAI.query)
-                possibilities_str = " ".join(possibilities)
-                self.last_query = 11
-                return self.decision_tree.get_next_node(11)
-            for entity in luis_entities:
-                if entity.type == "u'DEPARTMENT":
-                    for major in self.student_profile.major:
-                        if entity.entity == major or len(self.student_profile.major) == 2:
-                            pass
-                        else:
-                            self.student_profile.major.append(entity.entity)
-            return User_Query.UserQuery(self.student_profile, User_Query.QueryType.pleasantry)
+        eval_fn = None
+        try:
+            eval_fn = eval("self.handle{}".format(luis_intent))
+        except:
+            eval_fn = None
 
-        # done for now
-        if luis_intent == "ScheduleClass":
-            # if entity.type == "class":  # add more if's for different types
-            course = Course.Course()
-            if len(luis_entities) == 0:
-                print("We're here")
-                possibilities = self.nluu.find_course(luisAI.query)
-                possibilities_str = " ".join(possibilities)
-                tm_courses = self.task_manager_keyword(possibilities)
-                print("tm_courses: {}".format(tm_courses))
-                self.student_profile.relevant_class = tm_courses
-                if self.student_profile.current_credits < 18:
-                    return self.decision_tree.get_next_node(5)
-                else:
-                    return self.decision_tree.get_next_node(6)
-            for entity in luis_entities:
-                if entity.type == 'class':
-                    course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
-                    course.user_description = luisAI.query
-                    if course_name:
-                        course.id = course_name.group(0)
-                        course.course_num = course_name.group(2)
-                        course.department = course_name.group(1)
-                    else:
-                        course.name = entity.entity
-
-                    tm_courses = self.task_manager_information(course)
-                    if type(tm_courses) == list:
-                        tm_courses = tm_courses[0]
-                    self.student_profile.relevant_class = tm_courses
-                    self.student_profile.current_classes.append(tm_courses)
-                    self.student_profile.current_credits =+ 6
-                    self.student_profile.total_credits += tm_courses.credits
-                    print(self.student_profile.current_credits)
-                    if self.student_profile.current_credits < 12:
-                        self.current_class, self.decision_tree.current_course = course, course
-                        return self.decision_tree.get_next_node(5)
-                        #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
-                    else:
-                        self.current_class, self.decision_tree.current_course = course, course
-                        return self.decision_tree.get_next_node(5)
-                        #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
-                if entity.type == "personname":
-                    course.prof = entity.entity
-                    tm_courses = self.task_manager_information(course)
-                    self.student_profile.potential_courses = tm_courses
-                    if not tm_courses:
-                        return User_Query.UserQuery(None, User_Query.QueryType.clarify)
-                    else:
-                        for pot_course in self.student_profile.potential_courses:
-                            if pot_course.name or pot_course.id:
-                                self.student_profile.current_classes.append(tm_courses)
-                                self.student_profile.current_credits += 6
-                                self.student_profile.total_credits += tm_courses.credits
-                                if self.student_profile.current_credits < 12:
-                                    self.current_class, self.decision_tree.current_course = course, course
-                                    return self.decision_tree.get_next_node(5)
-                                    #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
-                                else:
-                                    self.current_class, self.decision_tree.current_course = course, course
-                                    return self.decision_tree.get_next_node(5)
-                                    #return User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
-                if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
-                    pass  # with start/end time that day?
-                # want a parse tree / relation extraction because we do not know
-                # whether it is during, before, or after without context.
-                if entity.type == "department":
-                    course.department = entity.entity
-                    tm_courses = self.task_manager_information(course)
-                    self.student_profile.potential_courses = tm_courses
-                    self.current_class, self.decision_tree.current_course = course, course
-                    return self.decision_tree.get_next_node(5)
-                    # return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
-
-        # most up to date for now
-        elif luis_intent == "ClassDescriptionRequest":
-            course = Course.Course()
-            if len(luis_entities) == 0:
-                print("We're here")
-                possibilities = self.nluu.find_course(luisAI.query)
-                if len(possibilities) == 0:
-                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
-                tm_courses = self.task_manager_keyword(possibilities)
-                print("tm_courses: {}".format(tm_courses))
-                self.student_profile.relevant_class = tm_courses
-                return self.decision_tree.get_next_node(36)
-            for entity in luis_entities:
-                print(entity.type)
-                if entity.type == 'class':
-                    course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
-                    course.user_description = luisAI.query
-                    if course_name:
-                        course.id = course_name.group(0)
-                        course.course_num = course_name.group(2)
-                        course.department = course_name.group(1)
-                    else:
-                        course.name = entity.entity
-
-                    tm_courses = self.task_manager_information(course)
-                    if not tm_courses:
-                        return User_Query.UserQuery(None, User_Query.QueryType.clarify)
-                    else:
-                        if type(tm_courses) is list:
-                            self.student_profile.relevant_class = tm_courses
-                        else:
-                            self.student_profile.relevant_class.append(tm_courses)
-
-                        self.student_profile.current_classes.append(tm_courses)
-                        self.student_profile.current_class, self.decision_tree.current_course = course, course
-                        return self.decision_tree.get_next_node(36)
-                        # return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_description)
-                if entity.type == "personname":
-                    course.prof = entity.entity
-                    # query on previous courses with professors
-                if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
-                    pass  # with start/end time that day?
-                    # want a parse tree / relation extraction because we do not know
-                    # whether it is during, before, or after without context.
-                if entity.type == "department":
-                    course.department = entity.entity
-                    tm_courses = self.task_manager_information(course)
-                    self.student_profile.potential_courses = tm_courses
-                    course = tm_courses
-                    self.student_profile.all_classes.append(course)
-                    self.current_class, self.decision_tree.current_course = course, course
-                    # return User_Query.UserQuery(course, User_Query.QueryType.new_class_description)
-                    self.decision_tree.get_next_node(36)
-
-
-        # need to update to decision tree status
-        elif luis_intent == "StudentNameInfo":
-
-            for entity in luis_entities:
-                if entity.type == "personname":
-                    self.student_profile.name = entity.entity
-            if self.student_profile.name:
-                return self.decision_tree.get_next_node(11)
-
-            else:
-                return User_Query.UserQuery(None, User_Query.QueryType.student_info_major)
-
-
-        # class sentiment only relavent on a prev class
-        # need to update to decision tree status
-        elif luis_intent == "ClassSentiment":
-            prev_course = None
-            if self.student_profile.all_classes:
-                if prev_course in self.student_profile.all_classes:
-                    pass
-            else:
-                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
-
-            return User_Query.UserQuery(prev_course, User_Query.QueryType.class_info_sentiment)
-
-
-        # done
-        elif luis_intent == "WelcomeResponse":
-            return User_Query.UserQuery(None, User_Query.QueryType.name)
-
-
-        elif luis_intent == "ClassDescriptionResponse":
-            course = Course.Course()
-            self.task_manager_information(course)
-
-
-        elif luis_intent == "ClassProfessorRequest":
-            course = Course.Course()
-            for entity in luis_entities:
-                print(entity.type)
-                if entity.type == 'class':
-                    course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
-                    course.user_description = luisAI.query
-                    if course_name:
-                        course.id = course_name.group(0)
-                        course.course_num = course_name.group(2)
-                        course.department = course_name.group(1)
-                    else:
-                        course.name = entity.entity
-
-                    tm_courses = self.task_manager_information(course)
-                    if not tm_courses:
-                        return User_Query.UserQuery(None, User_Query.QueryType.clarify)
-                    else:
-                        self.student_profile.current_classes.append(tm_courses)
-                        return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_prof)
-
-        elif luis_intent == "ClassProfessorResponse":
-            course = Course.Course()
-            for entity in luis_entities:
-                print(entity.type)
-                if entity.type == 'class':
-                    course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
-                    course.user_description = luisAI.query
-                    if course_name:
-                        course.id = course_name.group(0)
-                        course.course_num = course_name.group(2)
-                        course.department = course_name.group(1)
-                    else:
-                        course.name = entity.entity
-
-                    tm_courses = self.task_manager_information(course)
-                    if not tm_courses:
-                        return User_Query.UserQuery(None, User_Query.QueryType.clarify)
-                    else:
-                        self.student_profile.current_classes.append(tm_courses)
-                        return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_prof)
-
-        elif luis_intent == "StudentRequirementRequest":
-            course = Course.Course()
-            self.task_manager_information(course)
-            return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
-
-        elif luis_intent == "StudentRequirementResponse":
-            course = Course.Course()
-            self.task_manager_information(course)
-            return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
-
-        # done
-        elif luis_intent == "StudentMajorResponse":
-            return User_Query.UserQuery(self.student_profile.major, User_Query.QueryType.student_info_interests)
-
-        # done
-        elif luis_intent == "ClassTimeResponse":
-            for entity in luis_entities:
-                for course in self.student_profile.all_classes:
-                    if entity == course:
-                        return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
-
-
-        elif luis_intent == "ClassTimeRequest":
-            course = Course.Course()
-            self.task_manager_information(course)
-            return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
-
-        elif luis_intent == "ClassTermResponse":
-            course = Course.Course()
-            self.task_manager_information(course)
-            return User_Query.UserQuery(course, User_Query.QueryType.class_info_description)
-
-        elif luis_intent == "ClassTermRequest":
-            pass
-
-        # done
-        elif luis_intent == "StudentInterests":
-            for entity in luis_entities:
-                print(entity)
-                if entity.type == "u'CLASS" or entity.type == "u'DEPARTMENT" or entity.type == "u'SENTIMENT":
-                    self.student_profile.interests.append(entity.entity)
-            return User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_name)
-
+        if eval_fn:
+            return eval_fn(input, luisAI, luis_intent, luis_entities)
         # else statement will ask for more information
-        elif luis_intent == "None":
+        else:
             # if entity.type == "class":  # add more if's for different types
             if self.decision_tree.current_node.userQuery.value == 10:
                 if luis_entities:
