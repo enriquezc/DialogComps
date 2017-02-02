@@ -228,7 +228,7 @@ def smart_description_search(description):
             new_description += " {}".format(word)
     if new_description[0] == ' ':
         new_description = new_description[1:]
-    return new_descriptions
+    return new_description
 
 
 def smart_department_search(keywords, threshold=None):

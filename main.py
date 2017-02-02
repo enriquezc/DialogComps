@@ -4,6 +4,7 @@ from src.Dialog_Manager import Conversation
 
 
 def start_comps():
+    print("Starting comps")
     config_file = open("./config.json")
     config = json.load(config_file)
     conversation = Conversation.Conversation(config["luisurl"])
