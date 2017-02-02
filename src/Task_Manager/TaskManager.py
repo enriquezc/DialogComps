@@ -233,11 +233,22 @@ def smart_description_search(description):
 
 
 def smart_department_search(keywords, threshold=None):
+    stop_words = set()
+    stop_words_file = open('./src/Task_Manager/stop_words.txt', 'r')
+    for word in stop_words_file:
+        stop_words.add(word.strip())
+
     recommended_departments = set()
-    for i in range(len(keywords)):
-        keyword = smart_description_search(keywords[i])
-        keywords[i] = keyword.upper()
-    keywords_str = " in {}".format(str(tuple(keywords))) if len(keywords) > 1 else " = '{}'".format(keywords[0])
+    new_keywords = []
+    for keyword in keywords:
+        kss = smart_description_search(keyword)
+        #new_keywords.append(keyword)
+        #new_keywords.append(kss)
+        ks = kss.split()
+        for k in ks:
+            if k not in stop_words:
+                new_keywords.append(k.upper())
+    keywords_str = " in {}".format(tuple(new_keywords)) if len(new_keywords) > 1 else " = '{}'".format(new_keywords[0])
     query = "SELECT * FROM occurence where words {};".format(keywords_str)
     global conn
     cur = conn.cursor()
@@ -254,18 +265,16 @@ def smart_department_search(keywords, threshold=None):
 
     #print(department_names)
     query = "SELECT DISTINCT c.sec_subject, r.title, r.long_description, c.sec_course_no FROM (SELECT * FROM COURSE c where UPPER(sec_subject) in {} AND (sec_term LIKE '16%' OR sec_term LIKE '17%')) AS c JOIN (SELECT * FROM REASON r WHERE UPPER(org_id) in {}) AS r ON c.sec_name = r.course_number".format(str(tuple(department_names)), str(tuple(department_names)))
-    query += " WHERE (UPPER(r.long_description) LIKE '%{}%'".format(keywords[0])
+    query += " WHERE (UPPER(r.long_description) LIKE '%{}%'".format(new_keywords[0])
     if len(keywords) > 1:
-        for keyword in keywords[1:]:
+        for keyword in new_keywords[1:]:
             query += "OR UPPER(r.long_description) LIKE '%{}%'".format(keyword)
 
     query += ")"
     cur.execute(query)
     results = cur.fetchall()
     courses = []
-    #print(len(results))
     for result in results:
-        #new_course = Course()
         new_course = Course.Course()
         new_course.id = result[0]
         new_course.name = result[1]
@@ -274,19 +283,25 @@ def smart_department_search(keywords, threshold=None):
         new_course.relevance = [0,0]
         punctuationset = set(string.punctuation)
         description = new_course.description
-        description = description + ' ' + new_course.name
         description = ''.join(ch for ch in description if ch not in punctuationset)
+        title = new_course.name
+        title = ''.join(ch for ch in title if ch not in punctuationset)
         words = description.split()
+        words2 = title.split()
         distinct_keywords = set([])
+        distinct_keywords2 = set([])
         for word in words:
-            if word.upper() in keywords:
+            if word.upper() in new_keywords:
                 new_course.relevance[1] = new_course.relevance[1] + 1
                 distinct_keywords.add(word.upper())
+        for word in words2:
+            if word.upper() in new_keywords:
+                new_course.relevance[1] = new_course.relevance[1] + 1
+                distinct_keywords2.add(word.upper())
         new_course.relevance[0] = len(distinct_keywords)
+        new_course.relevance[0] = new_course.relevance[0] + len(distinct_keywords2)
         new_course.weighted_score = 10 * new_course.relevance[0] + new_course.relevance[1]
         courses.append(new_course)
-        #print(result[1])
-        #print(new_course.relevance)
 
     courses.sort(key = lambda course: (course.relevance[0], course.relevance[1]))
     courses.reverse()

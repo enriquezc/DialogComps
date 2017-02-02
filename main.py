@@ -1,7 +1,7 @@
 import json
 from src.NLUU import nluu
 from src.Dialog_Manager import Conversation
-
+import profile
 
 def start_comps():
     print("Starting comps")
@@ -12,4 +12,4 @@ def start_comps():
 
 
 if __name__ == "__main__":
-    start_comps()
+    profile.run('start_comps()')
