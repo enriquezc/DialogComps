@@ -36,23 +36,28 @@ class Conversation:
         self.queries = []
         self.conversing = False
         self.nluu = nluu.nLUU(luis_url)
+        self.utterancesStack = []
         TaskManager.init()
 
     def start_conversation(self):
         self.conversing = True
-        our_str_response = "Hello young eager mind! What can I help you with?"
+        our_response = self.get_current_node()
+        our_str_response = self.nluu.create_response(our_response.type)
         while self.conversing:
-            client_response = input(our_str_response + "\n")
+            self.utterancesStack.append(our_str_response)
+            print(our_str_response)
+            client_response = input()
+            self.utterancesStack.append(client_response)
             luis_analysis = self.nluu.get_luis(client_response)
             print("luis: {}".format(luis_analysis))
-            userQuery = self.get_next_response(client_response, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
-            for i in range(len(userQuery)):
-                print("userQuery: {}".format(userQuery[i]))
-                if userQuery[i].type == User_Query.QueryType.goodbye:
+            userQueries = self.get_next_response(client_response, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
+            for userQuery in userQueries:
+                print("userQuery: {}".format(userQuery))
+                if userQuery.type == User_Query.QueryType.goodbye:
                     print("Goodbye")
                     self.conversing = False
                     break
-                our_str_response = self.nluu.create_response(userQuery[i])
+                our_str_response = self.nluu.create_response(userQuery)
 
     # @params
     # @return
@@ -71,6 +76,10 @@ class Conversation:
             if luis_input.entities[key].score > CUTOFF:
                 entities[luis_input.entities[key].type] = luis_input.entities[key].score
         return entities
+
+
+    def get_current_node(self):
+        return User_Query.UserQuery(self.student_profile, self.current_node.userQuery)
 
     # @params
     # @return
@@ -187,7 +196,8 @@ class Conversation:
             if len(luis_entities) == 0:
                 print("We're here")
                 possibilities = self.nluu.find_course(luisAI.query)
-                possibilities_str = " ".join(possibilities)
+                if len(possibilities) == 0:
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
                 tm_courses = self.task_manager_keyword(possibilities)
                 print("tm_courses: {}".format(tm_courses))
                 self.student_profile.relevant_class = tm_courses
