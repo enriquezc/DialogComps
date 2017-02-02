@@ -47,71 +47,71 @@ class DecisionTree:
 
 
     def is_answered(self, node):
-        if node.userQuery.type== 0:
+        if node.userQuery.value == 0:
             node.answered = True
             return True
-        elif node.userQuery.type== 1:
+        elif node.userQuery.value == 1:
             node.answered = False
             return False
-        elif node.userQuery.type== 2:
+        elif node.userQuery.value == 2:
             node.answered = False
             return False
-        elif node.userQuery.type== 3:
+        elif node.userQuery.value == 3:
             node.answered = False
             return False
-        elif node.userQuery.type== 4:
+        elif node.userQuery.value == 4:
             node.answered = False
             return False
-        elif node.userQuery.type== 5:
+        elif node.userQuery.value == 5:
             if self.current_course in self.student.current_classes:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.type== 10:
-            if self.student.name != None:
+        elif node.userQuery.value == 10:
+            if self.student.name:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.type== 11:
-            if self.student.major != []:
+        elif node.userQuery.value == 11:
+            if self.student.major:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.type== 12:
-            if self.student.previous_classes != []:
+        elif node.userQuery.value == 12:
+            if self.student.previous_classes:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.type== 13:
-            if self.student.interests != []:
+        elif node.userQuery.value == 13:
+            if self.student.interests:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.type== 14:
+        elif node.userQuery.value == 14:
             if self.student.terms_left == 0:
                 node.answered = False
                 return False
             node.answered = True
             return True
-        elif node.userQuery.type== 15:
-            if self.student.abroad != None:
+        elif node.userQuery.value == 15:
+            if self.student.abroad:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.type== 16:
-            if self.student.distributions_needed != []:
+        elif node.userQuery.value == 16:
+            if self.student.distributions_needed:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.type== 17:
-            if self.student.major_classes_needed != []:
+        elif node.userQuery.value == 17:
+            if self.student.major_classes_needed:
                 node.answered = True
                 return True
             elif self.student.major == "undeclared":
@@ -119,8 +119,8 @@ class DecisionTree:
                 return True
             node.answered = False
             return False
-        elif node.userQuery.type== 18:
-            if self.student.concentration != None:
+        elif node.userQuery.value == 18:
+            if self.student.concentration:
                 node.answered = True
                 return True
             elif self.student.major == "undeclared":
@@ -129,37 +129,37 @@ class DecisionTree:
             node.answered = False
             return False
 
-        elif node.userQuery.type== 30:
-            if self.current_course.name != None and self.current_course.id != None:
+        elif node.userQuery.value == 30:
+            if self.current_course.name and self.current_course.id:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.type== 31:
-            if self.current_course.prof != None:
+        elif node.userQuery.value == 31:
+            if self.current_course.prof:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.type == 32:
-            if self.current_course.department != None:
+        elif node.userQuery.value == 32:
+            if self.current_course.department:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.type == 33:
-            if self.current_course.sentiment != 0:
+        elif node.userQuery.value == 33:
+            if self.current_course.sentiment:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.type == 35:
-            if self.current_course.time != None:
+        elif node.userQuery.value == 35:
+            if self.current_course.time:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.type== 37:
+        elif node.userQuery.value == 37:
             return False
 
     def build_Tree(self):
@@ -209,39 +209,41 @@ class DecisionTree:
 
     # @params: the current node of the tree
     # @return: the next node of the tree
-    def get_next_node(self, query_number = self.current_node):
+    def get_next_node(self):
         past_node = self.current_node
-        if query_number != self.current_node:
-            past_node = self.mapOfNodes[query_number]
+        '''if query_number != self.current_node:
+            past_node = self.mapOfNodes[query_number]'''
 
 
         #self.current_node = self.mapOfNodes[query_number]
         self.current_node.asked = True
+        if self.current_node.userQuery == 30 or self.current_node.userQuery == 37:
+            self.current_node.asked = False
         if self.is_answered(past_node):
             for node in past_node.required_questions:
                 if not self.is_answered(node):
                     if not node.asked:
-                        self.current_node  = node
-                        return node
+                        self.current_node = node
+                        return User_Query.UserQuery(self.student, node.userQuery)
         for node in past_node.potential_next_questions:
             if not self.is_answered(node):
                 if not node.asked:
                     self.current_course = node
-                    return node
+                    return User_Query.UserQuery(self.student, node.userQuery)
         if self.is_answered(past_node):
             for node in past_node.required_questions:
                 if not self.is_answered(node):
                     #if not node.asked:
                     self.current_node = node
-                    return node
+                    return User_Query.UserQuery(self.student, node.userQuery)
 
         for node in past_node.potential_next_questions:
             if not self.is_answered(node):
                 #   if not node.asked:
                 self.current_course = node
-                return node
+                return node.userQuery
         if not self.is_answered(past_node):
-            return past_node
+            return past_node.userQuery
 
         if len(past_node.required_questions) > 0:
             self.current_node = past_node.required_questions[0]

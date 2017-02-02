@@ -94,7 +94,8 @@ class Conversation:
             possibilities = self.nluu.find_course(luisAI.query)
             possibilities_str = " ".join(possibilities)
             self.last_query = 11
-            return self.decision_tree.get_next_node(11)
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
+, self.decision_tree.get_next_node()]
         for entity in luis_entities:
             if entity.type == "u'DEPARTMENT":
                 for major in self.student_profile.major:
@@ -185,6 +186,11 @@ class Conversation:
         course = Course.Course()
         if len(luis_entities) == 0:
             print("We're here")
+            tokens = nltk.word_tokenize(luisAI.query)
+            pos = nltk.pos_tag(tokens)
+            verbs = [word for word,p in pos if p == 'NNP']
+            if "interested" in verbs:
+                self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
             possibilities = self.nluu.find_course(luisAI.query)
             if len(possibilities) == 0:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)
@@ -192,6 +198,8 @@ class Conversation:
             tm_courses = self.task_manager_keyword(possibilities)
             print("tm_courses: {}".format(tm_courses))
             self.student_profile.relevant_class = tm_courses
+            self.student_profile.current_classes.append(tm_courses)
+            self.student_profile.current_class, self.decision_tree.current_course = course, course
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)
                 , self.decision_tree.get_next_node()]
         for entity in luis_entities:
@@ -243,14 +251,17 @@ class Conversation:
         if len(luis_entities) == 0:
             name = self.nluu.find_name(luisAI.query)
             self.student_profile.name = name
-            return self.decision_tree.get_next_node(10)
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
+                , self.decision_tree.get_next_node()]
         for entity in luis_entities:
             if entity.type == "personname":
                 self.student_profile.name = entity.entity
         if self.student_profile.name:
-            return self.decision_tree.get_next_node(10)
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
+                , self.decision_tree.get_next_node()]
         else:
-            return [User_Query.UserQuery(None, User_Query.QueryType.student_info_major)]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)
+                , self.decision_tree.get_next_node()]
 
 
     def handleClassSentiment(self, input, luisAI, luis_intent, luis_entities):
@@ -360,7 +371,6 @@ class Conversation:
 
     # done
     def handleStudentInterests(self, input, luisAI, luis_intent, luis_entities):
-<<<<<<< HEAD
         if len(luis_entities) == 0:
             tokens = nltk.word_tokenize(luisAI.query)
             pos = nltk.pos_tag(tokens)
@@ -368,8 +378,6 @@ class Conversation:
             self.student_profile.interests.extend(interests)
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests)
                 , self.decision_tree.get_next_node()]
-=======
->>>>>>> 462a9b4663f14afaf05e807a07d25c2f1e5bf153
         for entity in luis_entities:
             print(entity)
             if entity.type == "u'CLASS" or entity.type == "u'DEPARTMENT" or entity.type == "u'SENTIMENT":
