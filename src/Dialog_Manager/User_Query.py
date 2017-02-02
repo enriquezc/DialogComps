@@ -87,4 +87,3 @@ class UserQuery:
         self.type = type
         #As of now either empty, of type class, or of type student.
         self.object = object
-

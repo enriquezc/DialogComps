@@ -7,6 +7,7 @@ import nltk
 import luis
 from src.Task_Manager import TaskManager
 from src.Dialog_Manager import Student, Course, User_Query, DecisionTree
+import datetime
 
 
 class Conversation:
@@ -45,13 +46,13 @@ class Conversation:
             luis_analysis = self.nluu.get_luis(client_response)
             print("luis: {}".format(luis_analysis))
             userQuery = self.get_next_response(client_response, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
-            
-            print("userQuery: {}".format(userQuery))
-            if userQuery.type == User_Query.QueryType.goodbye:
-                print("Goodbye")
-                self.conversing = False
-                break
-            our_str_response = self.nluu.create_response(userQuery)
+            for i in range(len(userQuery)):
+                print("userQuery: {}".format(userQuery[i]))
+                if userQuery[i].type == User_Query.QueryType.goodbye:
+                    print("Goodbye")
+                    self.conversing = False
+                    break
+                our_str_response = self.nluu.create_response(userQuery[i])
 
     # @params
     # @return
@@ -87,6 +88,16 @@ class Conversation:
         # entity_information = self.task_manager_information(luis_entities)
         # done
         if luis_intent == "StudentMajorRequest":
+            if len(luis_entities) == 0:
+                print("We're here")
+                tokens = nltk.word_tokenize(luisAI.query)
+                pos = nltk.pos_tag(tokens)
+                major = [word for word, p in pos if p in ['NNP']]
+                self.student_profile.major = major[0]
+                possibilities = self.nluu.find_course(luisAI.query)
+                possibilities_str = " ".join(possibilities)
+                self.last_query = 11
+                return self.decision_tree.get_next_node(11)
             for entity in luis_entities:
                 if entity.type == "u'DEPARTMENT":
                     for major in self.student_profile.major:
@@ -100,6 +111,17 @@ class Conversation:
         if luis_intent == "ScheduleClass":
             # if entity.type == "class":  # add more if's for different types
             course = Course.Course()
+            if len(luis_entities) == 0:
+                print("We're here")
+                possibilities = self.nluu.find_course(luisAI.query)
+                possibilities_str = " ".join(possibilities)
+                tm_courses = self.task_manager_keyword(possibilities)
+                print("tm_courses: {}".format(tm_courses))
+                self.student_profile.relevant_class = tm_courses
+                if self.student_profile.current_credits < 18:
+                    return self.decision_tree.get_next_node(5)
+                else:
+                    return self.decision_tree.get_next_node(6)
             for entity in luis_entities:
                 if entity.type == 'class':
                     course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
@@ -159,30 +181,7 @@ class Conversation:
                     return self.decision_tree.get_next_node(5)
                     # return User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
 
-        # done
-        elif luis_intent == "StudentNameInfo":
-            for entity in luis_entities:
-                if entity.type == "personname":
-                    self.student_profile.name = entity.entity
-            if self.student_profile.name:
-                return User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
-            else:
-                return User_Query.UserQuery(None, User_Query.QueryType.student_info_major)
-
-
-        # class sentiment only relavent on a prev class
-        # done
-        elif luis_intent == "ClassSentiment":
-            prev_course = None
-            if self.student_profile.all_classes:
-                if prev_course in self.student_profile.all_classes:
-                    pass
-            else:
-                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
-
-            return User_Query.UserQuery(prev_course, User_Query.QueryType.class_info_sentiment)
-
-        # done for now
+        # most up to date for now
         elif luis_intent == "ClassDescriptionRequest":
             course = Course.Course()
             if len(luis_entities) == 0:
@@ -217,7 +216,7 @@ class Conversation:
                         self.student_profile.current_classes.append(tm_courses)
                         self.student_profile.current_class, self.decision_tree.current_course = course, course
                         return self.decision_tree.get_next_node(36)
-                        #return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_description)
+                        # return User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_description)
                 if entity.type == "personname":
                     course.prof = entity.entity
                     # query on previous courses with professors
@@ -232,8 +231,34 @@ class Conversation:
                     course = tm_courses
                     self.student_profile.all_classes.append(course)
                     self.current_class, self.decision_tree.current_course = course, course
-                    #return User_Query.UserQuery(course, User_Query.QueryType.new_class_description)
+                    # return User_Query.UserQuery(course, User_Query.QueryType.new_class_description)
                     self.decision_tree.get_next_node(36)
+
+
+        # need to update to decision tree status
+        elif luis_intent == "StudentNameInfo":
+
+            for entity in luis_entities:
+                if entity.type == "personname":
+                    self.student_profile.name = entity.entity
+            if self.student_profile.name:
+                return User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
+            else:
+                return User_Query.UserQuery(None, User_Query.QueryType.student_info_major)
+
+
+        # class sentiment only relavent on a prev class
+        # need to update to decision tree status
+        elif luis_intent == "ClassSentiment":
+            prev_course = None
+            if self.student_profile.all_classes:
+                if prev_course in self.student_profile.all_classes:
+                    pass
+            else:
+                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+
+            return User_Query.UserQuery(prev_course, User_Query.QueryType.class_info_sentiment)
+
 
         # done
         elif luis_intent == "WelcomeResponse":

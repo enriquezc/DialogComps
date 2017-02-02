@@ -164,17 +164,20 @@ class DecisionTree:
         listOfEnums = [0, 1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33,
                        34,
                        35, 36, 37]
-        num_nodes = len(listOfEnums)
         for i in listOfEnums:
             self.mapOfNodes[i] = NodeObject(User_Query.QueryType(i), [], [])
 
         # here we go...
         self.mapOfNodes[0].required_questions.append(self.mapOfNodes[10])  # name
-        self.mapOfNodes[10].required_questions.append(self.mapOfNodes[14])  # time left / year
+        self.mapOfNodes[10].required_questions.extend([self.mapOfNodes[11], self.mapOfNodes[14]])  # time left / year
+        self.mapOfNodes[11].required_questions.extend([self.mapOfNodes[12], self.mapOfNodes[18]])
+        self.mapOfNodes[11].potential_next_questions.extend([self.mapOfNodes[13],self.mapOfNodes[12]])
+        self.mapOfNodes[12].potential_next_questions.extend(
+            [self.mapOfNodes[13],self.mapOfNodes[16], self.mapOfNodes[17], self.mapOfNodes[20]])
         self.mapOfNodes[15].required_questions.extend([self.mapOfNodes[18], self.mapOfNodes[17]])  # concentration, major requirements
         self.mapOfNodes[11].potential_next_questions.append(self.mapOfNodes[16])  # distros
         self.mapOfNodes[17].potential_next_questions.extend(
-            [self.mapOfNodes[30], self.mapOfNodes[26], self.mapOfNodes[35]])  # department, prof, reccomend
+            [self.mapOfNodes[30], self.mapOfNodes[20], self.mapOfNodes[36]])  # department, prof, reccomend
         self.mapOfNodes[14].potential_next_questions.extend([self.mapOfNodes[11], self.mapOfNodes[18], self.mapOfNodes[16],
                                                         self.mapOfNodes[13]])  # major, concentration, distros, interests
         self.mapOfNodes[16].potential_next_questions.append(self.mapOfNodes[13])  # interests
@@ -185,11 +188,11 @@ class DecisionTree:
         self.mapOfNodes[17].potential_next_questions.append(self.mapOfNodes[13])  # interests
         self.mapOfNodes[18].potential_next_questions.extend(
             [self.mapOfNodes[17], self.mapOfNodes[16], self.mapOfNodes[13]])  # major reqs, distros, interests
-        self.mapOfNodes[26].potential_next_questions.append(self.mapOfNodes[35])  # reccomend
-        self.mapOfNodes[30].potential_next_questions.extend([self.mapOfNodes[26], self.mapOfNodes[35]])  # prof, reccomend
+        self.mapOfNodes[20].potential_next_questions.append(self.mapOfNodes[36])  # reccomend
+        self.mapOfNodes[30].potential_next_questions.extend([self.mapOfNodes[20], self.mapOfNodes[36]])  # prof, reccomend
         self.mapOfNodes[32].potential_next_questions.extend(
-            [self.mapOfNodes[13], self.mapOfNodes[35]])  # interests, should we reccomend something?
-        self.mapOfNodes[35].potential_next_questions.append(self.mapOfNodes[25])  # what class would they want to take?
+            [self.mapOfNodes[13], self.mapOfNodes[36]])  # interests, should we reccomend something?
+        self.mapOfNodes[36].potential_next_questions.append(self.mapOfNodes[20])  # what class would they want to take?
         self.head_node = self.mapOfNodes[0]
 
     # takes in nothing, returns a userquery for asking how they feel about a new class.
@@ -204,6 +207,7 @@ class DecisionTree:
     # @params: the current node of the tree
     # @return: the next node of the tree
     def get_next_node(self, query_number):
+        past_node = self.mapOfNodes[query_number]
         self.current_node = self.mapOfNodes[query_number]
         self.current_node.asked = True
         try:
@@ -249,7 +253,7 @@ class DecisionTree:
                     else:
                         self.current_node = self.current_node.potential_next_questions[i]
 
-            return User_Query.UserQuery(self.student, self.current_node.userQuery)
+            return [User_Query.UserQuery(self.student, past_node.userQuery), User_Query.UserQuery(self.student, self.current_node.userQuery)]
 
         except ValueError:
             print("Unexpected error:", sys.exc_info()[0])
