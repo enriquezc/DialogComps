@@ -204,7 +204,7 @@ class Conversation:
 
                 tm_courses = self.task_manager_information(course)
                 if not tm_courses:
-                    return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                    return self.decision_tree.get_next_node(2)
                 else:
                     if type(tm_courses) is list:
                         self.student_profile.relevant_class = tm_courses
@@ -234,12 +234,15 @@ class Conversation:
 
 
     def handleStudentNameInfo(self, input, luisAI, luis_intent, luis_entities):
+        if len(luis_entities) == 0:
+            name = self.nluu.find_name(luisAI.query)
+            self.student_profile.name = name
+            return self.decision_tree.get_next_node(10)
         for entity in luis_entities:
             if entity.type == "personname":
                 self.student_profile.name = entity.entity
         if self.student_profile.name:
-            return self.decision_tree.get_next_node(11)
-
+            return self.decision_tree.get_next_node(10)
         else:
             return User_Query.UserQuery(None, User_Query.QueryType.student_info_major)
 
@@ -248,7 +251,6 @@ class Conversation:
         prev_course = None
         if self.student_profile.all_classes:
             if prev_course in self.student_profile.all_classes:
-                pass
         else:
             return User_Query.UserQuery(None, User_Query.QueryType.clarify)
 
@@ -317,7 +319,16 @@ class Conversation:
 
     # done
     def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities):
-        return User_Query.UserQuery(self.student_profile.major, User_Query.QueryType.student_info_interests)
+        if len(luis_entities) == 0:
+            tokens = nltk.word_tokenize(luisAI.query)
+            pos = nltk.pos_tag(tokens)
+            department = [word for word,p in pos if p in ['NNP','NNS','JJ']]
+            dept_answer = self.task_manager_department_match(department)
+            if dept_answer:
+                self.student_profile.major = dept_answer
+            else:
+                self.student_profile.major = department
+        return self.decision_tree.get_next_node(13)
 
     # done
     def handleClassTimeResponse(self, input, luisAI, luis_intent, luis_entities):
@@ -342,6 +353,12 @@ class Conversation:
 
     # done
     def StudentInterests(self, input, luisAI, luis_intent, luis_entities):
+        if len(luis_entities) == 0:
+            tokens = nltk.word_tokenize(luisAI.query)
+            pos = nltk.pos_tag(tokens)
+            interests = [word for word,p in pos if p in ['NNP','NNS','JJ','VBG']]
+            self.student_profile.interests.extend(interests)
+
         for entity in luis_entities:
             print(entity)
             if entity.type == "u'CLASS" or entity.type == "u'DEPARTMENT" or entity.type == "u'SENTIMENT":
@@ -551,7 +568,14 @@ class Conversation:
         if tm_courses:
             return tm_courses
         if not tm_courses:
-            return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+            return self.decision_tree.get_next_node(2)
+
+    def task_manager_department_match(self, dept):
+        tm_department = TaskManager.deparment_match(dept)
+        if tm_department:
+            return tm_department
+        if not tm_department:
+            return self.decision_tree.get_next_node(2)
 
     def schedule_course(self, new_course):
 
