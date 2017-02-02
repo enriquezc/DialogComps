@@ -42,8 +42,9 @@ def query_courses(course):
         course_query = course_query + "' AND "
 
     if course.name != None:
+        course_name = smart_description_search(str(course.name))
         course_query = course_query + "lower(sec_short_title) = '" \
-        + str(course.name)
+        + course_name
         course_query = course_query + "' AND "
 
     course_query = course_query[:-5]
@@ -234,7 +235,8 @@ def smart_description_search(description):
 def smart_department_search(keywords, threshold=None):
     recommended_departments = set()
     for i in range(len(keywords)):
-        keywords[i] = keywords[i].upper()
+        keyword = smart_description_search(keywords[i])
+        keywords[i] = keyword.upper()
     keywords_str = " in {}".format(str(tuple(keywords))) if len(keywords) > 1 else " = '{}'".format(keywords[0])
     query = "SELECT * FROM occurence where words {};".format(keywords_str)
     global conn
