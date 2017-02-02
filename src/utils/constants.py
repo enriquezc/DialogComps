@@ -1,6 +1,6 @@
 class Responses:
     WELCOME = ("Hello, how are you?",
-                "Sup dude")
+                "Hello, how can we help you?")
     GOODBYE = ("Goodbye, {}",
                "See ya")
     CLARIFY = ("Could you clarify what you just said?",)
