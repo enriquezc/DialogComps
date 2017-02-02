@@ -59,7 +59,7 @@ class Conversation:
                     print("Goodbye")
                     self.conversing = False
                     break
-                our_str_response += self.nluu.create_response(userQuery)
+                our_str_response += self.nluu.create_response(userQuery) + "\n"
 
     # @params
     # @return
@@ -192,6 +192,7 @@ class Conversation:
             return self.decision_tree.get_next_node(36)
         for entity in luis_entities:
             print(entity.type)
+            tm_courses = None
             if entity.type == 'class':
                 course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
                 course.user_description = luisAI.query
@@ -199,10 +200,10 @@ class Conversation:
                     course.id = course_name.group(0)
                     course.course_num = course_name.group(2)
                     course.department = course_name.group(1)
+                    tm_courses = self.task_manager_information(course)
                 else:
-                    course.name = entity.entity
+                    tm_courses = self.task_manager_keyword(entity.entity.split(' '))
 
-                tm_courses = self.task_manager_information(course)
                 if not tm_courses:
                     return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
                 else:
@@ -284,7 +285,7 @@ class Conversation:
                     self.student_profile.current_classes.append(tm_courses)
                     return [User_Query.UserQuery(tm_courses, User_Query.QueryType.new_class_prof)]
 
-    def ClassProfessorResponse(self, input, luisAI, luis_intent, luis_entities):
+    def handleClassProfessorResponse(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
         for entity in luis_entities:
             print(entity.type)
@@ -341,7 +342,7 @@ class Conversation:
         pass
 
     # done
-    def StudentInterests(self, input, luisAI, luis_intent, luis_entities):
+    def handleStudentInterests(self, input, luisAI, luis_intent, luis_entities):
         for entity in luis_entities:
             print(entity)
             if entity.type == "u'CLASS" or entity.type == "u'DEPARTMENT" or entity.type == "u'SENTIMENT":
@@ -535,7 +536,9 @@ class Conversation:
                 return User_Query.UserQuery(None, User_Query.QueryType.clarify)
 
     def task_manager_information(self, course):
+        print("We here")
         tm_courses = TaskManager.query_courses(course)
+        print("We done")
         if tm_courses:
             if len(tm_courses) == 1:
                 return tm_courses
