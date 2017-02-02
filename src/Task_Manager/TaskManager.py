@@ -42,7 +42,7 @@ def query_courses(course):
         course_query = course_query + "' AND "
 
     if course.name != None:
-        course_query = course_query + "sec_short_title = '" \
+        course_query = course_query + "lower(sec_short_title) = '" \
         + str(course.name)
         course_query = course_query + "' AND "
 
