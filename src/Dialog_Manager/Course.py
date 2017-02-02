@@ -24,3 +24,4 @@ class Course:
         self.taken = None
         self.credits = 0
         self.relevance = None
+        self.weighted_score = 0.0
