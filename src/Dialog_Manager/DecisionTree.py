@@ -252,7 +252,9 @@ class DecisionTree:
                     else:
                         self.current_node = node
                 if past_node == self.current_node:
-                    self.current_node = self.current_node.potential_next_questions[0]
+                    #self.current_node = self.current_node.potential_next_questions[0]
+                    current_node = self.head_node
+
 
             return [User_Query.UserQuery(self.student, past_node.userQuery), User_Query.UserQuery(self.student, self.current_node.userQuery)]
 
