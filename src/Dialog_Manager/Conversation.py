@@ -43,27 +43,29 @@ class Conversation:
         self.conversing = True
         our_response = self.get_current_node()
         our_str_response = self.nluu.create_response(our_response.type)
+        self.utterancesStack.append(our_response)
         while self.conversing:
-            self.utterancesStack.append(our_str_response)
             print(our_str_response)
             client_response = input()
-            self.utterancesStack.append(client_response)
             luis_analysis = self.nluu.get_luis(client_response)
+            self.utterancesStack.append(luis_analysis)
             print("luis: {}".format(luis_analysis))
             userQueries = self.get_next_response(client_response, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
+            our_str_response = ""
             for userQuery in userQueries:
+                self.utterancesStack.append(userQuery)
                 print("userQuery: {}".format(userQuery))
                 if userQuery.type == User_Query.QueryType.goodbye:
                     print("Goodbye")
                     self.conversing = False
                     break
-                our_str_response = self.nluu.create_response(userQuery)
+                our_str_response += self.nluu.create_response(userQuery)
 
     # @params
     # @return
     def classify_intent(self, luis_input):
         # input is a luis dictionary
-        if luis_input.intents[0].score >= .5:
+        if luis_input.intents[0].score >= .2:
             return luis_input.intents[0].intent
         return "None"
 
@@ -368,7 +370,7 @@ class Conversation:
         # else statement will ask for more information
         elif luis_intent == "None":
             # if entity.type == "class":  # add more if's for different types
-            if self.decision_tree.current_node.userQuery.type.value == 10:
+            if self.decision_tree.current_node.userQuery.value == 10:
                 if luis_entities:
                     for entity in luis_entities:
                         if entity.type == 'personname':
@@ -379,7 +381,7 @@ class Conversation:
                     return self.decision_tree.get_next_node()
                 else:
                     return User_Query.UserQuery(None, User_Query.QueryType.clarify)
-            if self.decision_tree.current_node.userQuery.type.value == 14:
+            if self.decision_tree.current_node.userQuery.value == 14:
                 cur_term = "fall"
                 if datetime.now().month < 4:
                     cur_term = "winter"
@@ -421,7 +423,7 @@ class Conversation:
                     return User_Query.UserQuery(None, User_Query.QueryType.clarify)
                 return self.decision_tree.get_next_node()
 
-            elif self.decision_tree.current_node.userQuery.type.value == 11:
+            elif self.decision_tree.current_node.userQuery.value == 11:
                 if luis_entities:
                     for entity in luis_entities:
                         if entity.type == "department":
@@ -435,7 +437,7 @@ class Conversation:
                     return self.decision_tree.get_next_node()
                 else:
                     return User_Query.UserQuery(None, User_Query.QueryType.clarify)
-            elif self.decision_tree.current_node.userQuery.type.value == 17:
+            elif self.decision_tree.current_node.userQuery.value == 17:
                 if "nothing" in self.last_query or "none" in self.last_query:
                     self.decision_tree.current_node.answered = True
                     return self.decision_tree.get_next_node()
@@ -454,7 +456,7 @@ class Conversation:
                         return self.decision_tree.get_next_node()
 
                 return User_Query.UserQuery(None, User_Query.QueryType.clarify)
-            elif self.decision_tree.current_node.userQuery.type.value == 16:
+            elif self.decision_tree.current_node.userQuery.value == 16:
                 if "nothing" in self.last_query or "none" in self.last_query:
                     self.decision_tree.current_node.answered = True
                     return self.decision_tree.get_next_node()
@@ -474,7 +476,7 @@ class Conversation:
 
                 return User_Query.UserQuery(None, User_Query.QueryType.clarify)
 
-            elif self.decision_tree.current_node.userQuery.type.value == 13:
+            elif self.decision_tree.current_node.userQuery.value == 13:
                 listOfWords = self.last_query
                 if "dunno" in listOfWords or "don't know" in listOfWords:
                     self.decision_tree.current_node.asked = True
@@ -492,7 +494,7 @@ class Conversation:
                     return self.decision_tree.get_next_node()
                 return User_Query.UserQuery(None, User_Query.QueryType.clarify)
 
-            elif self.decision_tree.current_node.userQuery.type.value == 32:
+            elif self.decision_tree.current_node.userQuery.value == 32:
                 if luis_entities:
                     for entity in luis_entities:
                         if entity.type == "department":
@@ -508,7 +510,7 @@ class Conversation:
                     return self.decision_tree.get_next_node()
                 return User_Query.UserQuery(None, User_Query.QueryType.clarify)
 
-            elif self.decision_tree.current_node.userQuery.type.value == 31:
+            elif self.decision_tree.current_node.userQuery.value == 31:
                 if luis_entities:
                     for entity in luis_entities:
                         if entity.type == 'personname':
@@ -524,7 +526,7 @@ class Conversation:
                     return self.decision_tree.get_next_node()
                 else:
                     return User_Query.UserQuery(None, User_Query.QueryType.clarify)
-            elif self.decision_tree.current_node.userQuery.type.value == 37:
+            elif self.decision_tree.current_node.userQuery.value == 37:
                 if " ok" in self.last_query or "sure" == self.last_query or "reccomend" in self.last_query:
                     print("they have gotten to the point where they want a course from us")
                     print("Lets fix this later")
