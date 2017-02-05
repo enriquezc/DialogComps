@@ -10,10 +10,12 @@ from src.Dialog_Manager import Course
 
 conn = None
 dept_dict = {}
+stop_words = None
 
 def init():
     connect_to_db()
     create_dept_dict()
+    create_stop_words_set()
 
 
 def connect_to_db():
@@ -117,6 +119,36 @@ def query_courses(course):
     #list_courses = []
 
     return results
+
+def query_by_title(title_string):
+    global conn
+    word_array = title_string.split()
+    new_word_array = title_string.split()
+    for i in range(len(word_array)):
+        new_word_array[i] = smart_description_search(word_array[i])
+
+    new_string = "%"
+    cur_string = "%"
+    for i in range(len(new_word_array)):
+        new_string = new_string  + new_word_array[i].lower() + "%"
+        if word_array[i] not in dept_dict:
+            if word_array[i] in stop_words:
+                continue
+            else:
+                cur_string = cur_string + word_array[i].lower() + "%"
+        else:
+            cur_string = cur_string + dept_dict[word_array[i].lower()] + "%"
+
+    query_string = "SELECT DISTINCT * FROM COURSE WHERE (sec_term LIKE '16%' OR sec_term LIKE '17%') AND (lower(sec_short_title) LIKE '{}' OR lower(sec_short_title) LIKE '{}')".format(new_string, cur_string)
+
+    cur = conn.cursor()
+    print(cur.mogrify(query_string))
+    cur.execute(query_string)
+
+    results = cur.fetchall()
+
+    for result in results:
+        print(result[16])
 
 
 def makeCooccurenceMatrix():
@@ -231,13 +263,16 @@ def smart_description_search(description):
         new_description = new_description[1:]
     return new_description
 
-
-def smart_department_search(keywords, threshold=None):
+def create_stop_words_set():
+    global stop_words
     stop_words = set()
     stop_words_file = open('./src/Task_Manager/stop_words.txt', 'r')
+    #stop_words_file = open('stop_words.txt', 'r')
     for word in stop_words_file:
         stop_words.add(word.strip())
 
+def smart_department_search(keywords, threshold=None):
+    global stop_words
     recommended_departments = set()
     new_keywords = []
     for keyword in keywords:
@@ -342,7 +377,7 @@ def edit_distance(s1, s2):
 
     return previous_row[-1]
 
-def deparment_match(str_in):
+def department_match(str_in):
     ##TODO: replace truncations, like lit, polysci, etc..
     ## comp, bio, sci,
     global dept_dict
@@ -376,9 +411,7 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
+    query_by_title("spanish")
     #makeCooccurenceMatrix()
     #print(smart_description_search(''))
     #edit_distance('ent', 'PHIL')
-    list_o_courses = smart_department_search(['japanese','manga'])
-    for course in list_o_courses:
-        print(course.name)
