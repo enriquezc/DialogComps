@@ -44,6 +44,8 @@ class Conversation:
         our_response = self.get_current_node()
         our_str_response = self.nluu.create_response(our_response.type)
         self.utterancesStack.append(our_response)
+        '''print(our_str_response)
+        our_str_response = self.nluu.create_response(User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name)) + "\n"'''
         while self.conversing:
             print(our_str_response)
             client_response = input()
@@ -251,13 +253,13 @@ class Conversation:
         if len(luis_entities) == 0:
             name = self.nluu.find_name(luisAI.query)
             self.student_profile.name = name
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
-                , self.decision_tree.get_next_node()]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name_res)
+                ,self.decision_tree.get_next_node()]
         for entity in luis_entities:
             if entity.type == "personname":
                 self.student_profile.name = entity.entity
         if self.student_profile.name:
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name_res)
                 , self.decision_tree.get_next_node()]
         else:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)
@@ -345,7 +347,7 @@ class Conversation:
                 self.student_profile.major = dept_answer
             else:
                 self.student_profile.major = department
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res)
             , self.decision_tree.get_next_node()]
 
     # done
@@ -562,14 +564,14 @@ class Conversation:
                     self.student_profile.potential_courses.append(c)
                     return self.decision_tree.get_next_node()
                 else:
-                    return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                    return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
             elif self.decision_tree.current_node.userQuery.value == 37:
                 if " ok" in self.last_query or "sure" == self.last_query or "reccomend" in self.last_query:
                     print("they have gotten to the point where they want a course from us")
                     print("Lets fix this later")
                 if "no " in self.last_query or "I don" in self.last_query or "I've" in self.last_query or "know" in self.last_query or "I'm" in self.last_query:
                     return self.decision_tree.get_next_node()
-                return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+                return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
 
     def task_manager_information(self, course):
         print("We here")
@@ -581,7 +583,7 @@ class Conversation:
             else:
                 return tm_courses[0]
         if not tm_courses:
-            return User_Query.UserQuery(None, User_Query.QueryType.clarify)
+            return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
             # @params course to add to student classes
             # @return 0 for added successfully, 1 for not added
 

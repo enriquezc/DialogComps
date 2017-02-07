@@ -36,6 +36,7 @@ class nLUU:
             QueryType.student_info_abroad: self.create_student_info_abroad,
             QueryType.student_info_requirements: self.create_student_info_requirements,
             QueryType.student_info_major_requirements: self.create_student_info_major,
+            QueryType.student_info_concentration : self.create_student_info_concentration,
             QueryType.new_class_name: self.create_new_class_name,
             QueryType.new_class_prof: self.create_new_class_prof,
             QueryType.new_class_sentiment: self.create_new_class_sentiment,
@@ -43,7 +44,16 @@ class nLUU:
             QueryType.new_class_time: self.create_new_class_time,
             QueryType.new_class_description: self.create_new_class_description,
             QueryType.schedule_class_res: self.create_schedule_class_res,
-            QueryType.full_schedule_check : self.create_full_schedule_check
+            QueryType.full_schedule_check : self.create_full_schedule_check,
+            QueryType.student_info_name_res : self.create_student_info_name_res,
+            QueryType.student_info_major_res : self.create_student_info_major_res,
+            QueryType.student_info_previous_classes_res : self.create_student_info_previous_classes_res,
+            QueryType.student_info_interests_res : self.create_student_info_interests_res,
+            QueryType.student_info_time_left_res : self.create_student_info_time_left_res,
+            QueryType.student_info_abroad_res : self.create_student_info_abroad_res,
+            QueryType.student_info_requirements_res : self.create_student_info_requirements_res,
+            QueryType.student_info_major_requirements_res : self.create_student_info_major_requirements_res,
+            QueryType.student_info_concentration_res : self.create_student_info_concentration_res
         }
         self.stemmer = SnowballStemmer("english")
         #Requires a local copy of atis.cfg
@@ -238,6 +248,66 @@ class nLUU:
         for course in userQuery.object.current_classes:
             course_list += (course.name + "\n")
         return s.format(course_list, userQuery.object.current_credits)
+
+    def create_student_info_name_res(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_NAME_RES[0]
+        return s.format(userQuery.object.name)
+
+    def create_student_info_major_res(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_MAJOR_RES[0]
+        if len(userQuery.object.major) == 1:
+            return s.format(userQuery.object.major[0])
+        elif len(userQuery.object.major) == 0:
+            print("There are no majors")
+            return s
+        else:
+            majors = userQuery.object.major[0] + " and " + userQuery.object.major[1]
+            return s.format(majors)
+
+    def create_student_info_previous_classes_res(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_PREVIOUS_CLASSES_RES[0]
+        previous_classes = ""
+        for course in userQuery.object.previous_classes:
+            previous_classes += (course.name + "\n")
+        return s.format(previous_classes)
+
+    def create_student_info_interests_res(self, userQuery): 
+        s = constants.Responses.STUDENT_INFO_INTERESTS_RES[0]
+        interest_string = ""
+        for interest in userQuery.object.interests:
+            interest_string += (interest + "\n")
+
+    def create_student_info_time_left_res(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_TIME_LEFT_RES[0]
+        return s
+
+    def create_student_info_abroad_res(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_ABROAD_RES[0]
+        return s
+
+    def create_student_info_requirements_res(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[0]
+        return s
+
+    def create_student_info_major_requirements_res(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[0]
+        return s
+
+    def create_student_info_concentration(self, userQuery):
+        s = constants.Responses.STUDENT.INFO_CONCENTRATION[0]
+        return s
+
+    def create_student_info_concentration_res(self, userQuery):
+        if len(userQuery.object.concentration) > 0:
+            s = constants.Responses.STUDENT_INFO_CONCENTRATION_RES[0]
+            concentration_string = ""
+            for concentration in userQuery.object.concentration:
+                concentration_string += (concentration + "\n")
+            return s.format(concentration_string)
+
+        else:
+            s = constants.Responses.STUDENT_INFO_CONCENTRATION_RES[1] 
+            return s
 
     def stem(self, s):
         return(self.stemmer.stem(s))
