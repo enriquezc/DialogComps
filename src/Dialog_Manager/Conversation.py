@@ -44,8 +44,6 @@ class Conversation:
         our_response = self.get_current_node()
         our_str_response = self.nluu.create_response(our_response.type)
         self.utterancesStack.append(our_response)
-        '''print(our_str_response)
-        our_str_response = self.nluu.create_response(User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name)) + "\n"'''
         while self.conversing:
             print(our_str_response)
             client_response = input()
@@ -378,13 +376,13 @@ class Conversation:
             pos = nltk.pos_tag(tokens)
             interests = [word for word,p in pos if p in ['NNP','NNS','JJ','VBG']]
             self.student_profile.interests.extend(interests)
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests)
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
                 , self.decision_tree.get_next_node()]
         for entity in luis_entities:
             print(entity)
             if entity.type == "u'CLASS" or entity.type == "u'DEPARTMENT" or entity.type == "u'SENTIMENT":
                 self.student_profile.interests.append(entity.entity)
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests)
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
             , self.decision_tree.get_next_node()]
 
 

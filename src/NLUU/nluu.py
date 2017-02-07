@@ -276,6 +276,7 @@ class nLUU:
         interest_string = ""
         for interest in userQuery.object.interests:
             interest_string += (interest + "\n")
+        return s
 
     def create_student_info_time_left_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_TIME_LEFT_RES[0]
