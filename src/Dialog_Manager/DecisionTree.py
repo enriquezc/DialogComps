@@ -47,70 +47,70 @@ class DecisionTree:
 
 
     def is_answered(self, node):
-        if node.userQuery.value == 0:
+        if node.userQuery.value == 0: #welcome
             node.answered = True
             return True
-        elif node.userQuery.value == 1:
+        elif node.userQuery.value == 1: #goodbye
             node.answered = False
             return False
-        elif node.userQuery.value == 2:
+        elif node.userQuery.value == 2: #clarify
             node.answered = False
             return False
-        elif node.userQuery.value == 3:
+        elif node.userQuery.value == 3: #specify
             node.answered = False
             return False
-        elif node.userQuery.value == 4:
+        elif node.userQuery.value == 4: #pleasantry
             node.answered = False
             return False
-        elif node.userQuery.value == 5:
+        elif node.userQuery.value == 5: #schedule_class_res
             if self.current_course in self.student.current_classes:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 10:
+        elif node.userQuery.value == 10: #student_name_info
             if self.student.name:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 11:
+        elif node.userQuery.value == 11: #student_info_major
             if self.student.major:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 12:
+        elif node.userQuery.value == 12: #student_info_previous_classes
             if self.student.previous_classes:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 13:
+        elif node.userQuery.value == 13: #student_info_interests
             if self.student.interests:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 14:
+        elif node.userQuery.value == 14: #student_info_time_left
             if self.student.terms_left == 0:
                 node.answered = False
                 return False
             node.answered = True
             return True
-        elif node.userQuery.value == 15:
+        elif node.userQuery.value == 15: #student_info_abroad
             if self.student.abroad:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 16:
+        elif node.userQuery.value == 16: #student_info_requirements
             if self.student.distributions_needed:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 17:
+        elif node.userQuery.value == 17: #student_info_major_requirements
             if self.student.major_classes_needed:
                 node.answered = True
                 return True
@@ -119,7 +119,7 @@ class DecisionTree:
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 18:
+        elif node.userQuery.value == 18: #student_info_concentration
             if self.student.concentration:
                 node.answered = True
                 return True
@@ -129,37 +129,37 @@ class DecisionTree:
             node.answered = False
             return False
 
-        elif node.userQuery.value == 30:
+        elif node.userQuery.value == 30: #new_class_name
             if self.current_course.name and self.current_course.id:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 31:
+        elif node.userQuery.value == 31: #new_class_prof
             if self.current_course.prof:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 32:
+        elif node.userQuery.value == 32: #new_class_dept
             if self.current_course.department:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 33:
+        elif node.userQuery.value == 33: #new_class_sentiment
             if self.current_course.sentiment:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 35:
+        elif node.userQuery.value == 35: #new_class_time
             if self.current_course.time:
                 node.answered = True
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 37:
+        elif node.userQuery.value == 37: #new_class_request
             return False
 
     def build_Tree(self):
