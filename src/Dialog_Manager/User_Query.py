@@ -78,7 +78,24 @@ class QueryType(Enum):
     #Ask if they want us to reccomend a class or if they already have something in mind?
     new_class_request = 37
 
+    #responding to student_info_name
+    student_response_name = 40
+    #responding to student_info_major
+    student_response_major = 41
 
+    student_response_previous_classes = 42
+    # response to more info about their interests
+    student_response_interests = 43
+    # response to more info about how much time left at Carleton
+    student_response_time_left = 44
+    # response to more info about studying abroad (current/future plans)
+    student_response_abroad = 45
+    #response to ask about distro requirements left
+    student_response_requirements = 46
+    #response to major requirements left
+    student_response_major_requirements = 47
+    #response to concentration
+    student_response_concentration = 48
 
 
 #This gets passed on to the NLUU, allowing it to decipher
