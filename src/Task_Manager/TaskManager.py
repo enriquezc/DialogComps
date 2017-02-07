@@ -120,35 +120,62 @@ def query_courses(course):
 
     return results
 
-def query_by_title(title_string):
+def query_by_title(title_string, department = None):
     global conn
     word_array = title_string.split()
     new_word_array = title_string.split()
     for i in range(len(word_array)):
         new_word_array[i] = smart_description_search(word_array[i])
 
-    new_string = "%"
-    cur_string = "%"
+    new_string = ""
+    cur_string = ""
     for i in range(len(new_word_array)):
-        new_string = new_string  + new_word_array[i].lower() + "%"
-        if word_array[i] not in dept_dict:
-            if word_array[i] in stop_words:
-                continue
+        if i > 0:
+            new_string = new_string  + " " + new_word_array[i].lower() + "%"
+            if word_array[i] not in dept_dict:
+                if word_array[i] in stop_words:
+                    continue
+                else:
+                    cur_string = cur_string + " " + word_array[i].lower() + "%"
             else:
-                cur_string = cur_string + word_array[i].lower() + "%"
+                cur_string = cur_string + " " + dept_dict[word_array[i]].lower() + "%"
         else:
-            cur_string = cur_string + dept_dict[word_array[i].lower()] + "%"
+            new_string = new_string  + new_word_array[i].lower() + "%"
+            if word_array[i] not in dept_dict:
+                if word_array[i] in stop_words:
+                    continue
+                else:
+                    cur_string = cur_string + word_array[i].lower() + "%"
+            else:
+                cur_string = cur_string + dept_dict[word_array[i]].lower() + "%"
 
     query_string = "SELECT DISTINCT * FROM COURSE WHERE (sec_term LIKE '16%' OR sec_term LIKE '17%') AND (lower(sec_short_title) LIKE '{}' OR lower(sec_short_title) LIKE '{}')".format(new_string, cur_string)
 
+    if department != None:
+        query_string = query_string + " AND sec_subject = '" + department + "'"
+
     cur = conn.cursor()
-    print(cur.mogrify(query_string))
     cur.execute(query_string)
 
     results = cur.fetchall()
-
+    courses = []
     for result in results:
-        print(result[16])
+        result_course = Course.Course()
+        #result_course = Course()
+        result_course.department = result[17]
+        result_course.course_num = result[2]
+        result_course.id = result[13]
+        result_course.name = result[16]
+        #result_course.comments = result[6]
+        result_course.term = result[19]
+        classroom_str = result[24]
+        if classroom_str != None:
+            classroom_str = classroom_str.split()
+            classroom = classroom_str[0] + " " + classroom_str[1]
+            result_course.time = classroom
+
+        courses.append(result_course)
+
 
 
 def makeCooccurenceMatrix():
@@ -271,7 +298,7 @@ def create_stop_words_set():
     for word in stop_words_file:
         stop_words.add(word.strip())
 
-def smart_department_search(keywords, threshold=None):
+def smart_department_search(keywords, threshold = None):
     global stop_words
     recommended_departments = set()
     new_keywords = []
@@ -411,7 +438,7 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
-    query_by_title("spanish")
+    query_by_title("methods", "ENGL")
     #makeCooccurenceMatrix()
     #print(smart_description_search(''))
     #edit_distance('ent', 'PHIL')
