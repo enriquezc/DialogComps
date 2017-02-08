@@ -75,7 +75,7 @@ class DecisionTree:
             node.answered = False
             return False
         elif node.userQuery.value == 11: #student_info_major
-            if self.student.major:
+            if len(self.student.major) > 0:
                 node.answered = True
                 return True
             node.answered = False
@@ -173,7 +173,7 @@ class DecisionTree:
         self.mapOfNodes[0].required_questions.append(self.mapOfNodes[10])  # name
         self.mapOfNodes[10].required_questions.extend([self.mapOfNodes[11], self.mapOfNodes[13]])  # time left / year
         self.mapOfNodes[10].potential_next_questions.extend([self.mapOfNodes[11], self.mapOfNodes[13]])  # time left / year
-        self.mapOfNodes[11].required_questions.extend([ self.mapOfNodes[18]])
+        self.mapOfNodes[11].required_questions.extend([self.mapOfNodes[18]])
         self.mapOfNodes[11].potential_next_questions.extend([self.mapOfNodes[13],self.mapOfNodes[16]])
         self.mapOfNodes[12].potential_next_questions.extend(
             [self.mapOfNodes[13],self.mapOfNodes[16], self.mapOfNodes[17], self.mapOfNodes[20]])
@@ -214,24 +214,24 @@ class DecisionTree:
         '''if query_number != self.current_node:
             past_node = self.mapOfNodes[query_number]'''
 
-
         #self.current_node = self.mapOfNodes[query_number]
         self.current_node.asked = True
         if self.current_node.userQuery == 30 or self.current_node.userQuery == 37:
             self.current_node.asked = False
         if self.is_answered(past_node):
             for node in past_node.required_questions:
+                print("asked: ", self.is_answered(node))
+                print("answered: ", self.is_answered(node))
                 if not self.is_answered(node):
                     if not node.asked:
                         self.current_node = node
-                        print("current node: ", past_node.userQuery)
-
+                        print("has answered")
                         return User_Query.UserQuery(self.student, node.userQuery)
         for node in past_node.potential_next_questions:
             if not self.is_answered(node):
                 if not node.asked:
                     self.current_course = node
-                    print("current node: ", past_node.userQuery)
+                    print("current node: 1 ", past_node.userQuery)
 
                     return User_Query.UserQuery(self.student, node.userQuery)
         if self.is_answered(past_node):
@@ -239,17 +239,17 @@ class DecisionTree:
                 if not self.is_answered(node):
                     #if not node.asked:
                     self.current_node = node
-                    print("current node: ", past_node.userQuery)
+                    print("current node: 2 ", past_node.userQuery)
                     return User_Query.UserQuery(self.student, node.userQuery)
 
         for node in past_node.potential_next_questions:
             if not self.is_answered(node):
                 #   if not node.asked:
                 self.current_course = node
-                print("next node: ", past_node.userQuery)
+                print("next node: 1 ", past_node.userQuery)
                 return node.userQuery
         if not self.is_answered(past_node):
-            print("next node: ", past_node.userQuery)
+            print("next node: 2 ", past_node.userQuery)
             return past_node.userQuery
 
         if len(past_node.required_questions) > 0:

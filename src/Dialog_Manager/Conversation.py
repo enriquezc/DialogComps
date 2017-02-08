@@ -100,25 +100,32 @@ class Conversation:
 
     def handleStudentMajorRequest(self, input, luisAI, luis_intent, luis_entities):
         if len(luis_entities) == 0:
-            print("We're here")
+            print("no entity")
             tokens = nltk.word_tokenize(luisAI.query)
             pos = nltk.pos_tag(tokens)
-            major = [word for word, p in pos if p in ['NNP']]
+            major = [word for word, p in pos if p in ['JJ','NN']]
+
+            if len(major) == 0:
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)
+                    , self.decision_tree.get_next_node()]
+            print("major ", major)
+            #tm_major = TaskManager.smart_department_search(major)
+            #print("tm major: ", tm_major)
             self.student_profile.major = major[0]
-            possibilities = self.nluu.find_course(luisAI.query)
-            possibilities_str = " ".join(possibilities)
+
             self.last_query = 11
+            print(self.student_profile.major)
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
 , self.decision_tree.get_next_node()]
         for entity in luis_entities:
-            if entity.type == "u'DEPARTMENT":
-                for major in self.student_profile.major:
-                    if entity.entity == major or len(self.student_profile.major) == 2:
-                        pass
-                    else:
-                        self.student_profile.major.append(entity.entity)
+            if entity.type == "department":
+                self.student_profile.major.append(entity.entity)
+            print(self.student_profile.major)
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major)
 , self.decision_tree.get_next_node()]
+
+    def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities):
+        return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
 
     def handleScheduleClass(self, input, luisAI, luis_intent, luis_entities):
         # if entity.type == "class":  # add more if's for different types
