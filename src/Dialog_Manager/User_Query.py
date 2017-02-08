@@ -78,6 +78,26 @@ class QueryType(Enum):
     #Ask if they want us to reccomend a class or if they already have something in mind?
     new_class_request = 37
 
+    #More responses to answers the user could give us.
+    #Reponse to user giving their name.
+    student_info_name_res = 40
+    #Response to user telling us their major.
+    student_info_major_res = 41
+    #Response to user telling us previous classes they've taken.
+    student_info_previous_classes_res = 42
+    #Response to user telling us what they're interested in.
+    student_info_interests_res = 43
+    #Response to user telling us how much time they have left.
+    student_info_time_left_res = 44
+    #Response to user telling us about their study abroad plans/experience.
+    student_info_abroad_res = 45
+    #Response to user telling us which general requirements they have left.
+    student_info_requirements_res = 46
+    #Response to user telling us which major requirements they have left.
+    student_info_major_requirements_res = 47
+    #Response to user telling us their concentrations.
+    student_info_concentration_res = 48
+
 
 
 
