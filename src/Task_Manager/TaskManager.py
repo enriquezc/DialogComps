@@ -80,41 +80,8 @@ def query_courses(course):
 
         results.append(result_course)
         #academic_session
+        result_course.description = result[29]
 
-    for result in results:
-
-        reason_query = "SELECT * FROM REASON WHERE "
-
-        if result.id != None:
-            reason_query = reason_query + "course_number = '" \
-                 + result.id
-            reason_query = reason_query + "' AND "
-
-            if result.term != None:
-                reason_query = reason_query + "academic_session = '" \
-                     + result.term
-                reason_query = reason_query + "' AND "
-
-        elif course.department != None:
-            reason_query = reason_query + "org_id = '" + course.department
-            reason_query = reason_query + "' AND "
-
-        elif course.course_num != None:
-            reason_query = reason_query + "course_number = '" \
-                + str(course.course_num)
-            reason_query = reason_query + "' AND "
-
-        reason_query = reason_query[:-5]
-
-        #print(reason_query)
-
-        cur = conn.cursor()
-        cur.execute(reason_query)
-        course_results = cur.fetchone()
-
-        #print(course_results)
-        if  course_results != None:
-            result.description = course_results[16]
 
     #list_courses = []
 
@@ -149,8 +116,9 @@ def query_by_title(title_string, department = None):
             else:
                 cur_string = cur_string + dept_dict[word_array[i]].lower() + "%"
 
-    query_string = "SELECT DISTINCT * FROM COURSE WHERE (sec_term LIKE '16%' OR sec_term LIKE '17%') AND (lower(sec_short_title) LIKE '{}' OR lower(sec_short_title) LIKE '{}')".format(new_string, cur_string)
+    query_string = "SELECT DISTINCT c.sec_subject, c.sec_short_title, c.sec_course_no, c.sec_name,c.xsec_cc_meeting_times_sv, r.long_description, c.sec_term FROM COURSE c JOIN REASON r ON c.sec_course_no = r.course_number  WHERE (sec_term LIKE '16%' OR sec_term LIKE '17%') AND (lower(sec_short_title) LIKE '{}' OR lower(sec_short_title) LIKE '{}')".format(new_string, cur_string)
 
+    # adding a deparment criteria to narrow search if passed
     if department != None:
         query_string = query_string + " AND sec_subject = '" + department + "'"
 
@@ -175,6 +143,8 @@ def query_by_title(title_string, department = None):
             result_course.time = classroom
 
         courses.append(result_course)
+
+
 
 
 
@@ -438,7 +408,10 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
-    query_by_title("methods", "ENGL")
+    results = smart_department_search(["predictive","analysis"])
+    for course in results:
+        print(course.name)
+    #query_by_title("methods", "ENGL")
     #makeCooccurenceMatrix()
     #print(smart_description_search(''))
     #edit_distance('ent', 'PHIL')
