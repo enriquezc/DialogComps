@@ -5,7 +5,7 @@ class Student:
         self.name = None
         self.current_classes = []
         self.major = []
-        self.concentration = None
+        self.concentration = []
         self.previous_classes = []
         self.distributions_needed = []
         self.major_classes_needed = []

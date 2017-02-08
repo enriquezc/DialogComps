@@ -159,7 +159,7 @@ class DecisionTree:
                 return True
             node.answered = False
             return False
-        elif node.userQuery.value == 37: #new_class_request
+        elif node.userQuery.value == 37: #new_class_res
             return False
 
     def build_Tree(self):
