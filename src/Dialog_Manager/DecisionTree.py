@@ -246,7 +246,7 @@ class DecisionTree:
                 return node.userQuery
         if not self.is_answered(past_node):
             print("next node: 2 ", past_node.userQuery)
-            return past_node.userQuery
+            return User_Query.UserQuery(self.student, past_node.userQuery)
 
         if len(past_node.required_questions) > 0:
             self.current_node = past_node.required_questions[0]
