@@ -6,7 +6,34 @@ import numpy as np
 import string
 import io
 import string
-from src.Dialog_Manager import Course
+#from src.Dialog_Manager import Course
+class Course:
+    def __init__(self):
+        #name of class
+        self.name = None
+        self.id = None
+        self.prof = None
+        self.term = None
+        self.department = None
+        self.course_num = None
+        #A score from 1-10 of how much they liked the class
+        self.sentiment = 0
+        #how confident are we in this sentiment
+        self.confidence = 0
+        self.scrunch = None
+        self.requirements_fulfilled = []
+        #Some way of storing start time, end time, and days of the week. Format undecided as of yet.
+        self.time = None
+        self.prereqs = []
+        #description from enroll
+        self.description = ""
+        #context the user gave about the class, just in case we still need it
+        self.user_description = ""
+        #Boolean. Have they taken the class yet?
+        self.taken = None
+        self.credits = 0
+        self.relevance = None
+        self.weighted_score = 0.0
 
 conn = None
 dept_dict = {}
@@ -263,8 +290,8 @@ def smart_description_search(description):
 def create_stop_words_set():
     global stop_words
     stop_words = set()
-    stop_words_file = open('./src/Task_Manager/stop_words.txt', 'r')
-    #stop_words_file = open('stop_words.txt', 'r')
+    #stop_words_file = open('./src/Task_Manager/stop_words.txt', 'r')
+    stop_words_file = open('stop_words.txt', 'r')
     for word in stop_words_file:
         stop_words.add(word.strip())
 
@@ -296,22 +323,23 @@ def smart_department_search(keywords, threshold = None):
         department_names.append(colnames[i].upper())
 
     #print(department_names)
-    query = "SELECT DISTINCT c.sec_subject, r.title, r.long_description, c.sec_course_no FROM (SELECT * FROM COURSE c where UPPER(sec_subject) in {} AND (sec_term LIKE '16%' OR sec_term LIKE '17%')) AS c JOIN (SELECT * FROM REASON r WHERE UPPER(org_id) in {}) AS r ON c.sec_name = r.course_number".format(str(tuple(department_names)), str(tuple(department_names)))
-    query += " WHERE (UPPER(r.long_description) LIKE '%{}%'".format(new_keywords[0])
+    query = "SELECT DISTINCT * FROM COURSE c where UPPER(sec_subject) in {} AND (sec_term LIKE '16%' OR sec_term LIKE '17%')".format(str(tuple(department_names)))
+    query += " AND (UPPER(long_description) LIKE '%{}%'".format(new_keywords[0])
     if len(keywords) > 1:
         for keyword in new_keywords[1:]:
-            query += "OR UPPER(r.long_description) LIKE '%{}%'".format(keyword)
+            query += "OR UPPER(long_description) LIKE '%{}%'".format(keyword)
 
     query += ")"
     cur.execute(query)
     results = cur.fetchall()
     courses = []
     for result in results:
-        new_course = Course.Course()
-        new_course.id = result[0]
-        new_course.name = result[1]
-        new_course.description = result[2]
-        new_course.course_num = result[3]
+        new_course = Course()#.Course()
+        new_course.department = result[17]
+        new_course.course_num = result[2]
+        new_course.id = result[13]
+        new_course.name = result[16]
+        new_course.description = result[29]
         new_course.relevance = [0,0]
         punctuationset = set(string.punctuation)
         description = new_course.description
@@ -345,8 +373,8 @@ def smart_department_search(keywords, threshold = None):
 
 def create_dept_dict():
     global dept_dict
-    file = open('./src/Task_Manager/course_subjects.txt', 'r')
-    #file = open('course_subjects.txt', 'r')
+    #file = open('./src/Task_Manager/course_subjects.txt', 'r')
+    file = open('course_subjects.txt', 'r')
     for line in file:
         line = line.strip()
         pair = line.split(';')
@@ -408,7 +436,7 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
-    results = query_by_title("programming languages")
+    results = smart_department_search(["data", "predictive","analysis"])
     for course in results:
         print(course.name)
         print(course.description)
