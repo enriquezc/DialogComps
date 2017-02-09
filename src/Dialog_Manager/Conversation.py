@@ -498,6 +498,13 @@ class Conversation:
     def handle_student_info_concentration(self, input, luisAI, luis_intent, luis_entities): #18
         return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
 
+    def handle_class_info_name(self, input, luisAI, luis_intent, luis_entities): #20
+
+    def handle_class_info_prof(self, input, luisAI, luis_intent, luis_entities):  # 21
+
+    def handle_class_info_term(self, input, luisAI, luis_intent, luis_entities):  # 22
+
+    def handle_new_class_name(self, input, luisAI, luis_intent, luis_entities):  # 30
 
     def handle_new_class_prof(self, input, luisAI, luis_intent, luis_entities):  # 31
         if luis_entities:
@@ -524,13 +531,21 @@ class Conversation:
                     c.department = entity.entity
                     self.student_profile.potential_courses.append(c)
             if self.student_profile.potential_courses != []:
-                return self.decision_tree.get_next_node()
+                return [self.decision_tree.get_next_node()]
+            else:
+                return [self.decision_tree.get_next_node()]
         if len(self.last_query.split()) < 3:
             c = Course.Course()
-            c.department = self.last_query
+            c.department = self.nluu.find_course(input)
             self.student_profile.potential_courses.append(c)
-            return self.decision_tree.get_next_node()
-        return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
+            return [self.decision_tree.get_next_node()]
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
+
+    def handle_new_class_requirements(self, input, luisAI, luis_intent, luis_entities): #34
+
+    def handle_new_class_time(self, input, luisAI, luis_intent, luis_entities):  # 35
+
+    def handle_new_class_description(self, input, luisAI, luis_intent, luis_entities):  # 36
 
     def handle_new_class_request(self, input, luisAI, luis_intent, luis_entities):  # 37
         if " ok" in self.last_query or "sure" == self.last_query or "reccommend" in self.last_query:
@@ -566,6 +581,8 @@ class Conversation:
                 eval_fn = None
             if eval_fn:
                 return eval_fn(input, luisAI, format(new_intent), luis_entities)
+            else:
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
 
             # if entity.type == "class":  # add more if's for different types
 
