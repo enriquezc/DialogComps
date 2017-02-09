@@ -98,9 +98,6 @@ class QueryType(Enum):
     #Response to user telling us their concentrations.
     student_info_concentration_res = 48
 
-
-
-
 #This gets passed on to the NLUU, allowing it to decipher
 class UserQuery:
     def __init__(self, object = None, type = QueryType.pleasantry):
