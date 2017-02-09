@@ -235,7 +235,20 @@ class nLUU:
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description)'''
         s = constants.Responses.NEW_CLASS_DESCRIPTION[1]
-        return s.format(userQuery.object.relevant_class.id, userQuery.object.relevant_class.name, userQuery.object.relevant_class.description)
+        if userQuery.object.relevant_class.time == None:
+            time = "an unknown time"
+        else:
+            time = str(userQuery.object.relevant_class.time)
+        if userQuery.object.relevant_class.prof == None:
+            prof = "unknown"
+        else:
+            prof = userQuery.object.relevant_class.prof
+        if userQuery.object.relevant_class.prereqs == []:
+            prereqs = "This class has no prereqs"
+        else:
+            prereqs = "The prereqs for this class are" + str(userQuery.object.relevant_class.prereqs)
+
+        return s.format(userQuery.object.relevant_class.id, userQuery.object.relevant_class.name, time, prof, prereqs, userQuery.object.relevant_class.description)
 
     def create_schedule_class_res(self, userQuery):
         s = constants.Responses.SCHEDULE_CLASS_RES[0]
