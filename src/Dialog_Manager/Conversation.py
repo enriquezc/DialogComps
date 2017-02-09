@@ -80,6 +80,8 @@ class Conversation:
     # @return
     def classify_intent(self, luis_input):
         # input is a luis dictionary
+        if luis_input.intents[0] == "None" and luis_input.intents[0].score > .7:
+            return luis_input.intents[0]
         for intent in luis_input.intents:
             if intent.score >= .15 and intent.intent != "None":
                 return intent.intent
@@ -142,8 +144,9 @@ class Conversation:
             possibilities = self.nluu.find_course(luisAI.query)
             possibilities_str = " ".join(possibilities)
             tm_courses = self.task_manager_keyword(possibilities)
-            print("tm_courses: {}".format(tm_courses))
-            self.student_profile.relevant_class = tm_courses
+            print("tm_courses: {}".format(tm_courses[0]))
+            self.student_profile.relevant_class = tm_courses[0]
+            self.student_profile.current_classes.append(tm_courses[0])
             if self.student_profile.current_credits < 18:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
                     , self.decision_tree.get_next_node()]
@@ -164,10 +167,10 @@ class Conversation:
                 tm_courses = self.task_manager_information(course)
                 if type(tm_courses) == list:
                     tm_courses = tm_courses[0]
-                self.student_profile.relevant_class = tm_courses
+                self.student_profile.relevant_class = [tm_courses]
                 self.student_profile.current_classes.append(tm_courses)
                 self.student_profile.current_credits = + 6
-                self.student_profile.total_credits += tm_courses.credits
+                self.student_profile.total_credits += 6
                 print(self.student_profile.current_credits)
                 if self.student_profile.current_credits < 12:
                     self.current_class, self.decision_tree.current_course = course, course
@@ -189,7 +192,7 @@ class Conversation:
                         if pot_course.name or pot_course.id:
                             self.student_profile.current_classes.append(tm_courses)
                             self.student_profile.current_credits += 6
-                            self.student_profile.total_credits += tm_courses.credits
+                            self.student_profile.total_credits += 6
                             if self.student_profile.current_credits < 12:
                                 self.current_class, self.decision_tree.current_course = course, course
                                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
@@ -225,8 +228,8 @@ class Conversation:
                     , self.decision_tree.get_next_node()]
             tm_courses = self.task_manager_keyword(possibilities)
             print("tm_courses: {}".format(tm_courses))
-            self.student_profile.relevant_class = tm_courses
-            self.student_profile.current_classes.append(tm_courses)
+            self.student_profile.relevant_class = tm_courses[0]
+            self.student_profile.current_classes.extend(tm_courses)
             self.student_profile.current_class, self.decision_tree.current_course = course, course
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
                 , self.decision_tree.get_next_node()]
@@ -245,16 +248,13 @@ class Conversation:
                     tm_courses = self.task_manager_class_title_match(entity.entity)
 
                 if not tm_courses:
-                    return self.decision_tree.get_next_node(2)
+                    return [self.decision_tree.get_next_node()]
 
                 else:
                     if type(tm_courses) is list:
-                        self.student_profile.relevant_class = tm_courses
+                        self.student_profile.relevant_class = tm_courses[0]
                     else:
-                        self.student_profile.relevant_class.append(tm_courses)
-
-                    self.student_profile.current_classes.append(tm_courses)
-                    self.student_profile.current_class, self.decision_tree.current_course = course, course
+                        self.student_profile.relevant_class = tm_courses
                     return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
 ,self.decision_tree.get_next_node()]
             if entity.type == "personname":
@@ -610,7 +610,7 @@ class Conversation:
         if tm_courses:
             return tm_courses
         if not tm_courses:
-            return self.decision_tree.get_next_node(2)
+            return self.decision_tree.get_next_node()
 
 
     def task_manager_department_match(self, dept):
@@ -618,14 +618,14 @@ class Conversation:
         if tm_department:
             return tm_department
         if not tm_department:
-            return self.decision_tree.get_next_node(2)
+            return self.decision_tree.get_next_node()
 
     def task_manager_class_title_match(self, class_string, department = None):
         tm_class_match = TaskManager.query_by_title(class_string, department)
         if tm_class_match:
             return tm_class_match
         if not tm_class_match:
-            return self.decision_tree.get_next_node(2)
+            return self.decision_tree.get_next_node()
 
     def schedule_course(self, new_course):
         for course in self.student_profile.previous_classes:

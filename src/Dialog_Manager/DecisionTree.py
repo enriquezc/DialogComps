@@ -163,19 +163,24 @@ class DecisionTree:
             return False
 
     def build_Tree(self):
-        listOfEnums = [0, 1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33,
+        listOfEnums = [0, 1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33,
                        34, 35, 36, 37]
         for i in listOfEnums:
             self.mapOfNodes[i] = NodeObject(User_Query.QueryType(i), [], [])
 
         # here we go...
         self.mapOfNodes[0].required_questions.append(self.mapOfNodes[10])  # name
+        self.mapOfNodes[5].required_questions.append(self.mapOfNodes[30])
+        self.mapOfNodes[5].potential_next_questions.append(self.mapOfNodes[30])
+        self.mapOfNodes[6].required_questions.append(self.mapOfNodes[30])
+        self.mapOfNodes[6].potential_next_questions.append(self.mapOfNodes[30])
+
         self.mapOfNodes[10].required_questions.extend([self.mapOfNodes[11], self.mapOfNodes[13]])  # time left / year
         self.mapOfNodes[10].potential_next_questions.extend([self.mapOfNodes[11], self.mapOfNodes[13]])  # time left / year
         self.mapOfNodes[11].required_questions.extend([self.mapOfNodes[18]])
         self.mapOfNodes[11].potential_next_questions.extend([self.mapOfNodes[13]])
-        self.mapOfNodes[12].potential_next_questions.extend([self.mapOfNodes[13], self.mapOfNodes[20]])
-        self.mapOfNodes[13].potential_next_questions.extend([self.mapOfNodes[30], self.mapOfNodes[20]])  # time left / year
+        self.mapOfNodes[12].potential_next_questions.extend([self.mapOfNodes[13]])
+        self.mapOfNodes[13].potential_next_questions.extend([self.mapOfNodes[30]])  # time left / year
         self.mapOfNodes[15].required_questions.extend([self.mapOfNodes[18]])  # concentration, major requirements
         #self.mapOfNodes[17].potential_next_questions.extend(
             #[self.mapOfNodes[30], self.mapOfNodes[20], self.mapOfNodes[36]])  # department, prof, reccomend
@@ -187,11 +192,12 @@ class DecisionTree:
             #self.mapOfNodes[32])  # Ask if they want to take a course that fills these reqs
         #self.mapOfNodes[17].potential_next_questions.append(self.mapOfNodes[13])  # interests
         self.mapOfNodes[18].potential_next_questions.extend([self.mapOfNodes[30], self.mapOfNodes[13]])  # major reqs, distros, interests
-        self.mapOfNodes[20].potential_next_questions.append(self.mapOfNodes[36])  # reccomend
-        self.mapOfNodes[30].potential_next_questions.extend([self.mapOfNodes[20], self.mapOfNodes[36]])  # prof, reccomend
+        self.mapOfNodes[20].potential_next_questions.append(self.mapOfNodes[37])  # reccomend
+        self.mapOfNodes[30].potential_next_questions.extend([self.mapOfNodes[5], self.mapOfNodes[37]])  # prof, reccomend
         self.mapOfNodes[32].potential_next_questions.extend(
             [self.mapOfNodes[13], self.mapOfNodes[36]])  # interests, should we reccomend something?
-        self.mapOfNodes[36].potential_next_questions.append(self.mapOfNodes[20])  # what class would they want to take?
+        self.mapOfNodes[36].potential_next_questions.append(self.mapOfNodes[30])  # what class would they want to take?
+
         self.head_node = self.mapOfNodes[10]
         self.current_node = self.head_node
     # takes in nothing, returns a userquery for asking how they feel about a new class.
@@ -226,7 +232,7 @@ class DecisionTree:
         for node in past_node.potential_next_questions:
             if not self.is_answered(node):
                 if not node.asked:
-                    self.current_course = node
+                    self.current_node = node
                     print("current node: 1 ", past_node.userQuery)
 
                     return User_Query.UserQuery(self.student, node.userQuery)
@@ -241,7 +247,7 @@ class DecisionTree:
         for node in past_node.potential_next_questions:
             if not self.is_answered(node):
                 #   if not node.asked:
-                self.current_course = node
+                self.current_node = node
                 print("next node: 1 ", past_node.userQuery)
                 return User_Query.UserQuery(self.student, node.userQuery)
         if not self.is_answered(past_node):
