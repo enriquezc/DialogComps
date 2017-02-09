@@ -53,14 +53,13 @@ class Conversation:
             client_response = input()
             luis_analysis = self.nluu.get_luis(client_response)
             self.utterancesStack.append(luis_analysis)
+            userQueries = self.get_next_response(client_response, luis_analysis) or User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify) # tuple containing response type as first argument, and data to format for other arguments
             print("luis: {}".format(luis_analysis))
-            userQueries = self.get_next_response(client_response, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
             our_str_response = ""
             if type(userQueries) is list:
                 for userQuery in userQueries:
                     self.utterancesStack.append(userQuery)
                     self.last_user_query.append(userQuery)
-                    print("userQuery: {}".format(userQuery.type))
                     if userQuery.type == User_Query.QueryType.goodbye:
                         print("Goodbye")
                         self.conversing = False
@@ -131,7 +130,7 @@ class Conversation:
             if entity.type == "department":
                 self.student_profile.major.append(entity.entity)
             print(self.student_profile.major)
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
+        return [self.decision_tree.get_next_node()]
 
     def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities):
         return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
@@ -387,20 +386,17 @@ class Conversation:
     # done
     def handleStudentInterests(self, input, luisAI, luis_intent, luis_entities):
         if len(luis_entities) == 0:
-            tokens = nltk.word_tokenize(luisAI.query)
-            pos = nltk.pos_tag(tokens)
-            interests = [word for word,p in pos if p in ['NNP','NNS','JJ','VBG']]
+            interests = self.nluu.find_interests(luisAI.query)
             for interest in interests:
                 self.student_profile.interests.add(interest)
-            print("Interest")
-            #print(self.student_profile.interests[0])
 
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
-                , self.decision_tree.get_next_node()]
-        for entity in luis_entities:
-            print(entity)
-            if entity.type == "u'CLASS" or entity.type == "u'DEPARTMENT" or entity.type == "u'SENTIMENT":
-                self.student_profile.interests.append(entity.entity)
+        else:
+            for entity in luis_entities:
+                print(entity)
+                if entity.type == "class" or entity.type == "department" or entity.type == "sentiment":
+                    self.student_profile.interests.add(entity.entity)
+        tm_courses = TaskManager.smart_department_search(" ".join(self.student_profile.interests))
+        self.student_profile.relevant_class = tm_courses[0]
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
             , self.decision_tree.get_next_node()]
 
@@ -504,6 +500,7 @@ class Conversation:
 
     def handle_class_info_prof(self, input, luisAI, luis_intent, luis_entities):  # 21
         pass
+
     def handle_class_info_term(self, input, luisAI, luis_intent, luis_entities):  # 22
         pass
 
