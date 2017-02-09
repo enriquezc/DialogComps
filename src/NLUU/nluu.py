@@ -271,6 +271,8 @@ class nLUU:
     def create_student_info_major_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_RES[0]
         if len(userQuery.object.major) == 1:
+            if "cs" in userQuery.object.major[0] or "computer" in userQuery.object.major[0]:
+                s = constants.Responses.STUDENT_INFO_MAJOR_RES[1]
             return s.format(userQuery.object.major[0])
         elif len(userQuery.object.major) == 0:
             print("There are no majors")
