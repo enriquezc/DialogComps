@@ -43,6 +43,7 @@ class Responses:
     NEW_CLASS_SENTIMENT = ("What do you think about taking {}?",)
     NEW_CLASS_REQUIREMENTS = ("Which requirements would you like to complete?",)
     NEW_CLASS_TIME = ("What time of day would you like your classes to be?",)
-    NEW_CLASS_DESCRIPTION = ("Here's some more information about the class you asked about:\n {}:\n {}.",)
+    NEW_CLASS_DESCRIPTION = ("Here's some more information about the class you asked about:\n {}:\n {}.",
+                             "I found {} : {}. Here's a short description of this class:\n {}",)
     SCHEDULE_CLASS_RES = ("Here are the classes you're currently registered for:\n {}.",)
     FULL_SCHEDULE_CHECK = ("Here are the classes you're currently registered for:\n {} You're registered for {} credits, do you want to register for more classes?",)

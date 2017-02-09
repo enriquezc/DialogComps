@@ -76,7 +76,7 @@ def query_courses(course):
         if classroom_str != None:
             classroom_str = classroom_str.split()
             classroom = classroom_str[0] + " " + classroom_str[1]
-            result_course.time = classroom
+            result_course.classroom = classroom
         result_course.description = result[29]
         results.append(result_course)
         #academic_session
@@ -140,7 +140,7 @@ def query_by_title(title_string, department = None):
         if classroom_str != None:
             classroom_str = classroom_str.split()
             classroom = classroom_str[0] + " " + classroom_str[1]
-            result_course.time = classroom
+            result_course.classroom = classroom
         result_course.description = result[29]
         courses.append(result_course)
 
@@ -415,7 +415,3 @@ if __name__ == "__main__":
     for course in results:
         print(course.name)
         print(course.description)
-    #query_by_title("methods", "ENGL")
-    #makeCooccurenceMatrix()
-    #print(smart_description_search(''))
-    #edit_distance('ent', 'PHIL')

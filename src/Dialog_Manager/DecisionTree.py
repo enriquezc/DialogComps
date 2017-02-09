@@ -175,7 +175,7 @@ class DecisionTree:
         self.mapOfNodes[11].required_questions.extend([self.mapOfNodes[18]])
         self.mapOfNodes[11].potential_next_questions.extend([self.mapOfNodes[13]])
         self.mapOfNodes[12].potential_next_questions.extend([self.mapOfNodes[13], self.mapOfNodes[20]])
-        self.mapOfNodes[13].potential_next_questions.extend([self.mapOfNodes[20], self.mapOfNodes[30]])  # time left / year
+        self.mapOfNodes[13].potential_next_questions.extend([self.mapOfNodes[30], self.mapOfNodes[20]])  # time left / year
         self.mapOfNodes[15].required_questions.extend([self.mapOfNodes[18]])  # concentration, major requirements
         #self.mapOfNodes[17].potential_next_questions.extend(
             #[self.mapOfNodes[30], self.mapOfNodes[20], self.mapOfNodes[36]])  # department, prof, reccomend
@@ -186,22 +186,22 @@ class DecisionTree:
         #self.mapOfNodes[17].required_questions.append(
             #self.mapOfNodes[32])  # Ask if they want to take a course that fills these reqs
         #self.mapOfNodes[17].potential_next_questions.append(self.mapOfNodes[13])  # interests
-        self.mapOfNodes[18].potential_next_questions.extend([self.mapOfNodes[13]])  # major reqs, distros, interests
+        self.mapOfNodes[18].potential_next_questions.extend([self.mapOfNodes[30], self.mapOfNodes[13]])  # major reqs, distros, interests
         self.mapOfNodes[20].potential_next_questions.append(self.mapOfNodes[36])  # reccomend
         self.mapOfNodes[30].potential_next_questions.extend([self.mapOfNodes[20], self.mapOfNodes[36]])  # prof, reccomend
         self.mapOfNodes[32].potential_next_questions.extend(
             [self.mapOfNodes[13], self.mapOfNodes[36]])  # interests, should we reccomend something?
         self.mapOfNodes[36].potential_next_questions.append(self.mapOfNodes[20])  # what class would they want to take?
-        self.head_node = self.mapOfNodes[0]
-
+        self.head_node = self.mapOfNodes[10]
+        self.current_node = self.head_node
     # takes in nothing, returns a userquery for asking how they feel about a new class.
     # The new classes are stored in the student object, under potential courses.
     def recommend_course(self):
         self.student.potential_courses = TaskManager.recommend_course(self.student)
         if len(self.student.potential_courses) > 0:
-            return User_Query(33)
+            return User_Query.UserQuery(self.student, node.userQuery)
         else:
-            return User_Query(13)
+            return User_Query.UserQuery(self.student, past_node.userQuery)
 
     # @params: the current node of the tree
     # @return: the next node of the tree
@@ -243,7 +243,7 @@ class DecisionTree:
                 #   if not node.asked:
                 self.current_course = node
                 print("next node: 1 ", past_node.userQuery)
-                return node.userQuery
+                return User_Query.UserQuery(self.student, node.userQuery)
         if not self.is_answered(past_node):
             print("next node: 2 ", past_node.userQuery)
             return User_Query.UserQuery(self.student, past_node.userQuery)
