@@ -173,23 +173,20 @@ class DecisionTree:
         self.mapOfNodes[10].required_questions.extend([self.mapOfNodes[11], self.mapOfNodes[13]])  # time left / year
         self.mapOfNodes[10].potential_next_questions.extend([self.mapOfNodes[11], self.mapOfNodes[13]])  # time left / year
         self.mapOfNodes[11].required_questions.extend([self.mapOfNodes[18]])
-        self.mapOfNodes[11].potential_next_questions.extend([self.mapOfNodes[13],self.mapOfNodes[16]])
-        self.mapOfNodes[12].potential_next_questions.extend(
-            [self.mapOfNodes[13],self.mapOfNodes[16], self.mapOfNodes[17], self.mapOfNodes[20]])
+        self.mapOfNodes[11].potential_next_questions.extend([self.mapOfNodes[13]])
+        self.mapOfNodes[12].potential_next_questions.extend([self.mapOfNodes[13], self.mapOfNodes[20]])
         self.mapOfNodes[13].potential_next_questions.extend([self.mapOfNodes[20], self.mapOfNodes[30]])  # time left / year
-        self.mapOfNodes[15].required_questions.extend([self.mapOfNodes[18], self.mapOfNodes[17]])  # concentration, major requirements
-        self.mapOfNodes[17].potential_next_questions.extend(
-            [self.mapOfNodes[30], self.mapOfNodes[20], self.mapOfNodes[36]])  # department, prof, reccomend
-        self.mapOfNodes[14].potential_next_questions.extend([self.mapOfNodes[11], self.mapOfNodes[18], self.mapOfNodes[16],
-                                                        self.mapOfNodes[13]])  # major, concentration, distros, interests
-        self.mapOfNodes[16].potential_next_questions.append(self.mapOfNodes[13])  # interests
-        self.mapOfNodes[16].required_questions.append(
-            self.mapOfNodes[32])  # ask if they want to take a course that fills these reqs
-        self.mapOfNodes[17].required_questions.append(
-            self.mapOfNodes[32])  # Ask if they want to take a course that fills these reqs
-        self.mapOfNodes[17].potential_next_questions.append(self.mapOfNodes[13])  # interests
-        self.mapOfNodes[18].potential_next_questions.extend(
-            [self.mapOfNodes[17], self.mapOfNodes[16], self.mapOfNodes[13]])  # major reqs, distros, interests
+        self.mapOfNodes[15].required_questions.extend([self.mapOfNodes[18]])  # concentration, major requirements
+        #self.mapOfNodes[17].potential_next_questions.extend(
+            #[self.mapOfNodes[30], self.mapOfNodes[20], self.mapOfNodes[36]])  # department, prof, reccomend
+        self.mapOfNodes[14].potential_next_questions.extend([self.mapOfNodes[11], self.mapOfNodes[18], self.mapOfNodes[13]])  # major, concentration, distros, interests
+        #self.mapOfNodes[16].potential_next_questions.append(self.mapOfNodes[13])  # interests
+        #self.mapOfNodes[16].required_questions.append(
+            #self.mapOfNodes[32])  # ask if they want to take a course that fills these reqs
+        #self.mapOfNodes[17].required_questions.append(
+            #self.mapOfNodes[32])  # Ask if they want to take a course that fills these reqs
+        #self.mapOfNodes[17].potential_next_questions.append(self.mapOfNodes[13])  # interests
+        self.mapOfNodes[18].potential_next_questions.extend([self.mapOfNodes[13]])  # major reqs, distros, interests
         self.mapOfNodes[20].potential_next_questions.append(self.mapOfNodes[36])  # reccomend
         self.mapOfNodes[30].potential_next_questions.extend([self.mapOfNodes[20], self.mapOfNodes[36]])  # prof, reccomend
         self.mapOfNodes[32].potential_next_questions.extend(
