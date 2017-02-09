@@ -275,9 +275,7 @@ class nLUU:
 
     def create_student_info_interests_res(self, userQuery): 
         s = constants.Responses.STUDENT_INFO_INTERESTS_RES[0]
-        interest_string = ""
-        for interest in userQuery.object.interests:
-            interest_string += (interest + "\n")
+        s = s.format(str(userQuery.object.relevant_class))
         return s
 
     def create_student_info_time_left_res(self, userQuery):
@@ -326,7 +324,10 @@ class nLUU:
         return [word for word,p in pos if p == 'NNP']
 
     def find_interests(self, utterance):
-        return self.find_course(utterance)
+        tokens = self.tokenize(utterance)
+        pos = self.pos_tag(tokens)
+        return [word for word, p in pos if p in ['NNP', 'NNS', 'JJ', 'VBG']]
+
 
 #if __name__ == '__main__':
 #    nluu = nLUU("https://api.projectoxford.ai/luis/v1/application?id=fc7758f9-4d40-4079-84d3-72d6ccbb3ad2&subscription-key=c18a6e7119874249927033e72b01aeea")

@@ -394,19 +394,17 @@ class Conversation:
     # done
     def handleStudentInterests(self, input, luisAI, luis_intent, luis_entities):
         if len(luis_entities) == 0:
-            tokens = nltk.word_tokenize(luisAI.query)
-            pos = nltk.pos_tag(tokens)
-            interests = [word for word,p in pos if p in ['NNP','NNS','JJ','VBG']]
+            interests = self.nluu.find_interests(luisAI.query)
             for interest in interests:
                 self.student_profile.interests.add(interest)
-            print("Interest")
 
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
-                , self.decision_tree.get_next_node()]
-        for entity in luis_entities:
-            print(entity)
-            if entity.type == "u'CLASS" or entity.type == "u'DEPARTMENT" or entity.type == "u'SENTIMENT":
-                self.student_profile.interests.append(entity.entity)
+        else:
+            for entity in luis_entities:
+                print(entity)
+                if entity.type == "class" or entity.type == "department" or entity.type == "sentiment":
+                    self.student_profile.interests.add(entity.entity)
+        tm_courses = TaskManager.smart_department_search(" ".join(self.student_profile.interests))
+        self.student_profile.relevant_class = tm_courses[0]
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
             , self.decision_tree.get_next_node()]
 

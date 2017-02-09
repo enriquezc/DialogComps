@@ -26,3 +26,6 @@ class Course:
         self.credits = 0
         self.relevance = None
         self.weighted_score = 0.0
+
+    def __str__(self):
+        return "{} : {}\n{}".format(self.id, self.name, self.description)

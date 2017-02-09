@@ -199,9 +199,9 @@ class DecisionTree:
     def recommend_course(self):
         self.student.potential_courses = TaskManager.recommend_course(self.student)
         if len(self.student.potential_courses) > 0:
-            return User_Query.UserQuery(self.student, node.userQuery)
+            return User_Query.UserQuery(self.student, self.node.userQuery)
         else:
-            return User_Query.UserQuery(self.student, past_node.userQuery)
+            return User_Query.UserQuery(self.student, self.past_node.userQuery)
 
     # @params: the current node of the tree
     # @return: the next node of the tree
