@@ -295,7 +295,7 @@ class nLUU:
         return s
 
     def create_student_info_concentration(self, userQuery):
-        s = constants.Responses.STUDENT.INFO_CONCENTRATION[0]
+        s = constants.Responses.STUDENT_INFO_CONCENTRATION[0]
         return s
 
     def create_student_info_concentration_res(self, userQuery):

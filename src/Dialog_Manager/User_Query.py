@@ -78,12 +78,6 @@ class QueryType(Enum):
     #Ask if they want us to reccomend a class or if they already have something in mind?
     new_class_request = 37
 
-<<<<<<< HEAD
-    #responding to student_info_name
-    student_response_name = 40
-    #responding to student_info_major
-    student_response_major = 41
-=======
     #More responses to answers the user could give us.
     #Reponse to user giving their name.
     student_info_name_res = 40
@@ -103,23 +97,6 @@ class QueryType(Enum):
     student_info_major_requirements_res = 47
     #Response to user telling us their concentrations.
     student_info_concentration_res = 48
-
->>>>>>> bd8be94e34fec3b2dbf4ce51cd0feacb9b03ca55
-
-    student_response_previous_classes = 42
-    # response to more info about their interests
-    student_response_interests = 43
-    # response to more info about how much time left at Carleton
-    student_response_time_left = 44
-    # response to more info about studying abroad (current/future plans)
-    student_response_abroad = 45
-    #response to ask about distro requirements left
-    student_response_requirements = 46
-    #response to major requirements left
-    student_response_major_requirements = 47
-    #response to concentration
-    student_response_concentration = 48
-
 
 #This gets passed on to the NLUU, allowing it to decipher
 class UserQuery:
