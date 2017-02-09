@@ -42,7 +42,7 @@ class DecisionTree:
         #self.current_node = None
         self.build_Tree()
         self.current_node = self.head_node
-        self.current_course = None
+        self.current_course = Course.Course()
         self.student = student
 
 
@@ -130,7 +130,7 @@ class DecisionTree:
             return False
 
         elif node.userQuery.value == 30: #new_class_name
-            if self.current_course.name and self.current_course.id:
+            if self.current_course.name or self.current_course.id:
                 node.answered = True
                 return True
             node.answered = False
