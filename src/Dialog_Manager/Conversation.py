@@ -28,11 +28,12 @@ class Conversation:
 
     def __init__(self, luis_url):
         self.student_profile = Student.Student()
+        self.student_profile.current_class = Course.Course()
         self.last_query = 0
         self.last_user_query = []
         self.head_node = DecisionTree.NodeObject(User_Query.UserQuery(None, User_Query.QueryType.welcome), [], [])
         self.current_node = self.head_node
-        self.current_class = None
+        self.current_class = Course.Course()
         self.decision_tree = DecisionTree.DecisionTree(self.student_profile)
         self.queries = []
         self.conversing = False
@@ -54,11 +55,11 @@ class Conversation:
             self.utterancesStack.append(luis_analysis)
             print("luis: {}".format(luis_analysis))
             userQueries = self.get_next_response(client_response, luis_analysis) # tuple containing response type as first argument, and data to format for other arguments
-            self.last_user_query = userQueries
             our_str_response = ""
             if type(userQueries) is list:
                 for userQuery in userQueries:
                     self.utterancesStack.append(userQuery)
+                    self.last_user_query.append(userQuery)
                     print("userQuery: {}".format(userQuery.type))
                     if userQuery.type == User_Query.QueryType.goodbye:
                         print("Goodbye")
@@ -67,6 +68,7 @@ class Conversation:
                     our_str_response += self.nluu.create_response(userQuery) + "\n"
             else:
                 self.utterancesStack.append(userQueries)
+                self.last_user_query.append(userQueries)
                 print("userQuery: {}".format(userQueries.type))
                 if userQueries.type == User_Query.QueryType.goodbye:
                     print("Goodbye")
@@ -109,31 +111,20 @@ class Conversation:
             major = [word for word, p in pos if p in ['JJ','NN']]
 
             if len(major) == 0:
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res)]
             print("major ", major)
-            tm_major = TaskManager.smart_department_search(major)
-            print("tm major: ", tm_major)
-            if luis_intent == "student_info_concentration":
+            if format(luis_intent) == "student_info_concentration":
                 self.student_profile.concentration.append(major[0])
-                self.last_query = 18
+                print(self.student_profile.concentration)
+                return [self.decision_tree.get_next_node()]
             else:
+                tm_major = TaskManager.smart_department_search(major)
+                print("tm major: ", tm_major)
                 self.student_profile.major.append(major[0])
-                self.last_query = 11
                 print(self.student_profile.major)
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
             #tm_major = TaskManager.smart_department_search(major)
             #print("tm major: ", tm_major)
-            if format(self.utterancesStack[-1]) == "student_info_concentration":
-                if len(self.student_profile.concentration) == 0:
-                    self.student_profile.concentration.append(major[0])
-            else:
-                if len(self.student_profile.major) == 0:
-                    self.student_profile.major.append(major[0])
-
-
-                self.last_query = 11
-                print(self.student_profile.major)
-                return [self.decision_tree.get_next_node()]
         for entity in luis_entities:
             if entity.type == "department":
                 self.student_profile.major.append(entity.entity)
@@ -596,7 +587,7 @@ class Conversation:
             except:
                 eval_fn = None
             if eval_fn:
-                return eval_fn(input, luisAI, new_intent, luis_entities)
+                return eval_fn(input, luisAI, format(new_intent), luis_entities)
             else:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
 
