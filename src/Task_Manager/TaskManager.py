@@ -8,6 +8,7 @@ import io
 import string
 from src.Dialog_Manager import Course
 
+
 conn = None
 dept_dict = {}
 stop_words = None
@@ -72,6 +73,22 @@ def query_courses(course):
         result_course.name = result[16]
         #result_course.comments = result[6]
         result_course.term = result[19]
+        # if result[21] != None:
+        #     prof_id = result[21]
+        #     if '|' in prof_id:
+        #         prof_id = prof_id.split('|')
+        #         query_str = "SELECT name FROM professors WHERE id = "
+        #         for id_num in prof_id:
+        #             query_str = query_str + id_num + " OR id = "
+        #         query_str = query_str[:-9]
+        #         cur.execute(query_str)
+        #         name = cur.fetchone()
+        #         result_course.prof = name[0]
+        #     else:
+        #         query_str = "SELECT name FROM professors WHERE id = " + prof_id
+        #         cur.execute(query_str)
+        #         name = cur.fetchone()
+        #         result_course.prof = name[0]
         classroom_str = result[24]
         if classroom_str != None:
             classroom_str = classroom_str.split()
@@ -411,10 +428,14 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
-    results = smart_department_search(["data", "predictive","analysis"])
+    course = Course()
+    course.deparment = "CS"
+    course.course_num = 111
+    results = query_courses(course)
     for course in results:
         print(course.name)
         print(course.description)
+        print(course.prof)
     #query_by_title("methods", "ENGL")
     #makeCooccurenceMatrix()
     #print(smart_description_search(''))
