@@ -77,44 +77,10 @@ def query_courses(course):
             classroom_str = classroom_str.split()
             classroom = classroom_str[0] + " " + classroom_str[1]
             result_course.time = classroom
-
+        result_course.description = result[29]
         results.append(result_course)
         #academic_session
 
-    for result in results:
-
-        reason_query = "SELECT * FROM REASON WHERE "
-
-        if result.id != None:
-            reason_query = reason_query + "course_number = '" \
-                 + result.id
-            reason_query = reason_query + "' AND "
-
-            if result.term != None:
-                reason_query = reason_query + "academic_session = '" \
-                     + result.term
-                reason_query = reason_query + "' AND "
-
-        elif course.department != None:
-            reason_query = reason_query + "org_id = '" + course.department
-            reason_query = reason_query + "' AND "
-
-        elif course.course_num != None:
-            reason_query = reason_query + "course_number = '" \
-                + str(course.course_num)
-            reason_query = reason_query + "' AND "
-
-        reason_query = reason_query[:-5]
-
-        #print(reason_query)
-
-        cur = conn.cursor()
-        cur.execute(reason_query)
-        course_results = cur.fetchone()
-
-        #print(course_results)
-        if  course_results != None:
-            result.description = course_results[16]
 
     #list_courses = []
 
@@ -127,18 +93,18 @@ def query_by_title(title_string, department = None):
     for i in range(len(word_array)):
         new_word_array[i] = smart_description_search(word_array[i])
 
-    new_string = ""
-    cur_string = ""
+    new_string = "%"
+    cur_string = "%"
     for i in range(len(new_word_array)):
         if i > 0:
             new_string = new_string  + " " + new_word_array[i].lower() + "%"
-            if word_array[i] not in dept_dict:
+            if word_array[i].upper() not in dept_dict:
                 if word_array[i] in stop_words:
                     continue
                 else:
                     cur_string = cur_string + " " + word_array[i].lower() + "%"
             else:
-                cur_string = cur_string + " " + dept_dict[word_array[i]].lower() + "%"
+                cur_string = cur_string + " " + dept_dict[word_array[i].upper()].lower() + "%"
         else:
             new_string = new_string  + new_word_array[i].lower() + "%"
             if word_array[i] not in dept_dict:
@@ -149,12 +115,14 @@ def query_by_title(title_string, department = None):
             else:
                 cur_string = cur_string + dept_dict[word_array[i]].lower() + "%"
 
-    query_string = "SELECT DISTINCT * FROM COURSE WHERE (sec_term LIKE '16%' OR sec_term LIKE '17%') AND (lower(sec_short_title) LIKE '{}' OR lower(sec_short_title) LIKE '{}')".format(new_string, cur_string)
+    query_string = "SELECT * FROM COURSE WHERE (sec_term LIKE '16%' OR sec_term LIKE '17%') AND (lower(sec_short_title) LIKE '{}' OR lower(sec_short_title) LIKE '{}')".format(new_string, cur_string)
 
+    # adding a deparment criteria to narrow search if passed
     if department != None:
         query_string = query_string + " AND sec_subject = '" + department + "'"
 
     cur = conn.cursor()
+    print(cur.mogrify(query_string))
     cur.execute(query_string)
 
     results = cur.fetchall()
@@ -173,8 +141,10 @@ def query_by_title(title_string, department = None):
             classroom_str = classroom_str.split()
             classroom = classroom_str[0] + " " + classroom_str[1]
             result_course.time = classroom
-
+        result_course.description = result[29]
         courses.append(result_course)
+
+    return courses
 
 
 
@@ -438,7 +408,11 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
-    query_by_title("methods", "ENGL")
+    results = query_by_title("programming languages")
+    for course in results:
+        print(course.name)
+        print(course.description)
+    #query_by_title("methods", "ENGL")
     #makeCooccurenceMatrix()
     #print(smart_description_search(''))
     #edit_distance('ent', 'PHIL')
