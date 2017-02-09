@@ -234,7 +234,7 @@ class Conversation:
                     course.department = course_name.group(1)
                     tm_courses = self.task_manager_information(course)
                 else:
-                    tm_courses = self.task_manager_keyword(entity.entity.split(' '))
+                    tm_courses = self.task_manager_class_title_match(entity.entity)
 
                 if not tm_courses:
                     return self.decision_tree.get_next_node(2)
@@ -598,6 +598,7 @@ class Conversation:
         if not tm_courses:
             return self.decision_tree.get_next_node(2)
 
+
     def task_manager_department_match(self, dept):
         tm_department = TaskManager.deparment_match(dept)
         if tm_department:
@@ -613,7 +614,6 @@ class Conversation:
             return self.decision_tree.get_next_node(2)
 
     def schedule_course(self, new_course):
-
         for course in self.student_profile.previous_classes:
             if new_course.id == course.id:
                 return course
