@@ -271,18 +271,19 @@ class Conversation:
 
 
     def handleStudentNameInfo(self, input, luisAI, luis_intent, luis_entities):
-        if len(luis_entities) == 0:
-            name = self.nluu.find_name(luisAI.query)
-            self.student_profile.name = name
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name_res)
-                , self.decision_tree.get_next_node()]
+        if self.student_profile.name is None:
+            if len(luis_entities) == 0:
+                name = self.nluu.find_name(luisAI.query)
+                self.student_profile.name = name
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name_res)
+                    , self.decision_tree.get_next_node()]
 
-        for entity in luis_entities:
-            if entity.type == "personname":
-                self.student_profile.name = entity.entity
-        if self.student_profile.name:
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name_res)
-                , self.decision_tree.get_next_node()]
+            for entity in luis_entities:
+                if entity.type == "personname":
+                    self.student_profile.name = entity.entity
+            if self.student_profile.name:
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name_res)
+                    , self.decision_tree.get_next_node()]
 
         else:
             return [self.decision_tree.get_next_node()]
