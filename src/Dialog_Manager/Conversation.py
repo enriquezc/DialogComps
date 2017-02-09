@@ -119,12 +119,12 @@ class Conversation:
                 self.student_profile.major = major[0]
                 self.last_query = 11
                 print(self.student_profile.major)
-            return [self.decision_tree.get_next_node()]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
         for entity in luis_entities:
             if entity.type == "department":
                 self.student_profile.major.append(entity.entity)
             print(self.student_profile.major)
-        return [self.decision_tree.get_next_node()]
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
 
     def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities):
         return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
