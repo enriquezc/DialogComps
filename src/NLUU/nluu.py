@@ -323,19 +323,22 @@ class nLUU:
         pos = nltk.pos_tag(tokens)
         return [word for word,p in pos if p == 'NNP']
 
-# if __name__ == '__main__':
-#     nluu = nLUU("https://api.projectoxford.ai/luis/v1/application?id=fc7758f9-4d40-4079-84d3-72d6ccbb3ad2&subscription-key=c18a6e7119874249927033e72b01aeea")
-#     res = nluu.get_luis("when is Intro CS this year?")
-#     print("res1:{}".format(res))
-#     intents = res.intents
-#     results = []
-#     if intents[0].intent == 'StudentMajorResponse' or intents[0].intent == 'None':
-#         line = res.query
-#         pos = nluu.pos_tag(nluu.tokenize(line))
-#         for word, p in pos:
-#             if p == 'JJ' or p == 'NNP':
-#                 results.append(word)
+    def find_interests(self, utterance):
+        return self.find_course(utterance)
 
-#     if intents[0].intent == 'ClassDescriptionRequest':
-#         pass
-#     print("res: {}".format(" ".join(results)))
+#if __name__ == '__main__':
+#    nluu = nLUU("https://api.projectoxford.ai/luis/v1/application?id=fc7758f9-4d40-4079-84d3-72d6ccbb3ad2&subscription-key=c18a6e7119874249927033e72b01aeea")
+#    res = nluu.get_luis("when is Intro CS this year?")
+#    print("res1:{}".format(res))
+#    intents = res.intents
+#    results = []
+#    if intents[0].intent == 'StudentMajorResponse' or intents[0].intent == 'None':
+#        line = res.query
+#        pos = nluu.pos_tag(nluu.tokenize(line))
+#        for word, p in pos:
+#            if p == 'JJ' or p == 'NNP':
+#                results.append(word)
+
+#    if intents[0].intent == 'ClassDescriptionRequest':
+#        pass
+#    print("res: {}".format(" ".join(results)))

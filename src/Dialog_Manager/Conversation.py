@@ -39,7 +39,6 @@ class Conversation:
         self.nluu = nluu.nLUU(luis_url)
         self.utterancesStack = []
         self.mapOfIntents = {}
-
         TaskManager.init()
 
     def start_conversation(self):
