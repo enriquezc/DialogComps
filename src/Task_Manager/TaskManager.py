@@ -6,34 +6,7 @@ import numpy as np
 import string
 import io
 import string
-#from src.Dialog_Manager import Course
-class Course:
-    def __init__(self):
-        #name of class
-        self.name = None
-        self.id = None
-        self.prof = None
-        self.term = None
-        self.department = None
-        self.course_num = None
-        #A score from 1-10 of how much they liked the class
-        self.sentiment = 0
-        #how confident are we in this sentiment
-        self.confidence = 0
-        self.scrunch = None
-        self.requirements_fulfilled = []
-        #Some way of storing start time, end time, and days of the week. Format undecided as of yet.
-        self.time = None
-        self.prereqs = []
-        #description from enroll
-        self.description = ""
-        #context the user gave about the class, just in case we still need it
-        self.user_description = ""
-        #Boolean. Have they taken the class yet?
-        self.taken = None
-        self.credits = 0
-        self.relevance = None
-        self.weighted_score = 0.0
+from src.Dialog_Manager import Course
 
 conn = None
 dept_dict = {}
@@ -290,8 +263,8 @@ def smart_description_search(description):
 def create_stop_words_set():
     global stop_words
     stop_words = set()
-    #stop_words_file = open('./src/Task_Manager/stop_words.txt', 'r')
-    stop_words_file = open('stop_words.txt', 'r')
+    stop_words_file = open('./src/Task_Manager/stop_words.txt', 'r')
+    #stop_words_file = open('stop_words.txt', 'r')
     for word in stop_words_file:
         stop_words.add(word.strip())
 
@@ -334,7 +307,7 @@ def smart_department_search(keywords, threshold = None):
     results = cur.fetchall()
     courses = []
     for result in results:
-        new_course = Course()#.Course()
+        new_course = Course.Course()
         new_course.department = result[17]
         new_course.course_num = result[2]
         new_course.id = result[13]
@@ -373,8 +346,8 @@ def smart_department_search(keywords, threshold = None):
 
 def create_dept_dict():
     global dept_dict
-    #file = open('./src/Task_Manager/course_subjects.txt', 'r')
-    file = open('course_subjects.txt', 'r')
+    file = open('./src/Task_Manager/course_subjects.txt', 'r')
+    #file = open('course_subjects.txt', 'r')
     for line in file:
         line = line.strip()
         pair = line.split(';')

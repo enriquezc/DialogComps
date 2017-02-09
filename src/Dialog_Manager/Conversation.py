@@ -605,6 +605,14 @@ class Conversation:
         if not tm_department:
             return self.decision_tree.get_next_node(2)
 
+
+    def task_manager_class_title_match(self, class_string, department = None):
+        tm_class_match = TaskManager.query_by_title(class_string, department)
+        if tm_class_match:
+            return tm_class_match
+        if not tm_class_match:
+            return self.decision_tree.get_next_node(2)
+
     def schedule_course(self, new_course):
 
         for course in self.student_profile.previous_classes:
