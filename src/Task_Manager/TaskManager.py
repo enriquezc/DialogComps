@@ -32,7 +32,7 @@ def query_courses(course):
     '''
 
     #(sec_term LIKE '16%' OR sec_term LIKE '17%')
-    course_query = "SELECT * FROM COURSE WHERE (sec_term LIKE '16%' OR sec_term LIKE '17%') AND "
+    course_query = "SELECT * FROM COURSE WHERE ((sec_term LIKE '16%' OR sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND "
 
     if course.department != None:
         course_query = course_query + "sec_subject = '" + course.department.upper()
@@ -115,7 +115,7 @@ def query_by_title(title_string, department = None):
             else:
                 cur_string = cur_string + dept_dict[word_array[i]].lower() + "%"
 
-    query_string = "SELECT * FROM COURSE WHERE (sec_term LIKE '16%' OR sec_term LIKE '17%') AND (lower(sec_short_title) LIKE '{}' OR lower(sec_short_title) LIKE '{}')".format(new_string, cur_string)
+    query_string = "SELECT * FROM COURSE WHERE ((sec_term LIKE '16%' OR sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND (lower(sec_short_title) LIKE '{}' OR lower(sec_short_title) LIKE '{}')".format(new_string, cur_string)
 
     # adding a deparment criteria to narrow search if passed
     if department != None:
@@ -296,11 +296,11 @@ def smart_department_search(keywords, threshold = None):
         department_names.append(colnames[i].upper())
 
     #print(department_names)
-    query = "SELECT DISTINCT c.sec_subject, r.title, r.long_description, c.sec_course_no FROM (SELECT * FROM COURSE c where UPPER(sec_subject) in {} AND (sec_term LIKE '16%' OR sec_term LIKE '17%')) AS c JOIN (SELECT * FROM REASON r WHERE UPPER(org_id) in {}) AS r ON c.sec_name = r.course_number".format(str(tuple(department_names)), str(tuple(department_names)))
-    query += " WHERE (UPPER(r.long_description) LIKE '%{}%'".format(new_keywords[0])
+    query = "SELECT DISTINCT * FROM COURSE c where UPPER(sec_subject) in {} AND ((sec_term LIKE '16%' OR sec_term LIKE '17%') AND sec_term NOT LIKE '%SU')".format(str(tuple(department_names)))
+    query += " AND (UPPER(long_description) LIKE '%{}%'".format(new_keywords[0])
     if len(keywords) > 1:
         for keyword in new_keywords[1:]:
-            query += "OR UPPER(r.long_description) LIKE '%{}%'".format(keyword)
+            query += "OR UPPER(long_description) LIKE '%{}%'".format(keyword)
 
     query += ")"
     cur.execute(query)
@@ -308,10 +308,11 @@ def smart_department_search(keywords, threshold = None):
     courses = []
     for result in results:
         new_course = Course.Course()
-        new_course.id = result[0]
-        new_course.name = result[1]
-        new_course.description = result[2]
-        new_course.course_num = result[3]
+        new_course.department = result[17]
+        new_course.course_num = result[2]
+        new_course.id = result[13]
+        new_course.name = result[16]
+        new_course.description = result[29]
         new_course.relevance = [0,0]
         punctuationset = set(string.punctuation)
         description = new_course.description
@@ -408,7 +409,7 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
-    results = query_by_title("programming languages")
+    results = smart_department_search(["data", "predictive","analysis"])
     for course in results:
         print(course.name)
         print(course.description)
