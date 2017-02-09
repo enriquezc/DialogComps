@@ -52,14 +52,12 @@ class Conversation:
             client_response = input()
             luis_analysis = self.nluu.get_luis(client_response)
             self.utterancesStack.append(luis_analysis)
-            print("luis: {}".format(luis_analysis))
             userQueries = self.get_next_response(client_response, luis_analysis) or User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify) # tuple containing response type as first argument, and data to format for other arguments
             self.last_user_query = userQueries
             our_str_response = ""
             if type(userQueries) is list:
                 for userQuery in userQueries:
                     self.utterancesStack.append(userQuery)
-                    print("userQuery: {}".format(userQuery.type))
                     if userQuery.type == User_Query.QueryType.goodbye:
                         print("Goodbye")
                         self.conversing = False
@@ -382,10 +380,9 @@ class Conversation:
             tokens = nltk.word_tokenize(luisAI.query)
             pos = nltk.pos_tag(tokens)
             interests = [word for word,p in pos if p in ['NNP','NNS','JJ','VBG']]
-            
-            self.student_profile.interests.add(interests)
+            for interest in interests:
+                self.student_profile.interests.add(interest)
             print("Interest")
-            print(self.student_profile.interests[0])
 
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
                 , self.decision_tree.get_next_node()]
