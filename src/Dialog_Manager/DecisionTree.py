@@ -193,7 +193,7 @@ class DecisionTree:
             [self.mapOfNodes[13], self.mapOfNodes[36]])  # interests, should we reccomend something?
         self.mapOfNodes[36].potential_next_questions.append(self.mapOfNodes[20])  # what class would they want to take?
         self.head_node = self.mapOfNodes[10]
-
+        self.current_node = self.head_node
     # takes in nothing, returns a userquery for asking how they feel about a new class.
     # The new classes are stored in the student object, under potential courses.
     def recommend_course(self):

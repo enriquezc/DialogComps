@@ -114,13 +114,13 @@ class Conversation:
             tm_major = TaskManager.smart_department_search(major)
             print("tm major: ", tm_major)
             if luis_intent == "student_info_concentration":
-                self.student_profile.concentration = major[0]
+                self.student_profile.concentration.append(major[0])
                 self.last_query = 18
             else:
-                self.student_profile.major = major[0]
+                self.student_profile.major.append(major[0])
                 self.last_query = 11
                 print(self.student_profile.major)
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
             #tm_major = TaskManager.smart_department_search(major)
             #print("tm major: ", tm_major)
             if format(self.utterancesStack[-1]) == "student_info_concentration":
