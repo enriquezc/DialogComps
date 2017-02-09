@@ -42,7 +42,7 @@ class DecisionTree:
         #self.current_node = None
         self.build_Tree()
         self.current_node = self.head_node
-        self.current_course = None
+        self.current_course = Course.Course()
         self.student = student
 
 
@@ -130,7 +130,7 @@ class DecisionTree:
             return False
 
         elif node.userQuery.value == 30: #new_class_name
-            if self.current_course.name and self.current_course.id:
+            if self.current_course.name or self.current_course.id:
                 node.answered = True
                 return True
             node.answered = False
@@ -163,19 +163,24 @@ class DecisionTree:
             return False
 
     def build_Tree(self):
-        listOfEnums = [0, 1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33,
+        listOfEnums = [0, 1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33,
                        34, 35, 36, 37]
         for i in listOfEnums:
             self.mapOfNodes[i] = NodeObject(User_Query.QueryType(i), [], [])
 
         # here we go...
         self.mapOfNodes[0].required_questions.append(self.mapOfNodes[10])  # name
+        self.mapOfNodes[5].required_questions.append(self.mapOfNodes[30])
+        self.mapOfNodes[5].potential_next_questions.append(self.mapOfNodes[30])
+        self.mapOfNodes[6].required_questions.append(self.mapOfNodes[30])
+        self.mapOfNodes[6].potential_next_questions.append(self.mapOfNodes[30])
+
         self.mapOfNodes[10].required_questions.extend([self.mapOfNodes[11], self.mapOfNodes[13]])  # time left / year
         self.mapOfNodes[10].potential_next_questions.extend([self.mapOfNodes[11], self.mapOfNodes[13]])  # time left / year
         self.mapOfNodes[11].required_questions.extend([self.mapOfNodes[18]])
         self.mapOfNodes[11].potential_next_questions.extend([self.mapOfNodes[13]])
-        self.mapOfNodes[12].potential_next_questions.extend([self.mapOfNodes[13], self.mapOfNodes[20]])
-        self.mapOfNodes[13].potential_next_questions.extend([self.mapOfNodes[20], self.mapOfNodes[30]])  # time left / year
+        self.mapOfNodes[12].potential_next_questions.extend([self.mapOfNodes[13]])
+        self.mapOfNodes[13].potential_next_questions.extend([self.mapOfNodes[30]])  # time left / year
         self.mapOfNodes[15].required_questions.extend([self.mapOfNodes[18]])  # concentration, major requirements
         #self.mapOfNodes[17].potential_next_questions.extend(
             #[self.mapOfNodes[30], self.mapOfNodes[20], self.mapOfNodes[36]])  # department, prof, reccomend
@@ -186,22 +191,23 @@ class DecisionTree:
         #self.mapOfNodes[17].required_questions.append(
             #self.mapOfNodes[32])  # Ask if they want to take a course that fills these reqs
         #self.mapOfNodes[17].potential_next_questions.append(self.mapOfNodes[13])  # interests
-        self.mapOfNodes[18].potential_next_questions.extend([self.mapOfNodes[13]])  # major reqs, distros, interests
-        self.mapOfNodes[20].potential_next_questions.append(self.mapOfNodes[36])  # reccomend
-        self.mapOfNodes[30].potential_next_questions.extend([self.mapOfNodes[20], self.mapOfNodes[36]])  # prof, reccomend
+        self.mapOfNodes[18].potential_next_questions.extend([self.mapOfNodes[30], self.mapOfNodes[13]])  # major reqs, distros, interests
+        self.mapOfNodes[20].potential_next_questions.append(self.mapOfNodes[37])  # reccomend
+        self.mapOfNodes[30].potential_next_questions.extend([self.mapOfNodes[5], self.mapOfNodes[37]])  # prof, reccomend
         self.mapOfNodes[32].potential_next_questions.extend(
             [self.mapOfNodes[13], self.mapOfNodes[36]])  # interests, should we reccomend something?
-        self.mapOfNodes[36].potential_next_questions.append(self.mapOfNodes[20])  # what class would they want to take?
-        self.head_node = self.mapOfNodes[0]
+        self.mapOfNodes[36].potential_next_questions.append(self.mapOfNodes[30])  # what class would they want to take?
 
+        self.head_node = self.mapOfNodes[10]
+        self.current_node = self.head_node
     # takes in nothing, returns a userquery for asking how they feel about a new class.
     # The new classes are stored in the student object, under potential courses.
     def recommend_course(self):
         self.student.potential_courses = TaskManager.recommend_course(self.student)
         if len(self.student.potential_courses) > 0:
-            return User_Query(33)
+            return User_Query.UserQuery(self.student, self.node.userQuery)
         else:
-            return User_Query(13)
+            return User_Query.UserQuery(self.student, self.past_node.userQuery)
 
     # @params: the current node of the tree
     # @return: the next node of the tree
@@ -226,7 +232,7 @@ class DecisionTree:
         for node in past_node.potential_next_questions:
             if not self.is_answered(node):
                 if not node.asked:
-                    self.current_course = node
+                    self.current_node = node
                     print("current node: 1 ", past_node.userQuery)
 
                     return User_Query.UserQuery(self.student, node.userQuery)
@@ -241,12 +247,12 @@ class DecisionTree:
         for node in past_node.potential_next_questions:
             if not self.is_answered(node):
                 #   if not node.asked:
-                self.current_course = node
+                self.current_node = node
                 print("next node: 1 ", past_node.userQuery)
-                return node.userQuery
+                return User_Query.UserQuery(self.student, node.userQuery)
         if not self.is_answered(past_node):
             print("next node: 2 ", past_node.userQuery)
-            return past_node.userQuery
+            return User_Query.UserQuery(self.student, past_node.userQuery)
 
         if len(past_node.required_questions) > 0:
             self.current_node = past_node.required_questions[0]

@@ -7,6 +7,7 @@ class Course:
         self.term = None
         self.department = None
         self.course_num = None
+        self.classroom = None
         #A score from 1-10 of how much they liked the class
         self.sentiment = 0
         #how confident are we in this sentiment
@@ -25,3 +26,6 @@ class Course:
         self.credits = 0
         self.relevance = None
         self.weighted_score = 0.0
+
+    def __str__(self):
+        return "{} : {}\n{}".format(self.id, self.name, self.description)

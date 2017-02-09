@@ -16,7 +16,7 @@ class Responses:
     STUDENT_INFO_PREVIOUS_CLASSES = ("Can you tell me about classes you've already taken?",)
     STUDENT_INFO_PREVIOUS_CLASSES_RES = ("I'll try to find classes for you to look at other than:\n {}",)
     STUDENT_INFO_INTERESTS = ("What are some of your interests?",)
-    STUDENT_INFO_INTERESTS_RES = ("I'll try to find some classes for you to look at that relate to:\n {}",)
+    STUDENT_INFO_INTERESTS_RES = ("I'll try to find some classes for you to look at that relate to your interests:\n {}",)
     STUDENT_INFO_TIME_LEFT = ("How many terms do you have left at Carleton?",)
     STUDENT_INFO_TIME_LEFT_RES = ("I'll keep the number of terms you have left in mind.",)
     STUDENT_INFO_ABROAD = ("Do you have any plans to study abroad?",)
@@ -43,6 +43,7 @@ class Responses:
     NEW_CLASS_SENTIMENT = ("What do you think about taking {}?",)
     NEW_CLASS_REQUIREMENTS = ("Which requirements would you like to complete?",)
     NEW_CLASS_TIME = ("What time of day would you like your classes to be?",)
-    NEW_CLASS_DESCRIPTION = ("Here's some more information about the class you asked about:\n {}:\n {}.",)
+    NEW_CLASS_DESCRIPTION = ("Here's some more information about the class you asked about:\n {}:\n {}.",
+                             "I found {} : {}. Here's a short description of this class:\n {}",)
     SCHEDULE_CLASS_RES = ("Here are the classes you're currently registered for:\n {}.",)
     FULL_SCHEDULE_CHECK = ("Here are the classes you're currently registered for:\n {} You're registered for {} credits, do you want to register for more classes?",)

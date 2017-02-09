@@ -146,35 +146,35 @@ class nLUU:
 
     def create_class_info_name(self, userQuery):
         s = constants.Responses.CLASS_INFO_NAME[0]
-        return s.format(userQuery.object.relevant_class[0].name)
+        return s.format(userQuery.object.relevant_class.name)
 
     def create_class_info_name_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_NAME_RES[0]
-        return s.format(userQuery.object.relevant_class[0].name)
+        return s.format(userQuery.object.relevant_class.name)
 
     def create_class_info_time(self, userQuery):
         s = constants.Responses.CLASS_INFO_TIME[0]
-        return s.format(userQuery.object.relevant_class[0].name)
+        return s.format(userQuery.object.relevant_class.name)
 
     def create_class_info_time_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_TIME_RES[0]
-        return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].time)
+        return s.format(userQuery.object.relevant_class.name, userQuery.object.relevant_class[0].time)
 
     def create_class_info_prof(self, userQuery):
         s = constants.Responses.CLASS_INFO_PROF[0]
-        return s.format(userQuery.object.relevant_class[0].name)
+        return s.format(userQuery.object.relevant_class.name)
 
     def create_class_info_prof_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_PROF_RES[0]
-        return s.format(userQuery.object.relevant_class[0].prof)
+        return s.format(userQuery.object.relevant_class.prof)
 
     def create_class_info_sentiment(self, userQuery):
         s = constants.Responses.CLASS_INFO_SENTIMENT[0]
-        return s.format(userQuery.object.relevant_class[0].name)
+        return s.format(userQuery.object.relevant_class.name)
 
     def create_class_info_scrunch(self, userQuery):
         s = constants.Responses.CLASS_INFO_SCRUNCH[0]
-        return s.format(userQuery.object.relevant_class[0].name)
+        return s.format(userQuery.object.relevant_class.name)
 
     def create_new_class_dept(self, userQuery):
         s = constants.Responses.NEW_CLASS_DEPT[0]
@@ -232,8 +232,10 @@ class nLUU:
         return constants.Responses.NEW_CLASS_TIME[0]
 
     def create_new_class_description(self, userQuery):
-        s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
-        return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description)
+        '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
+        return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description)'''
+        s = constants.Responses.NEW_CLASS_DESCRIPTION[1]
+        return s.format(userQuery.object.relevant_class.id, userQuery.object.relevant_class.name, userQuery.object.relevant_class.description)
 
     def create_schedule_class_res(self, userQuery):
         s = constants.Responses.SCHEDULE_CLASS_RES[0]
@@ -273,9 +275,7 @@ class nLUU:
 
     def create_student_info_interests_res(self, userQuery): 
         s = constants.Responses.STUDENT_INFO_INTERESTS_RES[0]
-        interest_string = ""
-        for interest in userQuery.object.interests:
-            interest_string += (interest + "\n")
+        s = s.format(str(userQuery.object.relevant_class))
         return s
 
     def create_student_info_time_left_res(self, userQuery):
@@ -324,7 +324,10 @@ class nLUU:
         return [word for word,p in pos if p == 'NNP']
 
     def find_interests(self, utterance):
-        return self.find_course(utterance)
+        tokens = self.tokenize(utterance)
+        pos = self.pos_tag(tokens)
+        return [word for word, p in pos if p in ['NNP', 'NNS', 'JJ', 'VBG']]
+
 
 #if __name__ == '__main__':
 #    nluu = nLUU("https://api.projectoxford.ai/luis/v1/application?id=fc7758f9-4d40-4079-84d3-72d6ccbb3ad2&subscription-key=c18a6e7119874249927033e72b01aeea")
