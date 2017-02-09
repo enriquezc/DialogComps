@@ -111,6 +111,16 @@ class Conversation:
             if len(major) == 0:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
             print("major ", major)
+            tm_major = TaskManager.smart_department_search(major)
+            print("tm major: ", tm_major)
+            if luis_intent == "student_info_concentration":
+                self.student_profile.concentration = major[0]
+                self.last_query = 18
+            else:
+                self.student_profile.major = major[0]
+                self.last_query = 11
+                print(self.student_profile.major)
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
             #tm_major = TaskManager.smart_department_search(major)
             #print("tm major: ", tm_major)
             if format(self.utterancesStack[-1]) == "student_info_concentration":
@@ -128,7 +138,7 @@ class Conversation:
             if entity.type == "department":
                 self.student_profile.major.append(entity.entity)
             print(self.student_profile.major)
-        return [self.decision_tree.get_next_node()]
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
 
     def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities):
         return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
@@ -389,9 +399,10 @@ class Conversation:
             tokens = nltk.word_tokenize(luisAI.query)
             pos = nltk.pos_tag(tokens)
             interests = [word for word,p in pos if p in ['NNP','NNS','JJ','VBG']]
-            self.student_profile.interests.extend(interests)
+            for interest in interests:
+                self.student_profile.interests.add(interest)
             print("Interest")
-            print(self.student_profile.interests[0])
+            #print(self.student_profile.interests[0])
 
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
                 , self.decision_tree.get_next_node()]

@@ -232,8 +232,10 @@ class nLUU:
         return constants.Responses.NEW_CLASS_TIME[0]
 
     def create_new_class_description(self, userQuery):
-        s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
-        return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description)
+        '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
+        return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description)'''
+        s = constants.Responses.NEW_CLASS_DESCRIPTION[1]
+        return s.format(userQuery.object.relevant_class[0].id, userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description)
 
     def create_schedule_class_res(self, userQuery):
         s = constants.Responses.SCHEDULE_CLASS_RES[0]
