@@ -294,7 +294,9 @@ def smart_department_search(keywords, threshold = None):
     department_names = []
     for i in recommended_departments - set((0,)):
         department_names.append(colnames[i].upper())
-
+    # If we don't find any departments to query on, we just return nothing. DM's problem now
+    if department_names == []:
+        return []
     #print(department_names)
     query = "SELECT DISTINCT * FROM COURSE c where UPPER(sec_subject) in {} AND ((sec_term LIKE '16%' OR sec_term LIKE '17%') AND sec_term NOT LIKE '%SU')".format(str(tuple(department_names)))
     query += " AND (UPPER(long_description) LIKE '%{}%'".format(new_keywords[0])
