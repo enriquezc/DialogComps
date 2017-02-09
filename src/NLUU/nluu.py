@@ -233,7 +233,7 @@ class nLUU:
 
     def create_new_class_description(self, userQuery):
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
-        return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description)'''
+        return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
         s = constants.Responses.NEW_CLASS_DESCRIPTION[1]
         if userQuery.object.relevant_class.time == None:
             time = "an unknown time"
