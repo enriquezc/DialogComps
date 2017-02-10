@@ -3,11 +3,12 @@ class Course:
         #name of class
         self.name = None
         self.id = None
-        self.prof = None
         self.term = None
         self.department = None
         self.course_num = None
         self.classroom = None
+        self.faculty_id = None
+        self.faculty_name = None
         #A score from 1-10 of how much they liked the class
         self.sentiment = 0
         #how confident are we in this sentiment

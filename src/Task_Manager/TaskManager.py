@@ -63,47 +63,51 @@ def query_courses(course):
     results = []
 
     for result in course_results:
-        #print("Getting results from query")
-        #print(result)
         result_course = Course.Course()
-        #result_course = Course()
         result_course.department = result[17]
         result_course.course_num = result[2]
         result_course.id = result[13]
         result_course.name = result[16]
-        #result_course.comments = result[6]
         result_course.term = result[19]
-        # if result[21] != None:
-        #     prof_id = result[21]
-        #     if '|' in prof_id:
-        #         prof_id = prof_id.split('|')
-        #         query_str = "SELECT name FROM professors WHERE id = "
-        #         for id_num in prof_id:
-        #             query_str = query_str + id_num + " OR id = "
-        #         query_str = query_str[:-9]
-        #         cur.execute(query_str)
-        #         name = cur.fetchone()
-        #         result_course.prof = name[0]
-        #     else:
-        #         query_str = "SELECT name FROM professors WHERE id = " + prof_id
-        #         cur.execute(query_str)
-        #         name = cur.fetchone()
-        #         result_course.prof = name[0]
         classroom_str = result[24]
         if classroom_str != None:
             classroom_str = classroom_str.split()
             classroom = classroom_str[0] + " " + classroom_str[1]
             result_course.classroom = classroom
         result_course.description = result[29]
+
+        if result[21] != None:
+            result_course.faculty_id = result[21]
+            if '|' in result_course.faculty_id:
+                prof_ids = result_course.faculty_id.split('|')
+                query_str = "SELECT * FROM professors WHERE id = "
+                for id_num in prof_ids:
+                    query_str = query_str + id_num + " OR id = "
+                query_str = query_str[:-9]
+                cur.execute(query_str)
+                names = cur.fetchall()
+                result_course.faculty_id = ""
+                for result in names:
+                    result_course.faculty_id = result_course.faculty_id + names[0] + ","
+                    result_course.faculty_name = result_course.faculty_name + names[1] + ","
+
+                result_course.faculty_name = result_course.faculty_name[:-1]
+                result_course.faculty_id = result_course.faculty_id[:-1]
+            else:
+                query_str = "SELECT name FROM professors WHERE id = " + result_course.faculty_id
+                cur.execute(query_str)
+                name = cur.fetchone()
+                result_course.faculty_name = name[0]
+
         results.append(result_course)
-        #academic_session
-
-
-    #list_courses = []
-
     return results
 
+
+# Takes a title string and a potential department, returns a list of classes
 def query_by_title(title_string, department = None):
+    if type(title_string) != type("this is a string"):
+        return []
+
     global conn
     word_array = title_string.split()
     new_word_array = title_string.split()
@@ -151,7 +155,6 @@ def query_by_title(title_string, department = None):
         result_course.course_num = result[2]
         result_course.id = result[13]
         result_course.name = result[16]
-        #result_course.comments = result[6]
         result_course.term = result[19]
         classroom_str = result[24]
         if classroom_str != None:
@@ -159,6 +162,30 @@ def query_by_title(title_string, department = None):
             classroom = classroom_str[0] + " " + classroom_str[1]
             result_course.classroom = classroom
         result_course.description = result[29]
+
+        if result[21] != None:
+            result_course.faculty_id = result[21]
+            if '|' in result_course.faculty_id:
+                prof_ids = result_course.faculty_id.split('|')
+                query_str = "SELECT * FROM professors WHERE id = "
+                for id_num in prof_ids:
+                    query_str = query_str + str(int(id_num)) + " OR id = "
+                query_str = query_str[:-9]
+                cur.execute(query_str)
+                names = cur.fetchall()
+                result_course.faculty_id = ""
+                for result in names:
+                    result_course.faculty_id = result_course.faculty_id + names[0] + ","
+                    result_course.faculty_name = result_course.faculty_name + names[1] + ","
+
+                result_course.faculty_name = result_course.faculty_name[:-1]
+                result_course.faculty_id = result_course.faculty_id[:-1]
+            else:
+                query_str = "SELECT name FROM professors WHERE id = " + str(int(result_course.faculty_id))
+                cur.execute(query_str)
+                name = cur.fetchone()
+                result_course.faculty_name = name[0]
+
         courses.append(result_course)
 
     return courses
@@ -285,7 +312,11 @@ def create_stop_words_set():
     for word in stop_words_file:
         stop_words.add(word.strip())
 
+# takes a list of keywords, returns a list of classes
 def smart_department_search(keywords, threshold = None):
+    if type(keywords) != type([]):
+        return []
+
     global stop_words
     recommended_departments = set()
     new_keywords = []
