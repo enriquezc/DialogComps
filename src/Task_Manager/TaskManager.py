@@ -328,12 +328,17 @@ def smart_description_expansion(description):
         res = cur.fetchone()
         if res != None:
             s, l = res
-            new_description += " {}".format(l)
+            if l != None:
+                new_description += " {}".format(l)
+            else:
+                new_description += " {}".format(word)
         else:
             new_description += " {}".format(word)
-    if new_description[0] == ' ':
+    if len(new_description) > 0 and new_description[0] == ' ':
         new_description = new_description[1:]
-    return new_description
+        return new_description
+    else:
+        return description
 
 def create_stop_words_set():
     global stop_words
