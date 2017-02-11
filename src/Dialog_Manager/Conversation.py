@@ -109,7 +109,12 @@ class Conversation:
             print("no entity")
             tokens = nltk.word_tokenize(luisAI.query)
             pos = nltk.pos_tag(tokens)
+            major_string = ''
             major = [word for word, p in pos if p in ['JJ','NN']]
+            for word in major:
+                if word != "major":
+                    major_string.join(word+" ")
+            print(major_string)
             print("major: ", major)
             if len(major) == 0:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
@@ -118,10 +123,10 @@ class Conversation:
                 print(self.student_profile.concentration)
                 return [self.decision_tree.get_next_node()]
             else:
-                tm_major = TaskManager.smart_description_expansion(major)
+                tm_major = TaskManager.smart_description_expansion(major_string)
                 try:
                     print("tm major: ", tm_major)
-                    self.student_profile.major.append(major[0])
+                    self.student_profile.major.append(tm_major)
                 except:
                     return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
                 print(self.student_profile.major)
@@ -131,7 +136,7 @@ class Conversation:
                 tm_major = format(TaskManager.smart_description_expansion(entity.entity))
                 try:
                     print("tm major: ", tm_major)
-                    self.student_profile.major.append(tm_major[0])
+                    self.student_profile.major.append(tm_major)
                 except:
                     return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify), self.decision_tree.get_next_node()]
             print(self.student_profile.major)
