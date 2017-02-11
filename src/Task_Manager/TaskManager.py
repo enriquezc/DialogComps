@@ -8,7 +8,6 @@ import io
 import string
 from src.Dialog_Manager import Course
 
-
 conn = None
 dept_dict = {}
 stop_words = None
@@ -32,8 +31,10 @@ def query_courses(course):
     criteria.
     '''
 
-    #(sec_term LIKE '16%' OR sec_term LIKE '17%')
-    course_query = "SELECT * FROM COURSE WHERE ((sec_term LIKE '16%' OR sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND "
+    #print("ENTERING QUERY COURSES FUNCTION")
+
+    course_query = "SELECT * FROM COURSE WHERE ((sec_term LIKE '16%' OR \
+                    sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND "
 
     if course.department != None:
         course_query = course_query + "sec_subject = '" + course.department.upper()
@@ -72,15 +73,18 @@ def query_courses(course):
         classroom_str = result[24]
         if classroom_str != None:
             classroom_str = classroom_str.split()
-            classroom = classroom_str[0] + " " + classroom_str[1]
-            result_course.classroom = classroom
+            if len(classroom_str) > 1:
+                classroom = classroom_str[0] + " " + classroom_str[1]
+                result_course.classroom = classroom
+            else:
+                result_course.classroom = None
         result_course.description = result[29]
 
         if result[21] != None:
             result_course.faculty_id = result[21]
             if '|' in result_course.faculty_id:
                 prof_ids = result_course.faculty_id.split('|')
-                query_str = "SELECT * FROM professors WHERE id = "
+                query_str = "SELECT DISTINCT * FROM professors WHERE id = "
                 for id_num in prof_ids:
                     query_str = query_str + str(int(id_num)) + " OR id = "
                 query_str = query_str[:-9]
@@ -88,18 +92,22 @@ def query_courses(course):
                 names = cur.fetchall()
                 result_course.faculty_id = ""
                 for result in names:
-                    result_course.faculty_id = result_course.faculty_id + names[0] + ","
-                    result_course.faculty_name = result_course.faculty_name + names[1] + ","
-
-                result_course.faculty_name = result_course.faculty_name[:-1]
-                result_course.faculty_id = result_course.faculty_id[:-1]
+                    if len(result) > 1:
+                        result_course.faculty_id = result_course.faculty_id + result[0] + ","
+                        result_course.faculty_name = result_course.faculty_name + result[1] + ","
+                    else:
+                        result_course.faculty_id = None
+                        result_course.faculty_name = None
+                if result_course.faculty_name != None and result_course.faculty_id != None:
+                    result_course.faculty_name = result_course.faculty_name[:-1]
+                    result_course.faculty_id = result_course.faculty_id[:-1]
             else:
-                print(str(result_course.faculty_id))
-                query_str = "SELECT name FROM professors WHERE id = \'" + str(int(result_course.faculty_id)) + "'"
+                query_str = "SELECT name FROM professors WHERE id = \'" \
+                             + str(int(result_course.faculty_id)) + "'"
                 cur.execute(query_str)
                 name = cur.fetchall()
-                result_course.faculty_name = name[0]
-
+                if len(name) > 0 and len(name[0]) > 0:
+                    result_course.faculty_name = name[0][0]
         results.append(result_course)
     return results
 
@@ -137,7 +145,8 @@ def query_by_title(title_string, department = None):
                 else:
                     cur_string = cur_string + " " + word_array[i].lower() + "%"
             else:
-                cur_string = cur_string + " " + dept_dict[word_array[i].upper()].lower() + "%"
+                cur_string = cur_string + " " \
+                + dept_dict[word_array[i].upper()].lower() + "%"
         else:
             new_string = new_string  + new_word_array[i].lower() + "%"
             if word_array[i] not in dept_dict:
@@ -149,7 +158,11 @@ def query_by_title(title_string, department = None):
                 cur_string = cur_string + dept_dict[word_array[i]].lower() + "%"
 
     # Placing both strings in a query for the database
-    query_string = "SELECT * FROM COURSE WHERE ((sec_term LIKE '16%' OR sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND (lower(sec_short_title) LIKE '{}' OR lower(sec_short_title) LIKE '{}')".format(new_string, cur_string)
+    query_string = "SELECT * FROM COURSE WHERE ((sec_term LIKE '16%' \
+                    OR sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND \
+                    (lower(sec_short_title) LIKE '{}' OR \
+                    lower(sec_short_title) \
+                    LIKE '{}')".format(new_string, cur_string)
 
     # adding a deparment criteria to narrow search if passed
     if department != None:
@@ -188,13 +201,14 @@ def query_by_title(title_string, department = None):
                 names = cur.fetchall()
                 result_course.faculty_id = ""
                 for result in names:
-                    result_course.faculty_id = result_course.faculty_id + names[0] + ","
-                    result_course.faculty_name = result_course.faculty_name + names[1] + ","
+                    result_course.faculty_id = result_course.faculty_id + result[0] + ","
+                    result_course.faculty_name = result_course.faculty_name + result[1] + ","
 
                 result_course.faculty_name = result_course.faculty_name[:-1]
                 result_course.faculty_id = result_course.faculty_id[:-1]
             else:
-                query_str = "SELECT name FROM professors WHERE id = \'" + str(int(result_course.faculty_id)) + "'"
+                query_str = "SELECT name FROM professors WHERE id = \'" \
+                             + str(int(result_course.faculty_id)) + "'"
                 cur.execute(query_str)
                 name = cur.fetchone()
                 result_course.faculty_name = name[0]
@@ -341,6 +355,11 @@ def smart_department_search(keywords, threshold = None):
         for k in ks:
             if k not in stop_words:
                 new_keywords.append(k.upper())
+
+    # trying to catch any errors if new_keywords is never changed
+    if new_keywords == []:
+        return []
+
     keywords_str = " in {}".format(tuple(new_keywords)) if len(new_keywords) > 1 else " = '{}'".format(new_keywords[0])
     query = "SELECT * FROM occurence where words {};".format(keywords_str)
     global conn
@@ -359,7 +378,9 @@ def smart_department_search(keywords, threshold = None):
     if department_names == []:
         return []
     #print(department_names)
-    query = "SELECT DISTINCT * FROM COURSE c where UPPER(sec_subject) in {} AND ((sec_term LIKE '16%' OR sec_term LIKE '17%') AND sec_term NOT LIKE '%SU')".format(str(tuple(department_names)))
+    query = "SELECT DISTINCT * FROM COURSE c where UPPER(sec_subject) in {} \
+             AND ((sec_term LIKE '16%' OR sec_term LIKE '17%') \
+             AND sec_term NOT LIKE '%SU')".format(str(tuple(department_names)))
     query += " AND (UPPER(long_description) LIKE '%{}%'".format(new_keywords[0])
     if len(keywords) > 1:
         for keyword in new_keywords[1:]:
@@ -473,10 +494,8 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
-    course = Course()
-    course.deparment = "CS"
-    course.course_num = 111
-    results = query_courses(course)
+
+    results = smart_department_search(["sports"])
     for course in results:
         print(course.name)
         print(course.description)

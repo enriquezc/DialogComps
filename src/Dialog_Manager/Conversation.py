@@ -186,7 +186,7 @@ class Conversation:
                         , self.decision_tree.get_next_node()]
 
             if entity.type == "personname":
-                course.prof = entity.entity
+                course.faculty_name = entity.entity
                 tm_courses = self.task_manager_information(course)
                 self.student_profile.potential_courses = tm_courses
                 if not tm_courses:
@@ -262,7 +262,7 @@ class Conversation:
                     return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
 ,self.decision_tree.get_next_node()]
             if entity.type == "personname":
-                course.prof = entity.entity
+                course.faculty_name = entity.entity
                 # query on previous courses with professors
             if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
                 pass  # with start/end time that day?
@@ -401,12 +401,21 @@ class Conversation:
                 if entity.type == "class" or entity.type == "department" or entity.type == "sentiment":
                     self.student_profile.interests.add(entity.entity)
         tm_courses = TaskManager.smart_department_search(" ".join(self.student_profile.interests))
+<<<<<<< HEAD
         try:
             self.student_profile.relevant_class = tm_courses[0]
         except:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify), self.decision_tree.get_next_node()]
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
             , self.decision_tree.get_next_node()]
+=======
+        if tm_courses != []:
+            self.student_profile.relevant_class = tm_courses[0]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
+                , self.decision_tree.get_next_node()]
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
+                
+>>>>>>> 4a5008a36ae2afc94cdf73819becd65f1a5cdf6d
 
     def handle_student_info_name(self, input, luisAI, luis_intent, luis_entities): #10
         return self.handleStudentNameInfo(input, luisAI, luis_intent, luis_entities)
@@ -520,13 +529,13 @@ class Conversation:
             for entity in luis_entities:
                 if entity.type == 'personname':
                     c = Course.Course()
-                    c.prof = entity.entity
+                    c.faculty_name = entity.entity
                     self.student_profile.potential_courses.append(c)
                 if self.student_profile.potential_courses != []:
                     return self.decision_tree.get_next_node()
         elif len(self.last_query.split()) < 3:
             c = Course.Course()
-            c.prof = self.last_query
+            c.faculty_name = self.last_query
             self.student_profile.potential_courses.append(c)
             return self.decision_tree.get_next_node()
         else:
