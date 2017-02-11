@@ -167,7 +167,7 @@ def query_by_title(title_string, department = None):
                     OR sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND \
                     (lower(sec_short_title) LIKE '{}' OR \
                     lower(sec_short_title) \
-                    LIKE '{}')".format(new_string, cur_string)
+                    LIKE '{}') AND sec_name NOT LIKE '%WL%'".format(new_string, cur_string)
 
     # adding a deparment criteria to narrow search if passed
     if department != None:
