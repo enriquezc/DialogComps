@@ -32,6 +32,8 @@ def query_courses(course):
     criteria.
     '''
 
+    print("ENTERING QUERY COURSES FUNCTION")
+
     #(sec_term LIKE '16%' OR sec_term LIKE '17%')
     course_query = "SELECT * FROM COURSE WHERE ((sec_term LIKE '16%' OR sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND "
 
@@ -80,7 +82,7 @@ def query_courses(course):
             result_course.faculty_id = result[21]
             if '|' in result_course.faculty_id:
                 prof_ids = result_course.faculty_id.split('|')
-                query_str = "SELECT * FROM professors WHERE id = "
+                query_str = "SELECT DISTINCT * FROM professors WHERE id = "
                 for id_num in prof_ids:
                     query_str = query_str + str(int(id_num)) + " OR id = "
                 query_str = query_str[:-9]
@@ -88,17 +90,17 @@ def query_courses(course):
                 names = cur.fetchall()
                 result_course.faculty_id = ""
                 for result in names:
-                    result_course.faculty_id = result_course.faculty_id + names[0] + ","
-                    result_course.faculty_name = result_course.faculty_name + names[1] + ","
+                    result_course.faculty_id = result_course.faculty_id + result[0] + ","
+                    result_course.faculty_name = result_course.faculty_name + result[1] + ","
 
                 result_course.faculty_name = result_course.faculty_name[:-1]
                 result_course.faculty_id = result_course.faculty_id[:-1]
             else:
-                print(str(result_course.faculty_id))
+                #print(str(result_course.faculty_id))
                 query_str = "SELECT name FROM professors WHERE id = \'" + str(int(result_course.faculty_id)) + "'"
                 cur.execute(query_str)
                 name = cur.fetchall()
-                result_course.faculty_name = name[0]
+                result_course.faculty_name = name[0][0]
 
         results.append(result_course)
     return results
@@ -188,8 +190,8 @@ def query_by_title(title_string, department = None):
                 names = cur.fetchall()
                 result_course.faculty_id = ""
                 for result in names:
-                    result_course.faculty_id = result_course.faculty_id + names[0] + ","
-                    result_course.faculty_name = result_course.faculty_name + names[1] + ","
+                    result_course.faculty_id = result_course.faculty_id + result[0] + ","
+                    result_course.faculty_name = result_course.faculty_name + result[1] + ","
 
                 result_course.faculty_name = result_course.faculty_name[:-1]
                 result_course.faculty_id = result_course.faculty_id[:-1]

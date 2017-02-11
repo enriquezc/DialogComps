@@ -181,7 +181,7 @@ class Conversation:
                         , self.decision_tree.get_next_node()]
 
             if entity.type == "personname":
-                course.prof = entity.entity
+                course.faculty_name = entity.entity
                 tm_courses = self.task_manager_information(course)
                 self.student_profile.potential_courses = tm_courses
                 if not tm_courses:
@@ -257,7 +257,7 @@ class Conversation:
                     return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
 ,self.decision_tree.get_next_node()]
             if entity.type == "personname":
-                course.prof = entity.entity
+                course.faculty_name = entity.entity
                 # query on previous courses with professors
             if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
                 pass  # with start/end time that day?
@@ -512,13 +512,13 @@ class Conversation:
             for entity in luis_entities:
                 if entity.type == 'personname':
                     c = Course.Course()
-                    c.prof = entity.entity
+                    c.faculty_name = entity.entity
                     self.student_profile.potential_courses.append(c)
                 if self.student_profile.potential_courses != []:
                     return self.decision_tree.get_next_node()
         elif len(self.last_query.split()) < 3:
             c = Course.Course()
-            c.prof = self.last_query
+            c.faculty_name = self.last_query
             self.student_profile.potential_courses.append(c)
             return self.decision_tree.get_next_node()
         else:
