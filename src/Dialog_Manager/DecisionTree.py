@@ -163,43 +163,42 @@ class DecisionTree:
             return False
 
     def build_Tree(self):
-        listOfEnums = [0, 1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 26, 30, 31, 32, 33,
-                       34, 35, 36, 37]
-        for i in listOfEnums:
-            self.mapOfNodes[i] = NodeObject(User_Query.QueryType(i), [], [])
+        for query_type in User_Query.QueryType:
+            self.mapOfNodes[query_type] = NodeObject(query_type, [], [])
 
         # here we go...
-        self.mapOfNodes[0].required_questions.append(self.mapOfNodes[10])  # name
-        self.mapOfNodes[5].required_questions.append(self.mapOfNodes[30])
-        self.mapOfNodes[5].potential_next_questions.append(self.mapOfNodes[30])
-        self.mapOfNodes[6].required_questions.append(self.mapOfNodes[30])
-        self.mapOfNodes[6].potential_next_questions.append(self.mapOfNodes[30])
+        self.mapOfNodes[User_Query.QueryType.welcome].required_questions.append(self.mapOfNodes[User_Query.QueryType.student_info_name])  # name
+        self.mapOfNodes[User_Query.QueryType.schedule_class_res].required_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_name])
+        self.mapOfNodes[User_Query.QueryType.schedule_class_res].potential_next_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_name])
+        self.mapOfNodes[User_Query.QueryType.full_schedule_check].required_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_name])
+        self.mapOfNodes[User_Query.QueryType.full_schedule_check].potential_next_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_name])
 
-        self.mapOfNodes[10].required_questions.extend([self.mapOfNodes[11], self.mapOfNodes[13]])  # time left / year
-        self.mapOfNodes[10].potential_next_questions.extend([self.mapOfNodes[11], self.mapOfNodes[13]])  # time left / year
-        self.mapOfNodes[11].required_questions.extend([self.mapOfNodes[18]])
-        self.mapOfNodes[11].potential_next_questions.extend([self.mapOfNodes[13]])
-        self.mapOfNodes[12].potential_next_questions.extend([self.mapOfNodes[13]])
-        self.mapOfNodes[13].potential_next_questions.extend([self.mapOfNodes[30]])  # time left / year
-        self.mapOfNodes[15].required_questions.extend([self.mapOfNodes[18]])  # concentration, major requirements
+        self.mapOfNodes[User_Query.QueryType.student_info_name].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # time left / year
+        self.mapOfNodes[User_Query.QueryType.student_info_name].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # time left / year
+        self.mapOfNodes[User_Query.QueryType.student_info_major].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_concentration]])
+        self.mapOfNodes[User_Query.QueryType.student_info_major].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_interests]])
+        self.mapOfNodes[User_Query.QueryType.student_info_previous_classes].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_interests]])
+        self.mapOfNodes[User_Query.QueryType.student_info_interests].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])  # time left / year
+        self.mapOfNodes[User_Query.QueryType.student_info_abroad].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_concentration]])  # concentration, major requirements
         #self.mapOfNodes[17].potential_next_questions.extend(
-            #[self.mapOfNodes[30], self.mapOfNodes[20], self.mapOfNodes[36]])  # department, prof, reccomend
-        self.mapOfNodes[14].potential_next_questions.extend([self.mapOfNodes[11], self.mapOfNodes[18], self.mapOfNodes[13]])  # major, concentration, distros, interests
+            #[self.mapOfNodes[30], self.mapOfNodes[20], self.mapOfNodes[36]])  # department, prof, recommend
+        self.mapOfNodes[User_Query.QueryType.student_info_time_left].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_concentration], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # major, concentration, distros, interests
         #self.mapOfNodes[16].potential_next_questions.append(self.mapOfNodes[13])  # interests
         #self.mapOfNodes[16].required_questions.append(
             #self.mapOfNodes[32])  # ask if they want to take a course that fills these reqs
         #self.mapOfNodes[17].required_questions.append(
             #self.mapOfNodes[32])  # Ask if they want to take a course that fills these reqs
         #self.mapOfNodes[17].potential_next_questions.append(self.mapOfNodes[13])  # interests
-        self.mapOfNodes[18].potential_next_questions.extend([self.mapOfNodes[30], self.mapOfNodes[13]])  # major reqs, distros, interests
-        self.mapOfNodes[20].potential_next_questions.append(self.mapOfNodes[37])  # reccomend
-        self.mapOfNodes[30].potential_next_questions.extend([self.mapOfNodes[5], self.mapOfNodes[37]])  # prof, reccomend
-        self.mapOfNodes[32].potential_next_questions.extend(
-            [self.mapOfNodes[13], self.mapOfNodes[36]])  # interests, should we reccomend something?
-        self.mapOfNodes[36].potential_next_questions.append(self.mapOfNodes[30])  # what class would they want to take?
+        self.mapOfNodes[User_Query.QueryType.student_info_concentration].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # major reqs, distros, interests
+        self.mapOfNodes[User_Query.QueryType.class_info_name].potential_next_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_request])  # recommend
+        self.mapOfNodes[User_Query.QueryType.new_class_name].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.schedule_class_res], self.mapOfNodes[User_Query.QueryType.new_class_request]])  # prof, recommend
+        self.mapOfNodes[User_Query.QueryType.new_class_dept].potential_next_questions.extend(
+            [self.mapOfNodes[User_Query.QueryType.student_info_interests], self.mapOfNodes[User_Query.QueryType.new_class_description]])  # interests, should we recommend something?
+        self.mapOfNodes[User_Query.QueryType.new_class_description].potential_next_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_name])  # what class would they want to take?
 
-        self.head_node = self.mapOfNodes[10]
+        self.head_node = self.mapOfNodes[User_Query.QueryType.student_info_name]
         self.current_node = self.head_node
+
     # takes in nothing, returns a userquery for asking how they feel about a new class.
     # The new classes are stored in the student object, under potential courses.
     def recommend_course(self):
