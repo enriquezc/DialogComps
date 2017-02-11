@@ -118,7 +118,7 @@ class Conversation:
                 print(self.student_profile.concentration)
                 return [self.decision_tree.get_next_node()]
             else:
-                tm_major = TaskManager.smart_department_search([major])
+                tm_major = TaskManager.smart_description_expansion(major)
                 try:
                     print("tm major: ", tm_major)
                     self.student_profile.major.append(major[0])
@@ -128,7 +128,7 @@ class Conversation:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
         for entity in luis_entities:
             if entity.type == "department":
-                tm_major = format(TaskManager.smart_department_search([entity.entity]))
+                tm_major = format(TaskManager.smart_description_expansion([entity.entity]))
                 try:
                     print("tm major: ", tm_major)
                     self.student_profile.major.append(tm_major[0])
@@ -400,22 +400,13 @@ class Conversation:
                 print(entity)
                 if entity.type == "class" or entity.type == "department" or entity.type == "sentiment":
                     self.student_profile.interests.add(entity.entity)
-        tm_courses = TaskManager.smart_department_search(" ".join(self.student_profile.interests))
-<<<<<<< HEAD
+        tm_courses = TaskManager.query_by_keywords(" ".join(self.student_profile.interests))
         try:
             self.student_profile.relevant_class = tm_courses[0]
         except:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify), self.decision_tree.get_next_node()]
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
             , self.decision_tree.get_next_node()]
-=======
-        if tm_courses != []:
-            self.student_profile.relevant_class = tm_courses[0]
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
-                , self.decision_tree.get_next_node()]
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
-                
->>>>>>> 4a5008a36ae2afc94cdf73819becd65f1a5cdf6d
 
     def handle_student_info_name(self, input, luisAI, luis_intent, luis_entities): #10
         return self.handleStudentNameInfo(input, luisAI, luis_intent, luis_entities)
@@ -620,7 +611,7 @@ class Conversation:
             # @return 0 for added successfully, 1 for not added
 
     def task_manager_keyword(self, keywords):
-        tm_courses = TaskManager.smart_department_search([keywords])
+        tm_courses = TaskManager.query_by_keywords([keywords])
         if tm_courses:
             return tm_courses
         if not tm_courses:
