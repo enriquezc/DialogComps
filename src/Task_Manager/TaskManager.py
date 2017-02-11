@@ -53,7 +53,7 @@ def query_courses(course):
         + course_name
         course_query = course_query + "' AND "
 
-    course_query = course_query[:-5]
+    course_query = course_query + "sec_name NOT LIKE '%WL%'"
 
     global conn
 
