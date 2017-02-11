@@ -38,13 +38,15 @@ class NodeObject:
 class DecisionTree:
     def __init__(self, student):
         self.mapOfNodes = {}
-        self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.clarify), [], [])
-        #self.current_node = None
+        self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.welcome), [], [])
         self.build_Tree()
         self.current_node = self.head_node
         self.current_course = Course.Course()
         self.student = student
 
+
+    def get_current_node(self):
+        return self.current_node
 
     def is_answered(self, node):
         if node.userQuery.value == 0: #welcome

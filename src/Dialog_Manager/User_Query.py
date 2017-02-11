@@ -16,6 +16,8 @@ class QueryType(Enum):
     schedule_class_res = 5
     #scheduled a class
     full_schedule_check = 6
+    #clarifying a none return from the data base
+    tm_clarify = 7
 
 
 

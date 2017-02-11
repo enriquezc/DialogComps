@@ -79,10 +79,10 @@ class Conversation:
     # @return
     def classify_intent(self, luis_input):
         # input is a luis dictionary
-        if luis_input.intents[0] == "None" and luis_input.intents[0].score > .7:
+        if luis_input.intents[0] == "None" and luis_input.intents[0].score > .6:
             return luis_input.intents[0]
         for intent in luis_input.intents:
-            if intent.score >= .15 and intent.intent != "None":
+            if intent.score >= .20 and intent.intent != "None":
                 return intent.intent
             else:
                 pass
@@ -110,25 +110,30 @@ class Conversation:
             tokens = nltk.word_tokenize(luisAI.query)
             pos = nltk.pos_tag(tokens)
             major = [word for word, p in pos if p in ['JJ','NN']]
-
+            print("major: ", major)
             if len(major) == 0:
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res)]
-            print("major ", major)
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
             if format(luis_intent) == "student_info_concentration":
                 self.student_profile.concentration.append(major[0])
                 print(self.student_profile.concentration)
                 return [self.decision_tree.get_next_node()]
             else:
-                tm_major = TaskManager.smart_department_search(major)
-                print("tm major: ", tm_major)
-                self.student_profile.major.append(major[0])
+                tm_major = TaskManager.smart_department_search([major])
+                try:
+                    print("tm major: ", tm_major)
+                    self.student_profile.major.append(major[0])
+                except:
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
                 print(self.student_profile.major)
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
-            #tm_major = TaskManager.smart_department_search(major)
-            #print("tm major: ", tm_major)
         for entity in luis_entities:
             if entity.type == "department":
-                self.student_profile.major.append(entity.entity)
+                tm_major = format(TaskManager.smart_department_search([entity.entity]))
+                try:
+                    print("tm major: ", tm_major)
+                    self.student_profile.major.append(tm_major[0])
+                except:
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify), self.decision_tree.get_next_node()]
             print(self.student_profile.major)
         return [self.decision_tree.get_next_node()]
 
@@ -218,8 +223,8 @@ class Conversation:
             print("Class description no entity")
             tokens = nltk.word_tokenize(luisAI.query)
             pos = nltk.pos_tag(tokens)
-            verbs = [word for word,p in pos if p == 'NNP']
-            if "interested" in verbs:
+            #verbs = [word for word,p in pos if p == 'VB']
+            if "interested" in input:
                 self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
             possibilities = self.nluu.find_course(luisAI.query)
             if len(possibilities) == 0:
@@ -396,7 +401,10 @@ class Conversation:
                 if entity.type == "class" or entity.type == "department" or entity.type == "sentiment":
                     self.student_profile.interests.add(entity.entity)
         tm_courses = TaskManager.smart_department_search(" ".join(self.student_profile.interests))
-        self.student_profile.relevant_class = tm_courses[0]
+        try:
+            self.student_profile.relevant_class = tm_courses[0]
+        except:
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify), self.decision_tree.get_next_node()]
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
             , self.decision_tree.get_next_node()]
 
@@ -603,7 +611,7 @@ class Conversation:
             # @return 0 for added successfully, 1 for not added
 
     def task_manager_keyword(self, keywords):
-        tm_courses = TaskManager.smart_department_search(keywords)
+        tm_courses = TaskManager.smart_department_search([keywords])
         if tm_courses:
             return tm_courses
         if not tm_courses:
