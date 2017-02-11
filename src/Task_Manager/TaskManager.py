@@ -8,7 +8,6 @@ import io
 import string
 from src.Dialog_Manager import Course
 
-
 conn = None
 dept_dict = {}
 stop_words = None
@@ -101,7 +100,6 @@ def query_courses(course):
                 cur.execute(query_str)
                 name = cur.fetchall()
                 result_course.faculty_name = name[0][0]
-
         results.append(result_course)
     return results
 
@@ -322,8 +320,8 @@ def smart_description_search(description):
 def create_stop_words_set():
     global stop_words
     stop_words = set()
-    stop_words_file = open('./src/Task_Manager/stop_words.txt', 'r')
-    #stop_words_file = open('stop_words.txt', 'r')
+    #stop_words_file = open('./src/Task_Manager/stop_words.txt', 'r')
+    stop_words_file = open('stop_words.txt', 'r')
     for word in stop_words_file:
         stop_words.add(word.strip())
 
@@ -343,6 +341,11 @@ def smart_department_search(keywords, threshold = None):
         for k in ks:
             if k not in stop_words:
                 new_keywords.append(k.upper())
+
+    # trying to catch any errors if new_keywords is never changed
+    if new_keywords == []:
+        return []
+
     keywords_str = " in {}".format(tuple(new_keywords)) if len(new_keywords) > 1 else " = '{}'".format(new_keywords[0])
     query = "SELECT * FROM occurence where words {};".format(keywords_str)
     global conn
@@ -412,8 +415,8 @@ def smart_department_search(keywords, threshold = None):
 # called in the init function, reads the file to create a dictionary
 def create_dept_dict():
     global dept_dict
-    file = open('./src/Task_Manager/course_subjects.txt', 'r')
-    #file = open('course_subjects.txt', 'r')
+    #file = open('./src/Task_Manager/course_subjects.txt', 'r')
+    file = open('course_subjects.txt', 'r')
     for line in file:
         line = line.strip()
         pair = line.split(';')
@@ -475,10 +478,8 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
-    course = Course()
-    course.deparment = "CS"
-    course.course_num = 111
-    results = query_courses(course)
+
+    results = smart_department_search(["sports"])
     for course in results:
         print(course.name)
         print(course.description)
