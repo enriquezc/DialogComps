@@ -48,37 +48,42 @@ class Conversation:
         our_response = self.get_current_node()[0]
         our_str_response = self.nluu.create_response(our_response.type)
         self.utterancesStack.append(our_response)
+        print(our_str_response)
         while self.conversing:
-            print(our_str_response)
+            
             client_response = input()
-            luis_analysis = self.nluu.get_luis(client_response)
-            self.utterancesStack.append(luis_analysis)
-            userQueries = self.get_next_response(client_response, luis_analysis) or User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify) # tuple containing response type as first argument, and data to format for other arguments
-            print("luis: {}".format(luis_analysis))
-            our_str_response = ""
-            if type(userQueries) is list:
-                for userQuery in userQueries:
-                    self.utterancesStack.append(userQuery)
-                    self.last_user_query.append(userQuery)
-                    if userQuery.type == User_Query.QueryType.goodbye:
+            if client_response != "" and client_response != "\n":
+                luis_analysis = self.nluu.get_luis(client_response)
+                self.utterancesStack.append(luis_analysis)
+                userQueries = self.get_next_response(client_response, luis_analysis) or User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify) # tuple containing response type as first argument, and data to format for other arguments
+                print("luis: {}".format(luis_analysis))
+                our_str_response = ""
+                if type(userQueries) is list:
+                    for userQuery in userQueries:
+                        self.utterancesStack.append(userQuery)
+                        self.last_user_query.append(userQuery)
+                        if userQuery.type == User_Query.QueryType.goodbye:
+                            print("Goodbye")
+                            self.conversing = False
+                            break
+                        our_str_response += self.nluu.create_response(userQuery) + "\n"
+                        print(our_str_response)
+                else:
+                    self.utterancesStack.append(userQueries)
+                    self.last_user_query.append(userQueries)
+                    print("userQuery: {}".format(userQueries.type))
+                    if userQueries.type == User_Query.QueryType.goodbye:
                         print("Goodbye")
                         self.conversing = False
                         break
-                    our_str_response += self.nluu.create_response(userQuery) + "\n"
-            else:
-                self.utterancesStack.append(userQueries)
-                self.last_user_query.append(userQueries)
-                print("userQuery: {}".format(userQueries.type))
-                if userQueries.type == User_Query.QueryType.goodbye:
-                    print("Goodbye")
-                    self.conversing = False
-                    break
-                our_str_response += self.nluu.create_response(userQueries) + "\n"
+                    our_str_response += self.nluu.create_response(userQueries) + "\n"
+                    print(our_str_response)
 
     # @params
     # @return
     def classify_intent(self, luis_input):
         # input is a luis dictionary
+        
         if luis_input.intents[0] == "None" and luis_input.intents[0].score > .6:
             return luis_input.intents[0]
         for intent in luis_input.intents:
