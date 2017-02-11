@@ -288,7 +288,7 @@ class nLUU:
             previous_classes += (course.name + "\n")
         return s.format(previous_classes)
 
-    def create_student_info_interests_res(self, userQuery): 
+    def create_student_info_interests_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_INTERESTS_RES[0]
         s = s.format(str(userQuery.object.relevant_class))
         return s
@@ -322,7 +322,7 @@ class nLUU:
             return s.format(concentration_string)
 
         else:
-            s = constants.Responses.STUDENT_INFO_CONCENTRATION_RES[1] 
+            s = constants.Responses.STUDENT_INFO_CONCENTRATION_RES[1]
             return s
 
     def stem(self, s):

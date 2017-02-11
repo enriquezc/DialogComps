@@ -82,7 +82,7 @@ def query_courses(course):
                 prof_ids = result_course.faculty_id.split('|')
                 query_str = "SELECT * FROM professors WHERE id = "
                 for id_num in prof_ids:
-                    query_str = query_str + id_num + " OR id = "
+                    query_str = query_str + str(int(id_num)) + " OR id = "
                 query_str = query_str[:-9]
                 cur.execute(query_str)
                 names = cur.fetchall()
@@ -94,9 +94,10 @@ def query_courses(course):
                 result_course.faculty_name = result_course.faculty_name[:-1]
                 result_course.faculty_id = result_course.faculty_id[:-1]
             else:
-                query_str = "SELECT name FROM professors WHERE id = " + result_course.faculty_id
+                print(str(result_course.faculty_id))
+                query_str = "SELECT name FROM professors WHERE id = \'" + str(int(result_course.faculty_id)) + "'"
                 cur.execute(query_str)
-                name = cur.fetchone()
+                name = cur.fetchall()
                 result_course.faculty_name = name[0]
 
         results.append(result_course)
@@ -105,21 +106,32 @@ def query_courses(course):
 
 # Takes a title string and a potential department, returns a list of classes
 def query_by_title(title_string, department = None):
+    # just confirming that we are being given a string
     if type(title_string) != type("this is a string"):
         return []
 
     global conn
     word_array = title_string.split()
     new_word_array = title_string.split()
+
+    # if there is only whitespace in our title_string, we return an empty list
+    if len(new_word_array) < 1:
+        return []
+
+    # putting each word in the title string into smart description to check if
+    # the word can be expanded
     for i in range(len(word_array)):
         new_word_array[i] = smart_description_search(word_array[i])
 
     new_string = "%"
     cur_string = "%"
     for i in range(len(new_word_array)):
+        # if the first word is being read, no need for a space before the word
+        # anything else, and we add a space before
         if i > 0:
             new_string = new_string  + " " + new_word_array[i].lower() + "%"
             if word_array[i].upper() not in dept_dict:
+                # do nothing if a stop word is currently being read
                 if word_array[i] in stop_words:
                     continue
                 else:
@@ -136,6 +148,7 @@ def query_by_title(title_string, department = None):
             else:
                 cur_string = cur_string + dept_dict[word_array[i]].lower() + "%"
 
+    # Placing both strings in a query for the database
     query_string = "SELECT * FROM COURSE WHERE ((sec_term LIKE '16%' OR sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND (lower(sec_short_title) LIKE '{}' OR lower(sec_short_title) LIKE '{}')".format(new_string, cur_string)
 
     # adding a deparment criteria to narrow search if passed
@@ -162,7 +175,7 @@ def query_by_title(title_string, department = None):
             classroom = classroom_str[0] + " " + classroom_str[1]
             result_course.classroom = classroom
         result_course.description = result[29]
-
+        # adding professor information based on id found in courses
         if result[21] != None:
             result_course.faculty_id = result[21]
             if '|' in result_course.faculty_id:
@@ -181,7 +194,7 @@ def query_by_title(title_string, department = None):
                 result_course.faculty_name = result_course.faculty_name[:-1]
                 result_course.faculty_id = result_course.faculty_id[:-1]
             else:
-                query_str = "SELECT name FROM professors WHERE id = " + str(int(result_course.faculty_id))
+                query_str = "SELECT name FROM professors WHERE id = \'" + str(int(result_course.faculty_id)) + "'"
                 cur.execute(query_str)
                 name = cur.fetchone()
                 result_course.faculty_name = name[0]
@@ -286,7 +299,7 @@ def makeCooccurenceMatrix():
     result_file.close()
     print("Rows: {}".format(numrows))
 
-
+# checks if a description can be expanded from shorthand used
 def smart_description_search(description):
     global conn
     new_description = ""
@@ -394,6 +407,7 @@ def smart_department_search(keywords, threshold = None):
                 courses.remove(course)
     return courses
 
+# called in the init function, reads the file to create a dictionary
 def create_dept_dict():
     global dept_dict
     file = open('./src/Task_Manager/course_subjects.txt', 'r')
