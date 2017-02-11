@@ -37,6 +37,7 @@ class nLUU:
             QueryType.student_info_requirements: self.create_student_info_requirements,
             QueryType.student_info_major_requirements: self.create_student_info_major,
             QueryType.student_info_concentration : self.create_student_info_concentration,
+            QueryType.new_class_request : self.create_new_class_name,
             QueryType.new_class_name: self.create_new_class_name,
             QueryType.new_class_prof: self.create_new_class_prof,
             QueryType.new_class_sentiment: self.create_new_class_sentiment,
