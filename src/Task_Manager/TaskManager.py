@@ -334,8 +334,8 @@ def smart_description_search(description):
 def create_stop_words_set():
     global stop_words
     stop_words = set()
-    #stop_words_file = open('./src/Task_Manager/stop_words.txt', 'r')
-    stop_words_file = open('stop_words.txt', 'r')
+    stop_words_file = open('./src/Task_Manager/stop_words.txt', 'r')
+    #stop_words_file = open('stop_words.txt', 'r')
     for word in stop_words_file:
         stop_words.add(word.strip())
 
@@ -431,8 +431,8 @@ def smart_department_search(keywords, threshold = None):
 # called in the init function, reads the file to create a dictionary
 def create_dept_dict():
     global dept_dict
-    #file = open('./src/Task_Manager/course_subjects.txt', 'r')
-    file = open('course_subjects.txt', 'r')
+    file = open('./src/Task_Manager/course_subjects.txt', 'r')
+    #file = open('course_subjects.txt', 'r')
     for line in file:
         line = line.strip()
         pair = line.split(';')
