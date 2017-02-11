@@ -142,7 +142,7 @@ class nLUU:
                 class_str += course.id + ": " + course.name + "\n"
         else:
             class_str = userQuery.object.relevant_class.id + ": " + userQuery.object.relevant_class.name
-        return s.format(userQuery.object.relevant_class[0].prof, class_str)
+        return s.format(userQuery.object.relevant_class[0].faculty_name, class_str)
 
     def create_class_info_name(self, userQuery):
         s = constants.Responses.CLASS_INFO_NAME[0]
@@ -166,7 +166,7 @@ class nLUU:
 
     def create_class_info_prof_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_PROF_RES[0]
-        return s.format(userQuery.object.relevant_class.prof)
+        return s.format(userQuery.object.relevant_class.faculty_name)
 
     def create_class_info_sentiment(self, userQuery):
         s = constants.Responses.CLASS_INFO_SENTIMENT[0]
@@ -234,15 +234,15 @@ class nLUU:
     def create_new_class_description(self, userQuery):
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
-        s = constants.Responses.NEW_CLASS_DESCRIPTION[1]
+        s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         if userQuery.object.relevant_class.time == None:
             time = "an unknown time"
         else:
             time = str(userQuery.object.relevant_class.time)
-        if userQuery.object.relevant_class.prof == None:
+        if userQuery.object.relevant_class.faculty_name == None:
             prof = "unknown"
         else:
-            prof = userQuery.object.relevant_class.prof
+            prof = userQuery.object.relevant_class.faculty_name
         if userQuery.object.relevant_class.prereqs == []:
             prereqs = "This class has no prereqs"
         else:
