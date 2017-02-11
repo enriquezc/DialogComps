@@ -46,7 +46,7 @@ def query_courses(course):
         course_query = course_query + "' AND "
 
     if course.name != None:
-        course_name = smart_description_search(str(course.name))
+        course_name = smart_description_expansion(str(course.name))
         course_query = course_query + "lower(sec_short_title) = '" \
         + course_name
         course_query = course_query + "' AND "
@@ -129,7 +129,7 @@ def query_by_title(title_string, department = None):
     # putting each word in the title string into smart description to check if
     # the word can be expanded
     for i in range(len(word_array)):
-        new_word_array[i] = smart_description_search(word_array[i])
+        new_word_array[i] = smart_description_expansion(word_array[i])
 
     new_string = "%"
     cur_string = "%"
@@ -201,17 +201,21 @@ def query_by_title(title_string, department = None):
                 names = cur.fetchall()
                 result_course.faculty_id = ""
                 for result in names:
-                    result_course.faculty_id = result_course.faculty_id + result[0] + ","
-                    result_course.faculty_name = result_course.faculty_name + result[1] + ","
-
+                    if len(result) > 1:
+                        result_course.faculty_id = result_course.faculty_id + result[0] + ","
+                        result_course.faculty_name = result_course.faculty_name + result[1] + ","
+                    else:
+                        result_course.faculty_id = None
+                        result_course.faculty_name = None
                 result_course.faculty_name = result_course.faculty_name[:-1]
                 result_course.faculty_id = result_course.faculty_id[:-1]
             else:
                 query_str = "SELECT name FROM professors WHERE id = \'" \
                              + str(int(result_course.faculty_id)) + "'"
                 cur.execute(query_str)
-                name = cur.fetchone()
-                result_course.faculty_name = name[0]
+                name = cur.fetchall()
+                if len(name) > 0 and len(name[0]) > 0:
+                    result_course.faculty_name = name[0][0]
 
         courses.append(result_course)
 
@@ -314,7 +318,7 @@ def makeCooccurenceMatrix():
     print("Rows: {}".format(numrows))
 
 # checks if a description can be expanded from shorthand used
-def smart_description_search(description):
+def smart_description_expansion(description):
     global conn
     new_description = ""
     cur = conn.cursor()
@@ -340,7 +344,7 @@ def create_stop_words_set():
         stop_words.add(word.strip())
 
 # takes a list of keywords, returns a list of classes
-def smart_department_search(keywords, threshold = None):
+def query_by_keywords(keywords, threshold = None):
     if type(keywords) != type([]):
         return []
 
@@ -348,7 +352,7 @@ def smart_department_search(keywords, threshold = None):
     recommended_departments = set()
     new_keywords = []
     for keyword in keywords:
-        kss = smart_description_search(keyword)
+        kss = smart_description_expansion(keyword)
         #new_keywords.append(keyword)
         #new_keywords.append(kss)
         ks = kss.split()
@@ -461,8 +465,6 @@ def edit_distance(s1, s2):
     return previous_row[-1]
 
 def department_match(str_in):
-    ##TODO: replace truncations, like lit, polysci, etc..
-    ## comp, bio, sci,
     global dept_dict
     cur_match = None
     cur_best = 100
