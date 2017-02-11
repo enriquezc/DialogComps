@@ -181,7 +181,7 @@ class Conversation:
                 tm_courses = self.task_manager_information(course)
                 if type(tm_courses) == list:
                     tm_courses = tm_courses[0]
-                self.student_profile.relevant_class = [tm_courses]
+                self.student_profile.relevant_class = tm_courses[0]
                 self.student_profile.current_classes.append(tm_courses)
                 self.student_profile.current_credits = + 6
                 self.student_profile.total_credits += 6
@@ -244,7 +244,7 @@ class Conversation:
             print("tm_courses: {}".format(tm_courses))
             self.student_profile.relevant_class = tm_courses[0]
             self.student_profile.current_classes.extend(tm_courses)
-            self.student_profile.current_class, self.decision_tree.current_course = course, course
+            self.student_profile.current_class, self.decision_tree.current_course = tm_courses[0], tm_courses[0]
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
                 , self.decision_tree.get_next_node()]
         for entity in luis_entities:
