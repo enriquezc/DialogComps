@@ -128,7 +128,7 @@ class Conversation:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
         for entity in luis_entities:
             if entity.type == "department":
-                tm_major = format(TaskManager.smart_description_expansion([entity.entity]))
+                tm_major = format(TaskManager.smart_description_expansion(entity.entity))
                 try:
                     print("tm major: ", tm_major)
                     self.student_profile.major.append(tm_major[0])
@@ -400,7 +400,7 @@ class Conversation:
                 print(entity)
                 if entity.type == "class" or entity.type == "department" or entity.type == "sentiment":
                     self.student_profile.interests.add(entity.entity)
-        tm_courses = TaskManager.query_by_keywords(" ".join(self.student_profile.interests))
+        tm_courses = TaskManager.query_by_keywords(list(self.student_profile.interests))
         try:
             self.student_profile.relevant_class = tm_courses[0]
         except:
