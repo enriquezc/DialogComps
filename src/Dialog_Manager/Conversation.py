@@ -50,7 +50,7 @@ class Conversation:
         self.utterancesStack.append(our_response)
         print(our_str_response)
         while self.conversing:
-            
+
             client_response = input()
             if client_response != "" and client_response != "\n":
                 luis_analysis = self.nluu.get_luis(client_response)
@@ -83,7 +83,7 @@ class Conversation:
     # @return
     def classify_intent(self, luis_input):
         # input is a luis dictionary
-        
+
         if luis_input.intents[0] == "None" and luis_input.intents[0].score > .6:
             return luis_input.intents[0]
         for intent in luis_input.intents:
@@ -621,7 +621,7 @@ class Conversation:
             # @return 0 for added successfully, 1 for not added
 
     def task_manager_keyword(self, keywords):
-        tm_courses = TaskManager.query_by_keywords([keywords])
+        tm_courses = TaskManager.query_by_keywords(keywords)
         if tm_courses:
             return tm_courses
         if not tm_courses:
