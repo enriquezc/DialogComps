@@ -23,7 +23,9 @@ def connect_to_db():
     conn = psycopg2.connect(host = "cmc307-07.mathcs.carleton.edu", \
     database = "dialogcomps", user = "dialogcomps", password = "dialog!=comps")
 
-
+# @params Course object 'course' containing some initialized member variables,
+# and searches for courses which share those values
+# @return List of length >= 0 containing Course objects which match the input
 def query_courses(course):
     '''
     Returns a list of course objects which share the attributes defined for the
@@ -113,6 +115,9 @@ def query_courses(course):
 
 
 # Takes a title string and a potential department, returns a list of classes
+# @params String object 'title_string'
+# @params Optional String object 'department'
+# @return List of length >= 0 containing Course objects which match title_string
 def query_by_title(title_string, department = None):
     # just confirming that we are being given a string
     if type(title_string) != type("this is a string"):
@@ -221,8 +226,7 @@ def query_by_title(title_string, department = None):
 
     return courses
 
-
-
+# Helper function
 def makeCooccurenceMatrix():
     from ast import literal_eval as make_tuple
     stop_words = set()
@@ -318,6 +322,8 @@ def makeCooccurenceMatrix():
     print("Rows: {}".format(numrows))
 
 # checks if a description can be expanded from shorthand used
+# @params String object 'description' which contains some keywords for query
+# @return String object which has all shorthand keywords expanded
 def smart_description_expansion(description):
     global conn
     new_description = ""
@@ -349,6 +355,9 @@ def create_stop_words_set():
         stop_words.add(word.strip())
 
 # takes a list of keywords, returns a list of classes
+# @params List object 'keywords' which contains words to query on
+# @params Optional int 'threshold' which limits number of courses to return
+# @return List of length >= 0 containing Course objects which matched keywords
 def query_by_keywords(keywords, threshold = None):
     if type(keywords) != type([]):
         return []
@@ -469,6 +478,8 @@ def edit_distance(s1, s2):
 
     return previous_row[-1]
 
+# @params String object 'str_in' which is a department code or description
+# @return String object that is the best guess for a valid, capitalized dept code
 def department_match(str_in):
     global dept_dict
     cur_match = None
