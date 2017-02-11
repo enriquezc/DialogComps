@@ -8,7 +8,6 @@ import io
 import string
 from src.Dialog_Manager import Course
 
-
 conn = None
 dept_dict = {}
 stop_words = None
@@ -360,6 +359,11 @@ def query_by_keywords(keywords, threshold = None):
         for k in ks:
             if k not in stop_words:
                 new_keywords.append(k.upper())
+
+    # trying to catch any errors if new_keywords is never changed
+    if new_keywords == []:
+        return []
+
     keywords_str = " in {}".format(tuple(new_keywords)) if len(new_keywords) > 1 else " = '{}'".format(new_keywords[0])
     query = "SELECT * FROM occurence where words {};".format(keywords_str)
     global conn
@@ -492,10 +496,8 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
-    course = Course()
-    course.deparment = "CS"
-    course.course_num = 111
-    results = query_courses(course)
+
+    results = smart_department_search(["sports"])
     for course in results:
         print(course.name)
         print(course.description)
