@@ -12,4 +12,5 @@ def start_comps():
 
 
 if __name__ == "__main__":
-    profile.run('start_comps()')
+    #profile.run('start_comps()')
+    start_comps()
