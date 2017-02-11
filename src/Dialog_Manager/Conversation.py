@@ -396,9 +396,12 @@ class Conversation:
                 if entity.type == "class" or entity.type == "department" or entity.type == "sentiment":
                     self.student_profile.interests.add(entity.entity)
         tm_courses = TaskManager.smart_department_search(" ".join(self.student_profile.interests))
-        self.student_profile.relevant_class = tm_courses[0]
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
-            , self.decision_tree.get_next_node()]
+        if tm_courses != []:
+            self.student_profile.relevant_class = tm_courses[0]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
+                , self.decision_tree.get_next_node()]
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
+                
 
     def handle_student_info_name(self, input, luisAI, luis_intent, luis_entities): #10
         return self.handleStudentNameInfo(input, luisAI, luis_intent, luis_entities)
