@@ -113,7 +113,7 @@ class nLUU:
         return fun(userQuery)
 
     def create_welcome_response(self, userQuery):
-        return constants.Responses.WELCOME[1]
+        return constants.Responses.WELCOME[0]
 
     def create_goodbye_response(self, userQuery):
         return constants.Responses.GOODBYE[1]
