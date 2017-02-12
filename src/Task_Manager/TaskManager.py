@@ -405,6 +405,7 @@ def query_by_keywords(keywords, threshold = None):
             query += "OR UPPER(long_description) LIKE '%{}%'".format(keyword)
 
     query += ")"
+    query = query + " AND sec_name NOT LIKE '%WL%'"
     cur.execute(query)
     results = cur.fetchall()
     courses = []
