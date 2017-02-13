@@ -640,14 +640,14 @@ class Conversation:
             return tm_courses
 
             # @params course to add to student classes
-            # @return 0 for added successfully, 1 for not added
+    # @return 0 for added successfully, 1 for not added
     def task_manager_keyword(self, keywords):
         tm_courses = TaskManager.query_by_keywords(keywords)
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
                 return tm_courses[0]
             else:
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+                return None
         else:
             return tm_courses
 
@@ -658,7 +658,7 @@ class Conversation:
             if len(tm_department) > 0:
                 return tm_department[0]
             else:
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+                return None
         else:
             return tm_department
 
@@ -668,6 +668,6 @@ class Conversation:
             if len(tm_class_match) > 0:
                 return tm_class_match[0]
             else:
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+                return None
         else:
             return tm_class_match
