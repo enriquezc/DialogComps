@@ -112,13 +112,13 @@ class Conversation:
         print("in majors")
         tokens = nltk.word_tokenize(luisAI.query)
         pos = nltk.pos_tag(tokens)
-        major_string = " "
+        string = " "
         major_list = []
         major = [word for word, p in pos if p in ['JJ','NN']] #getting adj and nouns from sentence
         for word in major:
             if word != "major" and word != "concentration":
                 major_list.append(word)
-        major_string.join(major_list) #ok we need to either figure out way to join a fucking list or have the tm accept a list
+        major_string = string.join(major_list) #ok we need to either figure out way to join a fucking list or have the tm accept a list
         print("major: ", major_string)
         if not major: #making sure we actually query on something
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
