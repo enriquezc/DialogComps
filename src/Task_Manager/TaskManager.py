@@ -35,8 +35,7 @@ def query_courses(course):
 
     #print("ENTERING QUERY COURSES FUNCTION")
 
-    course_query = "SELECT * FROM COURSE WHERE ((sec_term LIKE '16%' OR \
-                    sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND "
+    course_query = "SELECT * FROM COURSE WHERE ((sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND "
 
     if course.department != None:
         course_query = course_query + "sec_subject = '" + course.department.upper()
@@ -163,8 +162,7 @@ def query_by_title(title_string, department = None):
                 cur_string = cur_string + dept_dict[word_array[i]].lower() + "%"
 
     # Placing both strings in a query for the database
-    query_string = "SELECT * FROM COURSE WHERE ((sec_term LIKE '16%' \
-                    OR sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND \
+    query_string = "SELECT * FROM COURSE WHERE ((sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND \
                     (lower(sec_short_title) LIKE '{}' OR \
                     lower(sec_short_title) \
                     LIKE '{}') AND sec_name NOT LIKE '%WL%'".format(new_string, cur_string)
@@ -397,7 +395,7 @@ def query_by_keywords(keywords, threshold = None):
         return []
     #print(department_names)
     query = "SELECT DISTINCT * FROM COURSE c where UPPER(sec_subject) in {} \
-             AND ((sec_term LIKE '16%' OR sec_term LIKE '17%') \
+             AND (( sec_term LIKE '17%') \
              AND sec_term NOT LIKE '%SU')".format(str(tuple(department_names)))
     query += " AND (UPPER(long_description) LIKE '%{}%'".format(new_keywords[0])
     if len(keywords) > 1:
