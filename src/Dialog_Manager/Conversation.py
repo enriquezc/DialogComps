@@ -170,7 +170,14 @@ class Conversation:
             possibilities = self.nluu.find_course(luisAI.query)
             possibilities_str = " ".join(possibilities)
             if len(possibilities) < 2:
+                self.student_profile.current_classes.append(self.student_profile.relevant_class)
                 print(self.student_profile.relevant_class.name)
+                if self.student_profile.current_credits < 18:
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                        , self.decision_tree.get_next_node()]
+                else:
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check)
+                        , self.decision_tree.get_next_node()]
             tm_courses = self.task_manager_keyword(possibilities)
             if type(tm_courses) is list:
                 self.student_profile.relevant_class = tm_courses[0] #new relevant class is the first returned
@@ -278,6 +285,9 @@ class Conversation:
                     tm_courses = self.task_manager_information(course)
                     if tm_courses is None:
                         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+                    self.student_profile.relevant_class = tm_courses
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
+                        , self.decision_tree.get_next_node()]
                 else:
                     tm_courses = self.task_manager_class_title_match(entity.entity) #type checking done in class title match
                     #should always return one class, if no classes, should have already returned tm_clarify
