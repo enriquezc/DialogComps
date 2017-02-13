@@ -169,6 +169,8 @@ class Conversation:
             print("We're here")
             possibilities = self.nluu.find_course(luisAI.query)
             possibilities_str = " ".join(possibilities)
+            if len(possibilities) < 2:
+                print(self.student_profile.relevant_class.name)
             tm_courses = self.task_manager_keyword(possibilities)
             if type(tm_courses) is list:
                 self.student_profile.relevant_class = tm_courses[0] #new relevant class is the first returned
@@ -251,7 +253,7 @@ class Conversation:
             tokens = nltk.word_tokenize(luisAI.query)
             pos = nltk.pos_tag(tokens)
             #verbs = [word for word,p in pos if p == 'VB']
-            if "interested" in input:
+            if "interest" in input or "about" in input:
                 self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
             possibilities = self.nluu.find_course(luisAI.query)
             if len(possibilities) == 0:
