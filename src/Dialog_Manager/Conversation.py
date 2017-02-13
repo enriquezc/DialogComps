@@ -118,7 +118,7 @@ class Conversation:
         pos = nltk.pos_tag(tokens)
         string = " "
         major_list = []
-        major = [word for word, p in pos if p in ['JJ','NN']] #getting adj and nouns from sentence
+        major = [word for word, p in pos if p in ['JJ','NN','NNS']] #getting adj and nouns from sentence
         print(major)
         for word in major:
             if word != "major" and word != "concentration":
@@ -137,7 +137,8 @@ class Conversation:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
             try:
                 tm_major = TaskManager.department_match(major_string) #weird output with
-                print("tm major: ", tm_major)
+                if tm_major is None:
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
                 self.student_profile.major.append(tm_major)
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                         self.decision_tree.get_next_node()]
@@ -270,11 +271,11 @@ class Conversation:
                     , self.decision_tree.get_next_node()]
             tm_courses = self.task_manager_keyword(possibilities) #type checked in tm keyword
             print("tm_courses: {}".format(tm_courses))
-            if type(tm_courses) is list:
-                self.student_profile.relevant_class = tm_courses[0]
-                self.student_profile.current_class, self.decision_tree.current_course = tm_courses[0], tm_courses[0]
-            else:
+            if tm_courses is None:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+            else:
+                self.student_profile.relevant_class = tm_courses
+                self.student_profile.current_class, self.decision_tree.current_course = tm_courses, tm_courses
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
                 , self.decision_tree.get_next_node()]
         for entity in luis_entities:
