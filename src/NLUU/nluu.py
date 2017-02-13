@@ -13,6 +13,7 @@ class nLUU:
             QueryType.welcome: self.create_welcome_response,
             QueryType.goodbye: self.create_goodbye_response,
             QueryType.clarify: self.create_clarify_response,
+            QueryType.tm_clarify: self.create_tm_clarify_response,
             QueryType.specify: self.create_specify_response,
             QueryType.pleasantry: self.create_pleasantry_response,
             QueryType.class_info_term: self.create_class_info_term,
@@ -326,6 +327,10 @@ class nLUU:
         else:
             s = constants.Responses.STUDENT_INFO_CONCENTRATION_RES[1]
             return s
+
+    def create_tm_clarify_response(self, userQuery):
+        s = constants.Responses.TM_CLARIFY[0]
+        return s
 
     def stem(self, s):
         return(self.stemmer.stem(s))

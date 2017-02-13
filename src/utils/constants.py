@@ -4,6 +4,7 @@ class Responses:
                "See ya",
                "Smell ya later!",)
     CLARIFY = ("Could you clarify what you just said?",)
+    TM_CLARIFY = ("I wasn't able to find anything related to what you just said. Please ask me about something else.",)
     SPECIFY = ("Can you be more specific on that regard?",)
     PLEASANTRY = ("Suh",)
     STUDENT_INFO_NAME = ("What's your name?",)
