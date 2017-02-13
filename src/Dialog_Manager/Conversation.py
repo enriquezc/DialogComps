@@ -94,7 +94,7 @@ class Conversation:
             if intent.score >= .20 and intent.intent != "None":
                 return intent.intent
             else:
-                pass
+                return luis_input.intents[0]
         return luis_input
 
     # @params
