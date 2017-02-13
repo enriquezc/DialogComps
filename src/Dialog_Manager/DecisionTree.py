@@ -255,7 +255,7 @@ class DecisionTree:
         if len(past_node.required_questions) > 0:
             self.current_node = past_node.required_questions[0]
             return self.get_next_node()
-        if len(past_node.potential_next_questions) > 0 and len(past_node.required_questions):
+        if len(past_node.potential_next_questions) > 0 and len(past_node.required_questions) > 0:
             self.current_node = past_node.required_questions[0]
             return self.get_next_node()
         self.current_node = self.mapOfNodes[0]
