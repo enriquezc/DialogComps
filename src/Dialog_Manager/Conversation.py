@@ -258,13 +258,13 @@ class Conversation:
 
     def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
+        if "interest" in input or "about" in input:
+            return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
         if len(luis_entities) == 0:
             print("Class description no entity")
             tokens = nltk.word_tokenize(luisAI.query)
             pos = nltk.pos_tag(tokens)
             #verbs = [word for word,p in pos if p == 'VB']
-            if "interest" in input or "about" in input:
-                self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
             possibilities = self.nluu.find_course(luisAI.query)
             if len(possibilities) == 0:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)
@@ -447,16 +447,19 @@ class Conversation:
                     interests.append(entity.entity)
                     self.student_profile.interests.add(entity.entity)
         try:
-            if len(self.student_profile.interests) == self.student_profile.interest_index:
+            if len(self.student_profile.interests) == self.student_profile.interest_index and self.student_profile.interests:
+                self.student_profile.interest_index = len(self.student_profile.interests)
                 tm_courses = TaskManager.query_by_keywords(interests)
                 self.student_profile.relevant_class = tm_courses[1]
-                self.student_profile.interest_index = len(self.student_profile.interests)
-            tm_courses = TaskManager.query_by_keywords(list(self.student_profile.interests)[self.student_profile.interest_index-1:])
-            self.student_profile.relevant_class = tm_courses[0]
             self.student_profile.interest_index = len(self.student_profile.interests)
+            print(self.student_profile.interest_index)
+            print(interests[0:])
+            tm_courses = TaskManager.query_by_keywords(list(self.student_profile.interests)[self.student_profile.interest_index-len(interests):])
+            self.student_profile.relevant_class = tm_courses[0]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
         except:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res), self.decision_tree.get_next_node()]
+
 
     def handle_student_info_name(self, input, luisAI, luis_intent, luis_entities): #10
         return self.handleStudentNameInfo(input, luisAI, luis_intent, luis_entities)

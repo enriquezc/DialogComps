@@ -17,7 +17,7 @@ class Student:
         #2. Enums of different categories of interests we've thought of, which we can expand as we go
         #3. Strings with phrases we believe they said they were interested in
         self.interests = set()
-        self.interest_index = -1
+        self.interest_index = 0
         self.abroad = None
         self.all_classes = []
         self.potential_courses = []
