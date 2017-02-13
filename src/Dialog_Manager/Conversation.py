@@ -171,7 +171,7 @@ class Conversation:
             else:
                 self.student_profile.relevant_class = tm_courses #new relevant class is the first returned
                 self.student_profile.current_classes.append(tm_courses)
-                print("registering for: " + self.student_profile.relevant_class)
+                print("registering for: " + self.student_profile.relevant_class.name)
             if self.student_profile.current_credits < 18:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
                     , self.decision_tree.get_next_node()]

@@ -174,7 +174,7 @@ def query_by_title(title_string, department = None):
         query_string = query_string + " AND sec_subject = '" + department + "'"
 
     cur = conn.cursor()
-    print(cur.mogrify(query_string))
+    #print(cur.mogrify(query_string))
     cur.execute(query_string)
 
     results = cur.fetchall()
