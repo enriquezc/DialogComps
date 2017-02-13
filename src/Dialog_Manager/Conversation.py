@@ -414,13 +414,20 @@ class Conversation:
                 self.student_profile.interests.add(interest)
 
         else:
+            interests = []
             for entity in luis_entities:
                 print(entity)
                 if entity.type == "class" or entity.type == "department" or entity.type == "sentiment":
+                    interests.append(entity.entity)
                     self.student_profile.interests.add(entity.entity)
-        tm_courses = TaskManager.query_by_keywords(list(self.student_profile.interests))
         try:
+            if len(self.student_profile.interests == self.student_profile.interest_index):
+                tm_courses = TaskManager.query_by_keywords(interests)
+                self.student_profile.relevant_class = tm_courses[1]
+                self.student_profile.interest_index = len(self.student_profile.interests)
+            tm_courses = TaskManager.query_by_keywords(list(self.student_profile.interests[self.student_profile.interest_index-1:]))
             self.student_profile.relevant_class = tm_courses[0]
+            self.student_profile.interest_index = len(self.student_profile.interests)
         except:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify), self.decision_tree.get_next_node()]
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
