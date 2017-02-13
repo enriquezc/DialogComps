@@ -168,6 +168,8 @@ class Conversation:
         if len(luis_entities) == 0:
             possibilities = self.nluu.find_course(luisAI.query)
             possibilities_str = " ".join(possibilities)
+            if len(possibilities) < 2:
+                print(self.student_profile.relevant_class.name)
             tm_courses = self.task_manager_keyword(possibilities)
             if type(tm_courses) is list:
                 print("NOOOO")
@@ -253,7 +255,7 @@ class Conversation:
             tokens = nltk.word_tokenize(luisAI.query)
             pos = nltk.pos_tag(tokens)
             #verbs = [word for word,p in pos if p == 'VB']
-            if "interested" in input:
+            if "interest" in input or "about" in input:
                 self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
             possibilities = self.nluu.find_course(luisAI.query)
             if len(possibilities) == 0:
@@ -645,7 +647,7 @@ class Conversation:
         else:
             return tm_courses
 
-            # @params course to add to student classes
+    # @params course to add to student classes
     # @return 0 for added successfully, 1 for not added
     def task_manager_keyword(self, keywords):
         tm_courses = TaskManager.query_by_keywords(keywords)
