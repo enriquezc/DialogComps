@@ -455,7 +455,7 @@ class Conversation:
             self.student_profile.interest_index = len(self.student_profile.interests)
         except:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify), self.decision_tree.get_next_node()]
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res)
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interest_res)
             , self.decision_tree.get_next_node()]
 
     def handle_student_info_name(self, input, luisAI, luis_intent, luis_entities): #10
