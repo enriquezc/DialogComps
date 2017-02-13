@@ -220,8 +220,8 @@ class DecisionTree:
             self.current_node.asked = False
         if self.is_answered(past_node):
             for node in past_node.required_questions:
-                print("asked: ", self.is_answered(node))
-                print("answered: ", self.is_answered(node))
+                print("asked: ", past_node.asked)
+                print("answered: ", self.is_answered(past_node))
                 if not self.is_answered(node):
                     if not node.asked:
                         self.current_node = node
