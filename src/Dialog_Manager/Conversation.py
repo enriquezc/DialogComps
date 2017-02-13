@@ -66,8 +66,8 @@ class Conversation:
                             print("Goodbye")
                             self.conversing = False
                             break
-                        our_str_response += self.nluu.create_response(userQuery) + "\n"
-                        print(our_str_response)
+                        our_str_response += self.nluu.create_response(userQuery) + '\n'
+                    print(our_str_response.encode("ascii", "ignore"))
                 else:
                     self.utterancesStack.append(userQueries)
                     self.last_user_query.append(userQueries)
@@ -76,7 +76,7 @@ class Conversation:
                         print("Goodbye")
                         self.conversing = False
                         break
-                    our_str_response += self.nluu.create_response(userQueries) + "\n"
+                    our_str_response += self.nluu.create_response(userQueries) + '\n'
                     print(our_str_response)
 
     # @params
