@@ -258,7 +258,7 @@ class Conversation:
 
     def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
-        if "interest" in input or "about" in input:
+        if "interest" in input:
             return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
         if len(luis_entities) == 0:
             print("Class description no entity")
@@ -276,7 +276,7 @@ class Conversation:
             else:
                 self.student_profile.relevant_class = tm_courses
                 self.student_profile.current_class, self.decision_tree.current_course = tm_courses, tm_courses
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
                 , self.decision_tree.get_next_node()]
         for entity in luis_entities:
             print(entity.type)
