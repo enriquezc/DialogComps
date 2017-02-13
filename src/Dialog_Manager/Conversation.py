@@ -425,11 +425,11 @@ class Conversation:
                     interests.append(entity.entity)
                     self.student_profile.interests.add(entity.entity)
         try:
-            if len(self.student_profile.interests == self.student_profile.interest_index):
+            if len(self.student_profile.interests) == self.student_profile.interest_index:
                 tm_courses = TaskManager.query_by_keywords(interests)
                 self.student_profile.relevant_class = tm_courses[1]
                 self.student_profile.interest_index = len(self.student_profile.interests)
-            tm_courses = TaskManager.query_by_keywords(list(self.student_profile.interests[self.student_profile.interest_index-1:]))
+            tm_courses = TaskManager.query_by_keywords(list(self.student_profile.interests)[self.student_profile.interest_index-1:])
             self.student_profile.relevant_class = tm_courses[0]
             self.student_profile.interest_index = len(self.student_profile.interests)
         except:
