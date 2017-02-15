@@ -37,16 +37,16 @@ def query_courses(course):
 
     course_query = "SELECT * FROM COURSE WHERE ((sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND "
 
-    if course.department != None:
+    if course.department != "":
         course_query = course_query + "sec_subject = '" + course.department.upper()
         course_query = course_query + "' AND "
 
-    if course.course_num != None:
+    if course.course_num != "":
         course_query = course_query + "sec_course_no = '" \
         + str(course.course_num)
         course_query = course_query + "' AND "
 
-    if course.name != None:
+    if course.name != "":
         course_name = smart_description_expansion(str(course.name))
         course_query = course_query + "lower(sec_short_title) = '" \
         + course_name
