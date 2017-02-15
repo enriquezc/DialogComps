@@ -8,6 +8,7 @@ import luis
 from src.Task_Manager import TaskManager
 from src.Dialog_Manager import Student, Course, User_Query, DecisionTree
 import datetime
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
 class Conversation:
@@ -40,18 +41,22 @@ class Conversation:
         self.nluu = nluu.nLUU(luis_url)
         self.utterancesStack = []
         self.mapOfIntents = {}
+        self.sentimentAnalyzer = SentimentIntensityAnalyzer()
 
         TaskManager.init()
 
     def start_conversation(self):
         self.conversing = True
-        our_response = self.get_current_node()[0]
-        our_str_response = self.nluu.create_response(our_response.type)
+        our_response = [self.get_current_node()[0], User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name)]
+        our_str_response = self.nluu.create_response(our_response[0].type) + "\n" + self.nluu.create_response(our_response[1])
         self.utterancesStack.append(our_response)
         print(our_str_response)
         while self.conversing:
 
             client_response = input()
+            if "goodbye" in client_response.lower() or " bye" in (" " + client_response.lower()):
+                print("Smell ya later! Thanks for chatting.")
+                return
             if client_response != "" and client_response != "\n":
                 luis_analysis = self.nluu.get_luis(client_response)
                 self.utterancesStack.append(luis_analysis)
@@ -60,13 +65,25 @@ class Conversation:
                 our_str_response = ""
                 if type(userQueries) is list:
                     for userQuery in userQueries:
-                        self.utterancesStack.append(userQuery)
-                        self.last_user_query.append(userQuery)
-                        if userQuery.type == User_Query.QueryType.goodbye:
-                            print("Goodbye")
-                            self.conversing = False
-                            break
-                        our_str_response += self.nluu.create_response(userQuery) + '\n'
+                        ###
+                        if User_Query.QueryType.full_schedule_check == userQuery.type:
+                            print (self.nluu.create_response(userQuery) + '\n')
+                            responseToCredits = input()
+                            
+                            responseSentiment = self.sentimentAnalyzer.polarity_scores(responseToCredits)
+                            if responseSentiment["neg"] > responseSentiment["pos"]:
+                                print("Smell ya later! Thanks for chatting.")
+                                return
+                        else:
+                        
+                        ###
+                            self.utterancesStack.append(userQuery)
+                            self.last_user_query.append(userQuery)
+                            if userQuery.type == User_Query.QueryType.goodbye:
+                                print("Goodbye")
+                                self.conversing = False
+                                break
+                            our_str_response += self.nluu.create_response(userQuery) + '\n'
                     # This mess of code stops descriptions with accents from
                     # throwing an error
                     our_str_response = our_str_response.encode("ascii", "ignore")
@@ -164,13 +181,23 @@ class Conversation:
         return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
 
     def handleScheduleClass(self, input, luisAI, luis_intent, luis_entities):
+        #print([thing.name for thing in self.student_profile.current_classes])
         # if entity.type == "class":  # add more if's for different types
         course = Course.Course()
         if len(luis_entities) == 0:
             possibilities = self.nluu.find_course(luisAI.query)
             possibilities_str = " ".join(possibilities)
             if len(possibilities) < 2:
+                if self.student_profile.relevant_class.name in  [thing.name for thing in self.student_profile.current_classes]:
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                        , self.decision_tree.get_next_node()]
                 self.student_profile.current_classes.append(self.student_profile.relevant_class)
+                if self.student_profile.relevant_class.credits is None:
+                    self.student_profile.current_credits += 6
+                    self.student_profile.total_credits += 6
+                else:
+                    self.student_profile.current_credits += self.student_profile.relevant_class.credits
+                    self.student_profile.total_credits += self.student_profile.relevant_class.credits
                 print(self.student_profile.relevant_class.name)
                 if self.student_profile.current_credits < 18:
                     return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
@@ -182,13 +209,31 @@ class Conversation:
             if type(tm_courses) is list:
                 print("NOOOO")
                 self.student_profile.relevant_class = tm_courses[0] #new relevant class is the first returned
+                if self.student_profile.relevant_class.name in  [thing.name for thing in self.student_profile.current_classes]:
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                        , self.decision_tree.get_next_node()]
                 self.student_profile.current_classes.append(tm_courses[0])
+                if self.student_profile.relevant_class.credits is None:
+                    self.student_profile.current_credits += 6
+                    self.student_profile.total_credits += 6
+                else:
+                    self.student_profile.current_credits += self.student_profile.relevant_class.credits
+                    self.student_profile.total_credits += self.student_profile.relevant_class.credits
             elif tm_courses == None:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
             else:
                 self.student_profile.relevant_class = tm_courses #new relevant class is the first returned
+                if self.student_profile.relevant_class.name in  [thing.name for thing in self.student_profile.current_classes]:
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                        , self.decision_tree.get_next_node()]
                 self.student_profile.current_classes.append(tm_courses)
                 print("registering for: " + self.student_profile.relevant_class.name)
+                if self.student_profile.relevant_class.credits is None:
+                    self.student_profile.current_credits += 6
+                    self.student_profile.total_credits += 6
+                else:
+                    self.student_profile.current_credits += self.student_profile.relevant_class.credits
+                    self.student_profile.total_credits += self.student_profile.relevant_class.credits
             if self.student_profile.current_credits < 18:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
                     , self.decision_tree.get_next_node()]
@@ -211,10 +256,17 @@ class Conversation:
                     return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
                 tm_courses = tm_courses
                 self.student_profile.relevant_class = tm_courses
+                if self.student_profile.relevant_class.name in  [thing.name for thing in self.student_profile.current_classes]:
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                        , self.decision_tree.get_next_node()]
                 self.student_profile.current_classes.append(tm_courses)
                 self.current_class, self.decision_tree.current_course = tm_courses, tm_courses
-                self.student_profile.current_credits += 6
-                self.student_profile.total_credits += 6
+                if self.student_profile.relevant_class.credits is None:
+                    self.student_profile.current_credits += 6
+                    self.student_profile.total_credits += 6
+                else:
+                    self.student_profile.current_credits += self.student_profile.relevant_class.credits
+                    self.student_profile.total_credits += self.student_profile.relevant_class.credits
                 print(self.student_profile.current_credits)
                 if self.student_profile.current_credits < 12:
                     return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
@@ -231,9 +283,16 @@ class Conversation:
                 print("tm_courses: {}".format(tm_courses))
                 self.student_profile.relevant_class = tm_courses
                 self.student_profile.current_class, self.decision_tree.current_course = tm_courses, tm_courses
+                if self.student_profile.relevant_class.name in  [thing.name for thing in self.student_profile.current_classes]:
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                        , self.decision_tree.get_next_node()]
                 self.student_profile.current_classes.append(tm_courses)
-                self.student_profile.current_credits += 6
-                self.student_profile.total_credits += 6
+                if self.student_profile.relevant_class.credits is None:
+                    self.student_profile.current_credits += 6
+                    self.student_profile.total_credits += 6
+                else:
+                    self.student_profile.current_credits += self.student_profile.relevant_class.credits
+                    self.student_profile.total_credits += self.student_profile.relevant_class.credits
                 if self.student_profile.current_credits < 12:
                     self.current_class, self.decision_tree.current_course = course, course
                     return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
@@ -436,7 +495,7 @@ class Conversation:
                 if tm_courses is None:
                     return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
                 else:
-                    self.student_profile.current_classes.append(tm_courses)
+                    self.student_profile.relevant_class.append(tm_courses)
                     return [self.decision_tree.get_next_node()]
 
     def handleClassProfessorResponse(self, input, luisAI, luis_intent, luis_entities):
