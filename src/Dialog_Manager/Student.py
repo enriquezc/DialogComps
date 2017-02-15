@@ -22,4 +22,3 @@ class Student:
         self.all_classes = []
         self.potential_courses = []
         self.relevant_class = Course.Course()
-        self.relevant_class.name = ""
