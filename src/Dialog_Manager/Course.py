@@ -24,7 +24,7 @@ class Course:
         self.user_description = ""
         #Boolean. Have they taken the class yet?
         self.taken = None
-        self.credits = 0
+        self.credits = None
         self.relevance = None
         self.weighted_score = 0.0
 
