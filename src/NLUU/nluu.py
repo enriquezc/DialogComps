@@ -348,7 +348,7 @@ class nLUU:
     def find_interests(self, utterance):
         tokens = self.tokenize(utterance)
         pos = self.pos_tag(tokens)
-        return [word for word, p in pos if p in ['NNP', 'NNS', 'JJ', 'VBG']]
+        return [word for word, p in pos if p in ['NNP', 'NNS', 'JJ', 'VBG', 'NN']]
 
 
 #if __name__ == '__main__':

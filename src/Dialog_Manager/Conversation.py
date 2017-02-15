@@ -8,7 +8,6 @@ import luis
 from src.Task_Manager import TaskManager
 from src.Dialog_Manager import Student, Course, User_Query, DecisionTree
 import datetime
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
 class Conversation:
@@ -41,7 +40,6 @@ class Conversation:
         self.nluu = nluu.nLUU(luis_url)
         self.utterancesStack = []
         self.mapOfIntents = {}
-        self.sentimentAnalyzer = SentimentIntensityAnalyzer()
 
         TaskManager.init()
 
@@ -219,7 +217,7 @@ class Conversation:
                 else:
                     self.student_profile.current_credits += self.student_profile.relevant_class.credits
                     self.student_profile.total_credits += self.student_profile.relevant_class.credits
-            elif tm_courses == None:
+            elif tm_courses is None:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
             else:
                 self.student_profile.relevant_class = tm_courses #new relevant class is the first returned
@@ -408,7 +406,7 @@ class Conversation:
         return [User_Query.UserQuery(prev_course, User_Query.QueryType.class_info_sentiment)]'''
 
 
-    def getCoursesFromLuis(self, input, luisAI, luis_intent, luis_entities):
+    def getCoursesFromLuis(self, input, luisAI, luis_intent, luis_entities, specific=True):
         """
         Helper function that is used for handleClassDescriptionRequest, handleRegisterClass(Course?), etc.
         that takes luis input and returns a list of courses using the TM in a centralized way.
@@ -426,11 +424,12 @@ class Conversation:
             tm_courses = self.task_manager_keyword(possibilities)  # type checked in tm keyword
             if tm_courses is None:
                 return None
+            elif not type(tm_courses) is list:
+                return [tm_courses]
             else:
                 return tm_courses
         for entity in luis_entities:
             course = Course.Course()
-            tm_courses = None
             if entity.type == 'class':
                 course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
                 course.user_description = luisAI.query
@@ -438,23 +437,25 @@ class Conversation:
                     course.id = course_name.group(0)
                     course.course_num = course_name.group(2)
                     course.department = course_name.group(1)
-                    tm_courses = self.task_manager_information(course)
+                    tm_course = self.task_manager_information(course)
+                    if not type(tm_course) is list:
+                        return [tm_course]
+                    return tm_course
                 else:
-                    tm_courses = self.task_manager_class_title_match(
+                    tm_course = self.task_manager_class_title_match(
                         entity.entity)  # type checking done in class title match
                     # should always return one class, if no classes, should have already returned tm_clarify
-                    if type(tm_courses) is list:
+                    if not type(tm_course) is list:
+                        return [tm_course]
+                    return tm_course
 
             if entity.type == "department":
                 course.department = entity.entity
-                tm_courses = self.task_manager_information(course)  # type checking is done in tm informaiton
-                if tm_courses is None:
-                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
-                self.student_profile.relevant_class = tm_courses
-                self.student_profile.current_class, self.decision_tree.current_course = tm_courses, tm_courses
-                self.student_profile.potential_courses = tm_courses
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
-                    , self.decision_tree.get_next_node()]
+                tm_course = self.task_manager_information(course)  # type checking is done in tm informaiton
+                if not type(tm_course) is list:
+                    return [tm_course]
+                return tm_course
+        return None
 
     def handleWelcomeResponse(self, input, luisAI, luis_intent, luis_entities):
         return [self.decision_tree.get_next_node()]
@@ -569,7 +570,18 @@ class Conversation:
 
 
     def handleUnregisterRequest(self, input, luisAI, luis_intent, luis_entities):
-
+        tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
+        if not tm_courses is None and len(tm_courses) > 0: # We got returned a list
+            for tm_course in tm_courses:
+                for stud_course in self.student_profile.current_classes:
+                    if tm_course == stud_course:
+                        self.student_profile.current_classes.remove(stud_course)
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)]
+        if tm_courses is None:
+            self.student_profile.current_classes.remove(self.student_profile.relevant_class)
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)]
+        else:
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
 
     def handle_student_info_name(self, input, luisAI, luis_intent, luis_entities): #10
