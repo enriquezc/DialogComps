@@ -120,6 +120,8 @@ class Conversation:
         major_list = []
         major = [word for word, p in pos if p in ['JJ','NN','NNS']] #getting adj and nouns from sentence
         print(major)
+        print("Printing pos")
+        print(pos)
         for word in major:
             if word != "major" and word != "concentration":
                 major_list.append(word)
