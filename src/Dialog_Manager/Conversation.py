@@ -45,13 +45,16 @@ class Conversation:
 
     def start_conversation(self):
         self.conversing = True
-        our_response = self.get_current_node()[0]
-        our_str_response = self.nluu.create_response(our_response.type)
+        our_response = [self.get_current_node()[0], User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name)]
+        our_str_response = self.nluu.create_response(our_response[0].type) + "\n" + self.nluu.create_response(our_response[1])
         self.utterancesStack.append(our_response)
         print(our_str_response)
         while self.conversing:
 
             client_response = input()
+            if "goodbye" in client_response.lower() or " bye" in (" " + client_response.lower()):
+                print("Smell ya later! Thanks for chatting.")
+                return
             if client_response != "" and client_response != "\n":
                 luis_analysis = self.nluu.get_luis(client_response)
                 self.utterancesStack.append(luis_analysis)
