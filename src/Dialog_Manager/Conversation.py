@@ -159,6 +159,9 @@ class Conversation:
                 tm_major = TaskManager.department_match(major_string) #weird output with
                 if tm_major is None:
                     return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+                elif tm_major in self.student_profile.major:
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
+                            self.decision_tree.get_next_node()]
                 self.student_profile.major.append(tm_major)
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                         self.decision_tree.get_next_node()]
@@ -187,6 +190,7 @@ class Conversation:
         #print([thing.name for thing in self.student_profile.current_classes])
         # if entity.type == "class":  # add more if's for different types
         course = Course.Course()
+        print(self.student_profile.current_credits)
         if len(luis_entities) == 0:
             possibilities = self.nluu.find_course(luisAI.query)
             possibilities_str = " ".join(possibilities)
@@ -547,10 +551,13 @@ class Conversation:
     # done
     def handleStudentInterests(self, input, luisAI, luis_intent, luis_entities):
         print("in interests")
-        if len(luis_entities) == 0:
+        if len(luis_entities) < 2:
             interests = self.nluu.find_interests(luisAI.query)
             for interest in interests:
-                self.student_profile.interests.add(interest)
+                if "interest" in interest or "class" in interest:
+                    pass
+                else:
+                    self.student_profile.interests.add(interest)
 
         else:
             interests = []
@@ -682,7 +689,7 @@ class Conversation:
         return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
 
     def handle_class_info_name(self, input, luisAI, luis_intent, luis_entities): #20
-        pass
+        self.handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities)
 
     def handle_class_info_prof(self, input, luisAI, luis_intent, luis_entities):  # 21
         pass

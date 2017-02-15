@@ -31,7 +31,7 @@ class DecisionTree:
         self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.welcome), [], [])
         self.build_Tree()
         self.current_node = self.head_node
-        self.current_course = [Course.Course()]
+        self.current_courses = [Course.Course()]
         self.student = student
 
 
@@ -162,7 +162,7 @@ class DecisionTree:
         self.mapOfNodes[User_Query.QueryType.welcome].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_name]])  # name
         self.mapOfNodes[User_Query.QueryType.schedule_class_res].required_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
         self.mapOfNodes[User_Query.QueryType.schedule_class_res].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
-        self.mapOfNodes[User_Query.QueryType.full_schedule_check].required_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
+        self.mapOfNodes[User_Query.QueryType.full_schedule_check].required_questions.extend([self.mapOfNodes[User_Query.QueryType.goodbye]])
         self.mapOfNodes[User_Query.QueryType.full_schedule_check].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
 
         self.mapOfNodes[User_Query.QueryType.student_info_name].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # time left / year
