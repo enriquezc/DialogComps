@@ -135,7 +135,7 @@ class Conversation:
         pos = nltk.pos_tag(tokens)
         string = " "
         major_list = []
-        major = [word for word, p in pos if p in ['JJ','NN','NNS']] #getting adj and nouns from sentence
+        major = [word for word, p in pos if p in ['JJ','NN','NNS',"NNP"]] #getting adj and nouns from sentence
         print(major)
         for word in major:
             if word != "major" and word != "concentration":
@@ -144,11 +144,14 @@ class Conversation:
         print("major: ", major_string)
         if format(luis_intent) == "student_info_concentration":
             if major:
-                self.student_profile.concentration.append(major[0])
+                if major[0] not in self.student_profile.concentration:
+                    self.student_profile.concentration.append(major[0])
+                else:
+                    return [self.decision_tree.get_next_node()]
             else:
                 self.student_profile.concentration = []
             print(self.student_profile.concentration)
-            return [self.decision_tree.get_next_node()]
+
         else: #can only query on expansion if it is not a concentration
             if not major:  # making sure we actually query on something
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]

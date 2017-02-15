@@ -22,3 +22,6 @@ class Student:
         self.all_classes = []
         self.potential_courses = []
         self.relevant_class = Course.Course()
+
+    def __str__(self):
+        return "{} : {}\n{}".format(self.id, self.name, self.description)
