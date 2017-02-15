@@ -430,6 +430,7 @@ class Conversation:
                 return tm_courses
         for entity in luis_entities:
             course = Course.Course()
+            tm_courses = None
             if entity.type == 'class':
                 course_name = re.search("([A-Za-z]{2,4}) ?(\d{3})", input)
                 course.user_description = luisAI.query
@@ -438,26 +439,12 @@ class Conversation:
                     course.course_num = course_name.group(2)
                     course.department = course_name.group(1)
                     tm_courses = self.task_manager_information(course)
-                    if tm_courses is None:
-                        return None
-                    return tm_courses
                 else:
                     tm_courses = self.task_manager_class_title_match(
                         entity.entity)  # type checking done in class title match
                     # should always return one class, if no classes, should have already returned tm_clarify
                     if type(tm_courses) is list:
-                        self.student_profile.relevant_class = tm_courses
-                        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
-                            , self.decision_tree.get_next_node()]
-                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
-            if entity.type == "personname":
-                course.faculty_name = entity.entity
-                # query on previous courses with professors
-            if entity.type == "time":  # time object is a list of lists, first is M-F, second is len 2,
-                pass  # with start/end time that day?
-                # want a parse tree / relation extraction because we do not know
-                # whether it is during, before, or after without context.
             if entity.type == "department":
                 course.department = entity.entity
                 tm_courses = self.task_manager_information(course)  # type checking is done in tm informaiton
