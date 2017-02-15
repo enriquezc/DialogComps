@@ -8,6 +8,7 @@ import luis
 from src.Task_Manager import TaskManager
 from src.Dialog_Manager import Student, Course, User_Query, DecisionTree
 import datetime
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 
 class Conversation:
@@ -40,6 +41,7 @@ class Conversation:
         self.nluu = nluu.nLUU(luis_url)
         self.utterancesStack = []
         self.mapOfIntents = {}
+        self.sentimentAnalyzer = SentimentIntensityAnalyzer()
 
         TaskManager.init()
 
@@ -63,13 +65,25 @@ class Conversation:
                 our_str_response = ""
                 if type(userQueries) is list:
                     for userQuery in userQueries:
-                        self.utterancesStack.append(userQuery)
-                        self.last_user_query.append(userQuery)
-                        if userQuery.type == User_Query.QueryType.goodbye:
-                            print("Goodbye")
-                            self.conversing = False
-                            break
-                        our_str_response += self.nluu.create_response(userQuery) + '\n'
+                        ###
+                        if User_Query.QueryType.full_schedule_check == userQuery.type:
+                            print (self.nluu.create_response(userQuery) + '\n')
+                            responseToCredits = input()
+                            
+                            responseSentiment = self.sentimentAnalyzer.polarity_scores(responseToCredits)
+                            if responseSentiment["neg"] > responseSentiment["pos"]:
+                                print("Smell ya later! Thanks for chatting.")
+                                return
+                        else:
+                        
+                        ###
+                            self.utterancesStack.append(userQuery)
+                            self.last_user_query.append(userQuery)
+                            if userQuery.type == User_Query.QueryType.goodbye:
+                                print("Goodbye")
+                                self.conversing = False
+                                break
+                            our_str_response += self.nluu.create_response(userQuery) + '\n'
                     # This mess of code stops descriptions with accents from
                     # throwing an error
                     our_str_response = our_str_response.encode("ascii", "ignore")

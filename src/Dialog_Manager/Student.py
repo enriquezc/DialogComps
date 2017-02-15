@@ -21,4 +21,5 @@ class Student:
         self.abroad = None
         self.all_classes = []
         self.potential_courses = []
-        self.relevant_class = []
+        self.relevant_class = Course.Course()
+        self.relevant_class.name = ""
