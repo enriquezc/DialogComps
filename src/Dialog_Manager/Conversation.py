@@ -200,7 +200,7 @@ class Conversation:
         # if entity.type == "class":  # add more if's for different types
         tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
         if tm_courses is None:
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
         else:
             tm_course = tm_courses[0]
             if tm_course in self.student_profile.current_classes:
@@ -220,7 +220,7 @@ class Conversation:
     def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities):
         if "interest" in input:
             return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
-        tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
+        tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False)
         if tm_courses is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
         else:
@@ -553,6 +553,8 @@ class Conversation:
         :return None if no entities and no help from TM else list of courses that might be of interest:
         """
         if len(luis_entities) == 0:
+            if specific:
+                return None
             possibilities = self.nluu.find_course(luisAI.query)
             if len(possibilities) == 0:
                 return None
