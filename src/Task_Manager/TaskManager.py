@@ -206,12 +206,8 @@ def query_by_title(title_string, department = None):
                 names = cur.fetchall()
                 result_course.faculty_id = ""
                 for result in names:
-                    if len(result) > 1:
-                        result_course.faculty_id = result_course.faculty_id + result[0] + ","
-                        result_course.faculty_name = result_course.faculty_name + result[1] + ","
-                    else:
-                        result_course.faculty_id = None
-                        result_course.faculty_name = None
+                    result_course.faculty_id = result_course.faculty_id + result[0] + ","
+                    result_course.faculty_name = result_course.faculty_name + result[1] + ","
                 result_course.faculty_name = result_course.faculty_name[:-1]
                 result_course.faculty_id = result_course.faculty_id[:-1]
             else:
