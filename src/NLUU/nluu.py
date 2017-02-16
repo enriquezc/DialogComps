@@ -10,50 +10,6 @@ class nLUU:
     def __init__(self, luisurl):
         self.luis = luis.Luis(luisurl)
         self.response_dict = {}
-        """self.response_dict = {
-            QueryType.welcome: self.create_welcome_res,
-            QueryType.goodbye: self.create_goodbye_res,
-            QueryType.clarify: self.create_clarify_res,
-            QueryType.tm_clarify: self.create_tm_clarify_res,
-            QueryType.specify: self.create_specify_res,
-            QueryType.pleasantry: self.create_pleasantry_res,
-            QueryType.class_info_term: self.create_class_info_term_res,
-            QueryType.class_info_time: self.create_class_info_time_res,
-            QueryType.class_info_name: self.create_class_info_name_res,
-            QueryType.class_info_name_res: self.create_class_info_name_res_res,
-            QueryType.class_info_prof: self.create_class_info_prof_res,
-            QueryType.class_info_scrunch: self.create_class_info_scrunch_res,
-            QueryType.class_info_sentiment: self.create_class_info_sentiment_extended_res,
-            QueryType.class_info_sentiment_extended: self.create_class_info_sentiment_extended_res,
-            QueryType.new_class_dept: self.create_new_class_dept_res,
-            QueryType.student_info_name: self.create_student_info_name_res,
-            QueryType.student_info_major: self.create_student_info_major_res,
-            QueryType.student_info_previous_classes: self.create_student_info_previous_classes_res,
-            QueryType.student_info_interests: self.create_student_info_interests_res_res,
-            QueryType.student_info_time_left: self.create_student_info_time_left_res,
-            QueryType.student_info_abroad: self.create_student_info_abroad_res,
-            QueryType.student_info_requirements: self.create_student_info_requirements_res,
-            QueryType.student_info_major_requirements: self.create_student_info_major_res,
-            QueryType.student_info_concentration : self.create_student_info_concentration_res,
-            QueryType.new_class_request : self.create_new_class_request_res,
-            QueryType.new_class_prof: self.create_new_class_prof_res,
-            QueryType.new_class_sentiment: self.create_new_class_sentiment_res,
-            QueryType.new_class_requirements: self.create_new_class_requirements_res,
-            QueryType.new_class_time: self.create_new_class_time_res,
-            QueryType.new_class_description: self.create_new_class_description_res,
-            QueryType.schedule_class_res: self.create_schedule_class_res_res,
-            QueryType.full_schedule_check : self.create_full_schedule_check_res,
-            QueryType.student_info_name_res : self.create_student_info_name_res_res,
-            QueryType.student_info_major_res : self.create_student_info_major_res_res,
-            QueryType.student_info_previous_classes_res : self.create_student_info_previous_classes_res_res,
-            QueryType.student_info_interests_res : self.create_student_info_interests_res_res,
-            QueryType.student_info_time_left_res : self.create_student_info_time_left_res_res,
-            QueryType.student_info_abroad_res : self.create_student_info_abroad_res_res,
-            QueryType.student_info_requirements_res : self.create_student_info_requirements_res_res,
-            QueryType.student_info_major_requirements_res : self.create_student_info_major_requirements_res_res,
-            QueryType.student_info_concentration_res : self.create_student_info_concentration_res_res,
-            QueryType.tm_course_clarify : self.create_tm_course_clarify_res
-        }"""
         self.stemmer = SnowballStemmer("english")
         #Requires a local copy of atis.cfg
         #atis_grammar = nltk.data.load("atis.cfg")
