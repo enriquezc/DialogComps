@@ -489,11 +489,11 @@ def department_match(str_in):
     cur_match = None
     cur_best = 100
     if str_in.upper() in dept_dict.keys():
-        return str_in.upper()
+        return dept_dict[str_in.upper()]
     for key in dept_dict:
         dist = edit_distance(key,str_in.upper())
         if dist < cur_best:
-            cur_match = key
+            cur_match = dept_dict[key]
             cur_best = dist
         dist = edit_distance(dept_dict[key],str_in)
         if dist < cur_best:
