@@ -126,9 +126,8 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, self.current_node.userQuery)]
 
 
-    def handleStudentMajorRequest(self, input, luisAI, luis_intent, luis_entities):
-        print("in majors")
 
+    def handleStudentMajorRequest(self, input, luisAI, luis_intent, luis_entities):
         # takes the Luis query, and lowers any word in the sequence so long as
         # the word isn't I. NLTK will be able to recognize the majors as nouns if
         # they are lowercase, but will also think i is a noun. Therefore, to
