@@ -203,19 +203,13 @@ class Conversation:
         return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
 
     def handleScheduleClass(self, input, luisAI, luis_intent, luis_entities):
-        #print([thing.name for thing in self.student_profile.current_classes])
-        # if entity.type == "class":  # add more if's for different types
         tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
         if tm_courses is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
         else:
-            tm_course = None
-            for course in tm_courses:
-                if course not in self.student_profile.all_classes:
-                    tm_course = course
-                    break
+            tm_course = tm_courses[0]
             if tm_course is None:
-                return
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
             if tm_course in self.student_profile.current_classes:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res),
                         self.decision_tree.get_next_node()]
