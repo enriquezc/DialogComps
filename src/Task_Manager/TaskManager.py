@@ -352,7 +352,7 @@ def create_stop_words_set():
 # @params List object 'keywords' which contains words to query on
 # @params Optional int 'threshold' which limits number of courses to return
 # @return List of length >= 0 containing Course objects which matched keywords
-def query_by_keywords(keywords, threshold = None):
+def query_by_keywords(keywords, threshold = 3):
     if type(keywords) != type([]):
         return []
 
@@ -461,10 +461,11 @@ def query_by_keywords(keywords, threshold = None):
 
     courses.sort(key = lambda course: (course.relevance[0], course.relevance[1]))
     courses.reverse()
-    if threshold != None:
-        for course in courses:
-            if course.weighted_score < threshold:
-                courses.remove(course)
+    max = courses[0].weighted_score
+    for course in courses:
+        val = max - threshold
+        if course.weighted_score < val:
+            courses.remove(course)
     return courses
 
 # called in the init function, reads the file to create a dictionary
