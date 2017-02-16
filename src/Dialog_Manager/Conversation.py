@@ -67,13 +67,13 @@ class Conversation:
                         if User_Query.QueryType.full_schedule_check == userQuery.type:
                             print (self.nluu.create_response(userQuery) + '\n')
                             responseToCredits = input()
-                            
+
                             responseSentiment = self.sentimentAnalyzer.polarity_scores(responseToCredits)
                             if responseSentiment["neg"] > responseSentiment["pos"]:
                                 print("Smell ya later! Thanks for chatting.")
                                 return
                         else:
-                        
+
                         ###
                             self.utterancesStack.append(userQuery)
                             self.last_user_query.append(userQuery)
@@ -128,14 +128,30 @@ class Conversation:
 
     def handleStudentMajorRequest(self, input, luisAI, luis_intent, luis_entities):
         print("in majors")
-        tokens = nltk.word_tokenize(luisAI.query)
+
+        # takes the Luis query, and lowers any word in the sequence so long as
+        # the word isn't I. NLTK will be able to recognize the majors as nouns if
+        # they are lowercase, but will also think i is a noun. Therefore, to
+        # prevent problems in the common case, we check for the presence of I.
+        adjusted_query = luisAI.query
+        adjusted_query_array = adjusted_query.split()
+        for i in range(len(adjusted_query_array)):
+            if adjusted_query_array[i] != "I":
+                adjusted_query_array[i] = adjusted_query_array[i].lower()
+            if adjusted_query_array[i] == "i":
+                adjusted_query_array[i] = adjusted_query_array[i].upper()
+
+        adjusted_query = " ".join(adjusted_query_array)
+
+        # tokenizes the query that has been adjusted by the code above
+        tokens = nltk.word_tokenize(adjusted_query)
         pos = nltk.pos_tag(tokens)
         string = " "
         major_list = []
         major = [word for word, p in pos if p in ['JJ','NN','NNS']] #getting adj and nouns from sentence
         print(major)
-        print("Printing pos")
-        print(pos)
+        #print("Printing pos")
+        #print(pos)
         for word in major:
             if word != "major" and word != "concentration":
                 major_list.append(word)
