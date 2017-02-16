@@ -320,6 +320,11 @@ class nLUU:
         pos = self.pos_tag(tokens)
         return [word for word, p in pos if p in ['NNP', 'NNS', 'JJ', 'VBG', 'NN']]
 
+    def find_departments(self, utterance):
+        tokens = nltk.word_tokenize(utterance)
+        pos = nltk.pos_tag(tokens)
+        return [word for word, p in pos if p in ['JJ', 'NN', 'NNS', "NNP"]]  # getting adj and nouns from sentence and proper nouns
+
 
 #if __name__ == '__main__':
 #    nluu = nLUU("https://api.projectoxford.ai/luis/v1/application?id=fc7758f9-4d40-4079-84d3-72d6ccbb3ad2&subscription-key=c18a6e7119874249927033e72b01aeea")

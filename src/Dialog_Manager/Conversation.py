@@ -125,6 +125,11 @@ class Conversation:
     def get_current_node(self):
         return [User_Query.UserQuery(self.student_profile, self.current_node.userQuery)]
 
+    def handleStudentConcentration(self, input, luisAI, luis_intent, luis_entities):
+        dept = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
+        if dept not in self.student_profile.concentration:
+            self.student_profile.concentration.append(dept)
+            return [self.decision_tree.get_next_node()]
 
 
     def handleStudentMajorRequest(self, input, luisAI, luis_intent, luis_entities):
@@ -196,6 +201,25 @@ class Conversation:
                             except:
                                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
+
+
+    def getDepartmentStringFromLuis(self, input, luisAI, luis_intent, luis_entities):
+        # takes the Luis query, and lowers any word in the sequence so long as
+        # the word isn't I. NLTK will be able to recognize the majors as nouns if
+        # they are lowercase, but will also think i is a noun. Therefore, to
+        # prevent problems in the common case, we check for the presence of I.
+        # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
+        # tokenizes the query that has been adjusted by the code above
+        string = " "
+        major_list = []
+        major = self.nluu.find_departments(luisAI.query)
+        for word in major:
+            if word != "major" and word != "concentration":
+                major_list.append(word)
+        major_string = string.join(
+            major_list)  # ok we need to either figure out way to join a list or have the tm accept a list
+        dept = TaskManager.department_match(major_string)
+        return dept
 
 
     def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities):
@@ -460,7 +484,7 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
 
     def handle_student_info_concentration(self, input, luisAI, luis_intent, luis_entities): #18
-        return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
+        return self.handleStudentConcentration(input, luisAI, luis_intent, luis_entities)
 
     def handle_class_info_name(self, input, luisAI, luis_intent, luis_entities): #20
         self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)

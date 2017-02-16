@@ -23,4 +23,19 @@ class Student:
         self.relevant_class = Course.Course()
 
     def __str__(self):
-        return "{} : {}\n{}".format(self.id, self.name, self.description)
+        major_str = ""
+        if len(self.major) == 0:
+            major_str = "Undecided"
+        elif len(self.major) == 1:
+            major_str = "a {} major".format(self.major[0])
+        else:
+            major_str = "a {}-{} double-major".format(self.major[0], self.major[1])
+        concentration_str = ""
+        if len(self.concentration) == 1:
+            concentration_str = " and a {} concentration".format(self.concentration[0])
+        courses_str = ""
+        if len(self.current_classes) > 0:
+            courses_str += " and are registered for:\n"
+            for course in self.current_classes:
+                courses_str += "\t{}\n".format(course.name)
+        return "{}, {}{}{}".format(self.name, major_str, concentration_str, courses_str)
