@@ -19,6 +19,6 @@ class Student:
         self.interests = set()
         self.interest_index = 0
         self.abroad = None
-        self.all_classes = []
+        self.all_classes = set()
         self.potential_courses = []
         self.relevant_class = Course.Course()

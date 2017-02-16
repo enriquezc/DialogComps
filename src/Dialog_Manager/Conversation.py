@@ -202,7 +202,13 @@ class Conversation:
         if tm_courses is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
         else:
-            tm_course = tm_courses[0]
+            tm_course = None
+            for course in tm_courses:
+                if course not in self.student_profile.all_classes:
+                    tm_course = course
+                    break
+            if tm_course is None:
+                return
             if tm_course in self.student_profile.current_classes:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res),
                         self.decision_tree.get_next_node()]
@@ -220,7 +226,7 @@ class Conversation:
     def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities):
         if "interest" in input:
             return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
-        tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False)
+        tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
         if tm_courses is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
         else:
@@ -552,9 +558,8 @@ class Conversation:
         :param luis_entities:
         :return None if no entities and no help from TM else list of courses that might be of interest:
         """
+        toReturn = None
         if len(luis_entities) == 0:
-            if specific:
-                return None
             possibilities = self.nluu.find_course(luisAI.query)
             if len(possibilities) == 0:
                 return None
@@ -562,9 +567,9 @@ class Conversation:
             if tm_courses is None:
                 return None
             elif not type(tm_courses) is list:
-                return [tm_courses]
+                toReturn = [tm_courses]
             else:
-                return tm_courses
+                toReturn = tm_courses
         for entity in luis_entities:
             course = Course.Course()
             if entity.type == 'class':
@@ -578,8 +583,9 @@ class Conversation:
                     if tm_course is None:
                         return None
                     if not type(tm_course) is list:
-                        return [tm_course]
-                    return tm_course
+                        toReturn = [tm_course]
+                    else:
+                        toReturn = tm_course
                 else:
                     tm_course = self.task_manager_class_title_match(
                         entity.entity)  # type checking done in class title match
@@ -587,16 +593,22 @@ class Conversation:
                     if tm_course is None:
                         return None
                     if not type(tm_course) is list:
-                        return [tm_course]
-                    return tm_course
+                        toReturn = [tm_course]
+                    else:
+                        toReturn = tm_course
 
             if entity.type == "department":
                 course.department = entity.entity
                 tm_course = self.task_manager_information(course)  # type checking is done in tm informaiton
                 if not type(tm_course) is list:
-                    return [tm_course]
-                return tm_course
-        return None
+                    toReturn = [tm_course]
+                else:
+                    toReturn = tm_course
+        if toReturn is None:
+            return toReturn
+        for course in toReturn:
+            self.student_profile.all_classes.add(course)
+        return toReturn
 
 
     def task_manager_information(self, course):

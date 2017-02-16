@@ -33,3 +33,6 @@ class Course:
 
     def __eq__(self, other):
         return other is not None and self.department == other.department and self.course_num == other.course_num
+
+    def __hash__(self):
+        return hash((self.department, self.course_num))
