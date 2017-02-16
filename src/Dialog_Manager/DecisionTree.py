@@ -163,7 +163,7 @@ class DecisionTree:
         self.mapOfNodes[User_Query.QueryType.schedule_class_res].required_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
         self.mapOfNodes[User_Query.QueryType.schedule_class_res].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
         self.mapOfNodes[User_Query.QueryType.full_schedule_check].required_questions.extend([self.mapOfNodes[User_Query.QueryType.goodbye]])
-        self.mapOfNodes[User_Query.QueryType.full_schedule_check].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
+        self.mapOfNodes[User_Query.QueryType.full_schedule_check].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.goodbye]])
 
         self.mapOfNodes[User_Query.QueryType.student_info_name].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # time left / year
         self.mapOfNodes[User_Query.QueryType.student_info_name].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # time left / year
