@@ -318,6 +318,7 @@ class Conversation:
     def handleStudentInterests(self, input, luisAI, luis_intent, luis_entities):
         print("in interests")
         #if len(luis_entities) < 10:
+        i = 0
         interests = self.nluu.find_interests(luisAI.query)
         new_interests = []
         for interest in interests:
@@ -337,20 +338,20 @@ class Conversation:
                     interests.append(entity.entity)
                     self.student_profile.interests.add(entity.entity)'''
         try:
-            if len(self.student_profile.interests) == self.student_profile.interest_index and self.student_profile.interests:
-                print("in same length")
-                self.student_profile.interest_index = len(self.student_profile.interests)
-                tm_courses = TaskManager.query_by_keywords(interests)
-                self.student_profile.relevant_class = tm_courses[1]
-            self.student_profile.interest_index = len(self.student_profile.interests)
-            #print(self.student_profile.interest_index)
-            print(self.student_profile.interests)
+            print(interests)
             #print(self.student_profile.interests[len(interests):])
             #print(interests[0:])
+            tm_courses = TaskManager.query_by_keywords(interests)
+            if set(self.student_profile.interests).issuperset(set(interests)) and len(tm_courses) > i:
+                print("in same length")
 
-            tm_courses = TaskManager.query_by_keywords(list(self.student_profile.interests)[self.student_profile.interest_index-len(interests):])
-            self.student_profile.relevant_class = tm_courses[0]
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
+                self.student_profile.relevant_class = tm_courses[i]
+                i += 1
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
+            else:
+                i = 0
+                self.student_profile.relevant_class = tm_courses[0]
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
         except:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
