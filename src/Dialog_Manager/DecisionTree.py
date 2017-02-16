@@ -25,23 +25,13 @@ class NodeObject:
         self.potential_next_questions = []
         self.potential_next_questions.extend(potentialQ)
         self.node_function = None
-
-    def answer(self):
-        pass
-
-    def relevant_course(*args):
-        pass
-
-    def call_database(self):
-        pass
-
 class DecisionTree:
     def __init__(self, student):
         self.mapOfNodes = {}
         self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.welcome), [], [])
         self.build_Tree()
         self.current_node = self.head_node
-        self.current_course = Course.Course()
+        self.current_courses = [Course.Course()]
         self.student = student
 
 
@@ -65,7 +55,7 @@ class DecisionTree:
             node.answered = False
             return False
         elif node.userQuery.value == 5: #schedule_class_res
-            if self.current_course in self.student.current_classes:
+            if self.current_courses[0] in self.student.current_classes:
                 node.answered = True
                 return True
             node.answered = False
@@ -132,31 +122,31 @@ class DecisionTree:
             return False
 
         elif node.userQuery.value == 30: #new_class_name
-            if self.current_course.name or self.current_course.id:
+            if self.current_courses[0].name or self.current_courses[0].id:
                 node.answered = True
                 return True
             node.answered = False
             return False
         elif node.userQuery.value == 31: #new_class_prof
-            if self.current_course.prof:
+            if self.current_courses[0].prof:
                 node.answered = True
                 return True
             node.answered = False
             return False
         elif node.userQuery.value == 32: #new_class_dept
-            if self.current_course.department:
+            if self.current_courses[0].department:
                 node.answered = True
                 return True
             node.answered = False
             return False
         elif node.userQuery.value == 33: #new_class_sentiment
-            if self.current_course.sentiment:
+            if self.current_courses[0].sentiment:
                 node.answered = True
                 return True
             node.answered = False
             return False
         elif node.userQuery.value == 35: #new_class_time
-            if self.current_course.time:
+            if self.current_courses[0].time:
                 node.answered = True
                 return True
             node.answered = False
@@ -172,8 +162,8 @@ class DecisionTree:
         self.mapOfNodes[User_Query.QueryType.welcome].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_name]])  # name
         self.mapOfNodes[User_Query.QueryType.schedule_class_res].required_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
         self.mapOfNodes[User_Query.QueryType.schedule_class_res].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
-        self.mapOfNodes[User_Query.QueryType.full_schedule_check].required_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
-        self.mapOfNodes[User_Query.QueryType.full_schedule_check].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
+        self.mapOfNodes[User_Query.QueryType.full_schedule_check].required_questions.extend([self.mapOfNodes[User_Query.QueryType.goodbye]])
+        self.mapOfNodes[User_Query.QueryType.full_schedule_check].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.goodbye]])
 
         self.mapOfNodes[User_Query.QueryType.student_info_name].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # time left / year
         self.mapOfNodes[User_Query.QueryType.student_info_name].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # time left / year

@@ -17,8 +17,10 @@ class Student:
         #2. Enums of different categories of interests we've thought of, which we can expand as we go
         #3. Strings with phrases we believe they said they were interested in
         self.interests = set()
-        self.interest_index = 0
         self.abroad = None
-        self.all_classes = []
+        self.all_classes = set()
         self.potential_courses = []
         self.relevant_class = Course.Course()
+
+    def __str__(self):
+        return "{} : {}\n{}".format(self.id, self.name, self.description)

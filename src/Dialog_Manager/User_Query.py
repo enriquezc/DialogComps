@@ -20,7 +20,8 @@ class QueryType(Enum):
     tm_clarify = 7
     #clarifying a none return from database searching on course titles
     tm_course_clarify = 8
-
+    #we've already talked about all the relevant courses
+    already_talked_about = 9
     #ask for more info about student
     # their name
     student_info_name = 10

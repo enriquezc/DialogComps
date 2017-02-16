@@ -85,6 +85,9 @@ class nLUU:
     def create_pleasantry_res(self, userQuery):
         return constants.Responses.PLEASANTRY[0]
 
+    def create_already_talked_about_res(self, userQuery):
+        return constants.Responses.ALREADY_TALKED_ABOUT[0]
+
     def create_class_info_term_res(self, userQuery):
         return constants.Responses.CLASS_INFO_TERM[0].format(userQuery.object.name)
 
@@ -197,7 +200,7 @@ class nLUU:
             time = "an unknown time"
         else:
             time = str(userQuery.object.relevant_class.time)
-        print(userQuery.object.relevant_class.faculty_name)
+
         if userQuery.object.relevant_class.faculty_name == "":
             prof = "unknown"
         else:
