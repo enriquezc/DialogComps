@@ -16,7 +16,7 @@ class Course:
         self.scrunch = ""
         self.requirements_fulfilled = []
         #Some way of storing start time, end time, and days of the week. Format undecided as of yet.
-        self.time = None
+        self.time = ""
         self.prereqs = []
         #description from enroll
         self.description = ""

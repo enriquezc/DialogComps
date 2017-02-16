@@ -18,8 +18,8 @@ class QueryType(Enum):
     full_schedule_check = 6
     #clarifying a none return from the data base
     tm_clarify = 7
-
-
+    #clarifying a none return from database searching on course titles
+    tm_course_clarify = 8
 
     #ask for more info about student
     # their name
