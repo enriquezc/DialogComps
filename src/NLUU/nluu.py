@@ -9,59 +9,58 @@ import random
 class nLUU:
     def __init__(self, luisurl):
         self.luis = luis.Luis(luisurl)
-        self.response_dict = {
-            QueryType.welcome: self.create_welcome_response,
-            QueryType.goodbye: self.create_goodbye_response,
-            QueryType.clarify: self.create_clarify_response,
-            QueryType.tm_clarify: self.create_tm_clarify_response,
-            QueryType.specify: self.create_specify_response,
-            QueryType.pleasantry: self.create_pleasantry_response,
-            QueryType.class_info_term: self.create_class_info_term,
-            #QueryType.class_info_term_res: self.create_class_info_term_res,
-            QueryType.class_info_time: self.create_class_info_time,
-            #QueryType.class_info_time_res: self.create_class_info_time_res,
-            #QueryType.classes_info_prof_res: self.create_class_info_prof_res,
-            QueryType.class_info_name: self.create_class_info_name,
-            #QueryType.class_info_name_res: self.create_class_info_name_res,
-            QueryType.class_info_prof: self.create_class_info_prof,
-            #QueryType.class_info_prof_res: self.create_class_info_prof_res,
-            QueryType.class_info_scrunch: self.create_class_info_scrunch,
-            QueryType.class_info_sentiment: self.create_class_info_sentiment,
-            QueryType.class_info_sentiment_extended: self.create_class_info_sentiment,
-            QueryType.new_class_dept: self.create_new_class_dept,
-            QueryType.student_info_name: self.create_student_info_name,
-            QueryType.student_info_major: self.create_student_info_major,
-            QueryType.student_info_previous_classes: self.create_student_info_previous_classes,
-            QueryType.student_info_interests: self.create_student_info_interests,
-            QueryType.student_info_time_left: self.create_student_info_time_left,
-            QueryType.student_info_abroad: self.create_student_info_abroad,
-            QueryType.student_info_requirements: self.create_student_info_requirements,
-            QueryType.student_info_major_requirements: self.create_student_info_major,
-            QueryType.student_info_concentration : self.create_student_info_concentration,
-            QueryType.new_class_request : self.create_new_class_name,
-            QueryType.new_class_name: self.create_new_class_name,
-            QueryType.new_class_prof: self.create_new_class_prof,
-            QueryType.new_class_sentiment: self.create_new_class_sentiment,
-            QueryType.new_class_requirements: self.create_new_class_requirements,
-            QueryType.new_class_time: self.create_new_class_time,
-            QueryType.new_class_description: self.create_new_class_description,
-            QueryType.schedule_class_res: self.create_schedule_class_res,
-            QueryType.full_schedule_check : self.create_full_schedule_check,
-            QueryType.student_info_name_res : self.create_student_info_name_res,
-            QueryType.student_info_major_res : self.create_student_info_major_res,
-            QueryType.student_info_previous_classes_res : self.create_student_info_previous_classes_res,
-            QueryType.student_info_interests_res : self.create_student_info_interests_res,
-            QueryType.student_info_time_left_res : self.create_student_info_time_left_res,
-            QueryType.student_info_abroad_res : self.create_student_info_abroad_res,
-            QueryType.student_info_requirements_res : self.create_student_info_requirements_res,
-            QueryType.student_info_major_requirements_res : self.create_student_info_major_requirements_res,
-            QueryType.student_info_concentration_res : self.create_student_info_concentration_res
-        }
+        self.response_dict = {}
+        """self.response_dict = {
+            QueryType.welcome: self.create_welcome_res,
+            QueryType.goodbye: self.create_goodbye_res,
+            QueryType.clarify: self.create_clarify_res,
+            QueryType.tm_clarify: self.create_tm_clarify_res,
+            QueryType.specify: self.create_specify_res,
+            QueryType.pleasantry: self.create_pleasantry_res,
+            QueryType.class_info_term: self.create_class_info_term_res,
+            QueryType.class_info_time: self.create_class_info_time_res,
+            QueryType.class_info_name: self.create_class_info_name_res,
+            QueryType.class_info_name_res: self.create_class_info_name_res_res,
+            QueryType.class_info_prof: self.create_class_info_prof_res,
+            QueryType.class_info_scrunch: self.create_class_info_scrunch_res,
+            QueryType.class_info_sentiment: self.create_class_info_sentiment_extended_res,
+            QueryType.class_info_sentiment_extended: self.create_class_info_sentiment_extended_res,
+            QueryType.new_class_dept: self.create_new_class_dept_res,
+            QueryType.student_info_name: self.create_student_info_name_res,
+            QueryType.student_info_major: self.create_student_info_major_res,
+            QueryType.student_info_previous_classes: self.create_student_info_previous_classes_res,
+            QueryType.student_info_interests: self.create_student_info_interests_res_res,
+            QueryType.student_info_time_left: self.create_student_info_time_left_res,
+            QueryType.student_info_abroad: self.create_student_info_abroad_res,
+            QueryType.student_info_requirements: self.create_student_info_requirements_res,
+            QueryType.student_info_major_requirements: self.create_student_info_major_res,
+            QueryType.student_info_concentration : self.create_student_info_concentration_res,
+            QueryType.new_class_request : self.create_new_class_request_res,
+            QueryType.new_class_prof: self.create_new_class_prof_res,
+            QueryType.new_class_sentiment: self.create_new_class_sentiment_res,
+            QueryType.new_class_requirements: self.create_new_class_requirements_res,
+            QueryType.new_class_time: self.create_new_class_time_res,
+            QueryType.new_class_description: self.create_new_class_description_res,
+            QueryType.schedule_class_res: self.create_schedule_class_res_res,
+            QueryType.full_schedule_check : self.create_full_schedule_check_res,
+            QueryType.student_info_name_res : self.create_student_info_name_res_res,
+            QueryType.student_info_major_res : self.create_student_info_major_res_res,
+            QueryType.student_info_previous_classes_res : self.create_student_info_previous_classes_res_res,
+            QueryType.student_info_interests_res : self.create_student_info_interests_res_res,
+            QueryType.student_info_time_left_res : self.create_student_info_time_left_res_res,
+            QueryType.student_info_abroad_res : self.create_student_info_abroad_res_res,
+            QueryType.student_info_requirements_res : self.create_student_info_requirements_res_res,
+            QueryType.student_info_major_requirements_res : self.create_student_info_major_requirements_res_res,
+            QueryType.student_info_concentration_res : self.create_student_info_concentration_res_res,
+            QueryType.tm_course_clarify : self.create_tm_course_clarify_res
+        }"""
         self.stemmer = SnowballStemmer("english")
         #Requires a local copy of atis.cfg
         #atis_grammar = nltk.data.load("atis.cfg")
         #self.parser = nltk.ChartParser(atis_grammar)
 
+    def create_new_class_name_res(self, userQuery): #Just calls new_class_request_res
+        return self.create_new_class_request_res(userQuery)
 
 
     def tokenize(self, s):
@@ -109,30 +108,31 @@ class nLUU:
         return s
 
     def create_response(self, userQuery):
-        fun = self.response_dict[userQuery.type]
+        querytype = format(userQuery.type).split('.')[1]
+        fun = eval("self.create_{}_res".format(querytype))
         if fun == None:
             fun = self.response_dict[QueryType.welcome]
         return fun(userQuery)
 
-    def create_welcome_response(self, userQuery):
+    def create_welcome_res(self, userQuery):
         return constants.Responses.WELCOME[0]
 
-    def create_goodbye_response(self, userQuery):
+    def create_goodbye_res(self, userQuery):
         return constants.Responses.GOODBYE[1]
 
-    def create_clarify_response(self, userQuery):
+    def create_clarify_res(self, userQuery):
         return constants.Responses.CLARIFY[0]
 
-    def create_specify_response(self, userQuery):
+    def create_specify_res(self, userQuery):
         return constants.Responses.SPECIFY[0]
 
-    def create_pleasantry_response(self, userQuery):
+    def create_pleasantry_res(self, userQuery):
         return constants.Responses.PLEASANTRY[0]
 
-    def create_class_info_term(self, userQuery):
+    def create_class_info_term_res(self, userQuery):
         return constants.Responses.CLASS_INFO_TERM[0].format(userQuery.object.name)
 
-    def create_class_info_term_res(self, userQuery):
+    def create_class_info_term_res_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_TERM_RES[0]
         return s.format(userQuery.object.relevant_class.name, userQuery.object.relevant_class.term)
 
@@ -146,67 +146,67 @@ class nLUU:
             class_str = userQuery.object.relevant_class.id + ": " + userQuery.object.relevant_class.name
         return s.format(userQuery.object.relevant_class[0].faculty_name, class_str)
 
-    def create_class_info_name(self, userQuery):
+    def create_class_info_name_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_NAME[0]
         return s.format(userQuery.object.relevant_class.name)
 
-    def create_class_info_name_res(self, userQuery):
+    def create_class_info_name_res_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_NAME_RES[0]
         return s.format(userQuery.object.relevant_class.name)
 
-    def create_class_info_time(self, userQuery):
+    def create_class_info_time_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_TIME[0]
         return s.format(userQuery.object.relevant_class.name)
 
-    def create_class_info_time_res(self, userQuery):
+    def create_class_info_time_res_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_TIME_RES[0]
         return s.format(userQuery.object.relevant_class.name, userQuery.object.relevant_class[0].time)
 
-    def create_class_info_prof(self, userQuery):
+    def create_class_info_prof_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_PROF[0]
         return s.format(userQuery.object.relevant_class.name)
 
-    def create_class_info_prof_res(self, userQuery):
+    def create_classes_info_prof_res_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_PROF_RES[0]
         return s.format(userQuery.object.relevant_class.faculty_name)
 
-    def create_class_info_sentiment(self, userQuery):
+    def create_class_info_sentiment_extended_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_SENTIMENT[0]
         return s.format(userQuery.object.relevant_class.name)
 
-    def create_class_info_scrunch(self, userQuery):
+    def create_class_info_scrunch_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_SCRUNCH[0]
         return s.format(userQuery.object.relevant_class.name)
 
-    def create_new_class_dept(self, userQuery):
+    def create_new_class_dept_res(self, userQuery):
         s = constants.Responses.NEW_CLASS_DEPT[0]
         return s
 
-    def create_student_info_name(self, userQuery):
+    def create_student_info_name_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_NAME[0]
         return s
 
-    def create_student_info_major(self, userQuery):
+    def create_student_info_major_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR[0]
         return s
 
-    def create_student_info_previous_classes(self, userQuery):
+    def create_student_info_previous_classes_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_PREVIOUS_CLASSES[0]
         return s
 
-    def create_student_info_interests(self, userQuery):
+    def create_student_info_interests_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_INTERESTS[0]
         return s
 
-    def create_student_info_time_left(self, userQuery):
+    def create_student_info_time_left_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_TIME_LEFT[0]
         return s
 
-    def create_student_info_abroad(self, userQuery):
+    def create_student_info_abroad_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_ABROAD[0]
         return s
 
-    def create_student_info_requirements(self, userQuery):
+    def create_student_info_requirements_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_REQUIREMENTS[0]
         return s
 
@@ -214,26 +214,26 @@ class nLUU:
         s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS[0]
         return s
 
-    def create_new_class_name(self, userQuery):
+    def create_new_class_request_res(self, userQuery):
         return constants.Responses.NEW_CLASS_NAME[0]
 
-    def create_new_class_prof(self, userQuery):
+    def create_new_class_prof_res(self, userQuery):
         return constants.Responses.NEW_CLASS_PROF[0]
 
     def create_new_class_dept(self, userQuery):
         return constants.Responses.NEW_CLASS_DEPT[0]
 
-    def create_new_class_sentiment(self, userQuery):
+    def create_new_class_sentiment_res(self, userQuery):
         s = constants.Responses.NEW_CLASS_SENTIMENT[0]
         return s.format(userQuery.object.relevant_class[0].name)
 
-    def create_new_class_requirements(self, userQuery):
+    def create_new_class_requirements_res(self, userQuery):
         return constants.Responses.NEW_CLASS_REQUIREMENTS[0]
 
-    def create_new_class_time(self, userQuery):
+    def create_new_class_time_res(self, userQuery):
         return constants.Responses.NEW_CLASS_TIME[0]
 
-    def create_new_class_description(self, userQuery):
+    def create_new_class_description_res(self, userQuery):
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
         s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
@@ -253,25 +253,25 @@ class nLUU:
 
         return s.format(userQuery.object.relevant_class.id, userQuery.object.relevant_class.name, time, prof, prereqs, userQuery.object.relevant_class.description)
 
-    def create_schedule_class_res(self, userQuery):
+    def create_schedule_class_res_res(self, userQuery):
         s = constants.Responses.SCHEDULE_CLASS_RES[0]
         course_list = ""
         for course in userQuery.object.current_classes:
             course_list += (course.name + "\n")
         return s.format(course_list)
 
-    def create_full_schedule_check(self, userQuery):
+    def create_full_schedule_check_res(self, userQuery):
         s = constants.Responses.FULL_SCHEDULE_CHECK[0]
         course_list = ""
         for course in userQuery.object.current_classes:
             course_list += (course.name + "\n")
         return s.format(course_list, userQuery.object.current_credits)
 
-    def create_student_info_name_res(self, userQuery):
+    def create_student_info_name_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_NAME_RES[0]
         return s.format(userQuery.object.name)
 
-    def create_student_info_major_res(self, userQuery):
+    def create_student_info_major_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_RES[0]
         if len(userQuery.object.major) == 1:
             if "cs" in userQuery.object.major[0] or "computer" in userQuery.object.major[0]:
@@ -284,39 +284,39 @@ class nLUU:
             majors = userQuery.object.major[0] + " and " + userQuery.object.major[1]
             return s.format(majors)
 
-    def create_student_info_previous_classes_res(self, userQuery):
+    def create_student_info_previous_classes_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_PREVIOUS_CLASSES_RES[0]
         previous_classes = ""
         for course in userQuery.object.previous_classes:
             previous_classes += (course.name + "\n")
         return s.format(previous_classes)
 
-    def create_student_info_interests_res(self, userQuery):
+    def create_student_info_interests_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_INTERESTS_RES[0]
         s = s.format(str(userQuery.object.relevant_class))
         return s
 
-    def create_student_info_time_left_res(self, userQuery):
+    def create_student_info_time_left_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_TIME_LEFT_RES[0]
         return s
 
-    def create_student_info_abroad_res(self, userQuery):
+    def create_student_info_abroad_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_ABROAD_RES[0]
         return s
 
-    def create_student_info_requirements_res(self, userQuery):
+    def create_student_info_requirements_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[0]
         return s
 
-    def create_student_info_major_requirements_res(self, userQuery):
+    def create_student_info_major_requirements_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[0]
         return s
 
-    def create_student_info_concentration(self, userQuery):
+    def create_student_info_concentration_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_CONCENTRATION[0]
         return s
 
-    def create_student_info_concentration_res(self, userQuery):
+    def create_student_info_concentration_res_res(self, userQuery):
         if len(userQuery.object.concentration) > 0:
             s = constants.Responses.STUDENT_INFO_CONCENTRATION_RES[0]
             concentration_string = ""
@@ -328,7 +328,7 @@ class nLUU:
             s = constants.Responses.STUDENT_INFO_CONCENTRATION_RES[1]
             return s
 
-    def create_tm_clarify_response(self, userQuery):
+    def create_tm_clarify_res(self, userQuery):
         s = constants.Responses.TM_CLARIFY[0]
         return s
 
