@@ -1,10 +1,10 @@
 import nltk
 import luis
+import random
 from src.Dialog_Manager import Student, Course, User_Query
 from src.Dialog_Manager.User_Query import QueryType
 from src.utils import constants
 from nltk.stem.snowball import SnowballStemmer
-import random
 
 class nLUU:
     def __init__(self, luisurl):
@@ -77,7 +77,7 @@ class nLUU:
         return constants.Responses.GOODBYE[1]
 
     def create_clarify_res(self, userQuery):
-        return constants.Responses.CLARIFY[0]
+        return constants.Responses.CLARIFY[random.randint(0,3)]
 
     def create_specify_res(self, userQuery):
         return constants.Responses.SPECIFY[0]
@@ -195,29 +195,35 @@ class nLUU:
     def create_new_class_description_res(self, userQuery):
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
-        s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
+
         if userQuery.object.relevant_class.time == "":
             time = "an unknown time"
         else:
             time = str(userQuery.object.relevant_class.time)
-
-        if userQuery.object.relevant_class.faculty_name == "":
-            prof = "unknown"
-        else:
+        print(userQuery.object.relevant_class.faculty_name)
+        if userQuery.object.relevant_class.faculty_name != "":
             prof = userQuery.object.relevant_class.faculty_name
         if userQuery.object.relevant_class.prereqs == []:
             prereqs = "This class has no prereqs"
         else:
             prereqs = "The prereqs for this class are" + str(userQuery.object.relevant_class.prereqs)
-
-        return s.format(userQuery.object.relevant_class.id, userQuery.object.relevant_class.name, time, prof, prereqs, userQuery.object.relevant_class.description)
+        if userQuery.object.relevant_class.faculty_name != "":
+            s = constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]
+            return s.format(userQuery.object.relevant_class.id, userQuery.object.relevant_class.name, time, prof, prereqs, userQuery.object.relevant_class.description)
+        else:
+            s = constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]
+            return s.format(userQuery.object.relevant_class.id, userQuery.object.relevant_class.name, time, prereqs, userQuery.object.relevant_class.description)
 
     def create_schedule_class_res_res(self, userQuery):
-        s = constants.Responses.SCHEDULE_CLASS_RES[0]
-        course_list = ""
-        for course in userQuery.object.current_classes:
-            course_list += (course.name + "\n")
-        return s.format(course_list)
+        if len(userQuery.object.current_classes) == 0:
+            s = constants.Responses.EMPTY_SCHEDULE_RES[0]
+            return s
+        else:
+            s = constants.Responses.SCHEDULE_CLASS_RES[0]
+            course_list = ""
+            for course in userQuery.object.current_classes:
+                course_list += (course.name + "\n")
+            return s.format(course_list)
 
     def create_full_schedule_check_res(self, userQuery):
         s = constants.Responses.FULL_SCHEDULE_CHECK[0]

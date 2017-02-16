@@ -1,11 +1,15 @@
 class Responses:
-    WELCOME = ("Hi, my name is DLNbot3000. Welcome to my office!",)
+    WELCOME = ("Hi, my name is DLNbot3000. Welcome to my office!\nAsk me about a specific course, or tell me some of your interests and I can find a related course.",)
     GOODBYE = ("Goodbye, {}",
                "See ya",
                "Smell ya later!",)
-    CLARIFY = ("Could you clarify what you just said?",)
+    CLARIFY = ("Could you clarify what you just said?",
+               "I'm not sure I understand, could you repeat that?",
+               "Hmmm, I don't quite follow. Maybe ask me in a different manner?",
+               "I'm sorry, I didn't get that. Could you clarify?",
+               )
     TM_CLARIFY = ("I wasn't able to find anything related to what you just said. Please ask me about something else.",)
-    TM_COURSE_CLARIFY = ("Are you dumb? That's not offered here. You'll have to go to St. Olaf for that class.", )
+    TM_COURSE_CLARIFY = ("I couldn't find a course related to that. Maybe it isn't offered at Carleton?.", )
     SPECIFY = ("Can you be more specific on that regard?",)
     PLEASANTRY = ("Suh",)
     STUDENT_INFO_NAME = ("What's your name?",)
@@ -46,8 +50,11 @@ class Responses:
     NEW_CLASS_SENTIMENT = ("What do you think about taking {}?",)
     NEW_CLASS_REQUIREMENTS = ("Which requirements would you like to complete?",)
     NEW_CLASS_TIME = ("What time of day would you like your classes to be?",)
-    NEW_CLASS_DESCRIPTION = ("So, here's what I know about {}.\n {} is available next term at {}, taught by {}.\n {}. Here's its official description:\n {}",)
-    SCHEDULE_CLASS_RES = ("Here are the classes you're currently registered for:\n {}.",)
+    NEW_CLASS_DESCRIPTIONA = ("So, here's what I know about {}.\n {} is available next term at {}, taught by {}.",)
+    NEW_CLASS_DESCRIPTIONB = ("So, here's what I know about {}.\n {} is available next term at {}",)
+    NEW_CLASS_DESCRIPTIONC = ("\n {}. Here's its official description:\n {}",)
+    SCHEDULE_CLASS_RES = ("Here are the classes you're currently registered for:\n {}",)
+    EMPTY_SCHEDULE_RES = ("You are not currently registered for any classes.",)
     FULL_SCHEDULE_CHECK = ("Here are the classes you're currently registered for:\n {} You're registered for {} credits, do you want to register for more classes?",)
     ALREADY_TALKED_ABOUT = ("We already talked about all the relevant courses to these interests. Ask about something else.",)
 
