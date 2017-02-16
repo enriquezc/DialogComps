@@ -1,11 +1,15 @@
 class Responses:
-    WELCOME = ("Hi, my name is DLNbot3000. Welcome to my office!",)
+    WELCOME = ("Hi, my name is DLNbot3000. Welcome to my office!\nAsk me about a specific course, or tell me some of your interests and I can find a related course.",)
     GOODBYE = ("Goodbye, {}",
                "See ya",
                "Smell ya later!",)
-    CLARIFY = ("Could you clarify what you just said?",)
+    CLARIFY = ("Could you clarify what you just said?",
+               "I'm not sure I understand, could you repeat that?",
+               "Hmmm, I don't quite follow. Maybe ask me in a different manner?",
+               "I'm sorry, I didn't get that. Could you clarify?",
+               )
     TM_CLARIFY = ("I wasn't able to find anything related to what you just said. Please ask me about something else.",)
-    TM_COURSE_CLARIFY = ("Are you dumb? That's not offered here. You'll have to go to St. Olaf for that class.", )
+    TM_COURSE_CLARIFY = ("I couldn't find a course related to that. Maybe it isn't offered at Carleton?.", )
     SPECIFY = ("Can you be more specific on that regard?",)
     PLEASANTRY = ("Suh",)
     STUDENT_INFO_NAME = ("What's your name?",)

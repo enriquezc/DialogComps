@@ -1,10 +1,10 @@
 import nltk
 import luis
+import random
 from src.Dialog_Manager import Student, Course, User_Query
 from src.Dialog_Manager.User_Query import QueryType
 from src.utils import constants
 from nltk.stem.snowball import SnowballStemmer
-import random
 
 class nLUU:
     def __init__(self, luisurl):
@@ -77,7 +77,7 @@ class nLUU:
         return constants.Responses.GOODBYE[1]
 
     def create_clarify_res(self, userQuery):
-        return constants.Responses.CLARIFY[0]
+        return constants.Responses.CLARIFY[random.randint(0,3)]
 
     def create_specify_res(self, userQuery):
         return constants.Responses.SPECIFY[0]
