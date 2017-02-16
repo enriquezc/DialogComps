@@ -197,7 +197,6 @@ class nLUU:
             time = "an unknown time"
         else:
             time = str(userQuery.object.relevant_class.time)
-        print(userQuery.object.relevant_class.faculty_name)
         if userQuery.object.relevant_class.faculty_name == None:
             prof = "unknown"
         else:
