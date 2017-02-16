@@ -94,13 +94,10 @@ def query_courses(course):
                 names = cur.fetchall()
                 result_course.faculty_id = ""
                 for result in names:
-                    if len(result) > 1:
-                        result_course.faculty_id = result_course.faculty_id + result[0] + ", "
-                        result_course.faculty_name = result_course.faculty_name + result[1] + ", "
-                    else:
-                        result_course.faculty_id = None
-                        result_course.faculty_name = None
-                if result_course.faculty_name != None and result_course.faculty_id != None:
+                    result_course.faculty_id = result_course.faculty_id + result[0] + ", "
+                    result_course.faculty_name = result_course.faculty_name + result[1] + ", "
+
+                if result_course.faculty_name != "" and result_course.faculty_id != "":
                     result_course.faculty_name = result_course.faculty_name[:-2]
                     result_course.faculty_id = result_course.faculty_id[:-2]
             else:
@@ -200,16 +197,17 @@ def query_by_title(title_string, department = None):
                 prof_ids = result_course.faculty_id.split('|')
                 query_str = "SELECT * FROM professors WHERE id = \'"
                 for id_num in prof_ids:
-                    query_str = query_str + str(int(id_num)) + " OR id = '"
+                    query_str = query_str + str(int(id_num)) + "' OR id = '"
                 query_str = query_str[:-10]
                 cur.execute(query_str)
                 names = cur.fetchall()
                 result_course.faculty_id = ""
                 for result in names:
-                    result_course.faculty_id = result_course.faculty_id + result[0] + ","
-                    result_course.faculty_name = result_course.faculty_name + result[1] + ","
-                result_course.faculty_name = result_course.faculty_name[:-1]
-                result_course.faculty_id = result_course.faculty_id[:-1]
+                    result_course.faculty_id = result_course.faculty_id + result[0] + ", "
+                    result_course.faculty_name = result_course.faculty_name + result[1] + ", "
+                if result_course.faculty_id != "" and result_course.faculty_id != "":
+                    result_course.faculty_name = result_course.faculty_name[:-2]
+                    result_course.faculty_id = result_course.faculty_id[:-2]
             else:
                 query_str = "SELECT name FROM professors WHERE id = \'" \
                              + str(int(result_course.faculty_id)) + "'"
@@ -414,6 +412,30 @@ def query_by_keywords(keywords, threshold = None):
         new_course.name = result[16]
         new_course.description = result[29]
         new_course.credits = result[11]
+        if result[21] != None:
+            new_course.faculty_id = result[21]
+            if '|' in new_course.faculty_id:
+                prof_ids = new_course.faculty_id.split('|')
+                query_str = "SELECT * FROM professors WHERE id = \'"
+                for id_num in prof_ids:
+                    query_str = query_str + str(int(id_num)) + "' OR id = '"
+                query_str = query_str[:-10]
+                cur.execute(query_str)
+                names = cur.fetchall()
+                new_course.faculty_id = ""
+                for result in names:
+                    new_course.faculty_id = new_course.faculty_id + result[0] + ", "
+                    new_course.faculty_name = new_course.faculty_name + result[1] + ", "
+                if new_course.faculty_id != "" and new_course.faculty_id != "":
+                    new_course.faculty_name = new_course.faculty_name[:-2]
+                    new_course.faculty_id = new_course.faculty_id[:-2]
+            else:
+                query_str = "SELECT name FROM professors WHERE id = \'" \
+                             + str(int(new_course.faculty_id)) + "'"
+                cur.execute(query_str)
+                name = cur.fetchall()
+                if len(name) > 0 and len(name[0]) > 0:
+                    new_course.faculty_name = name[0][0]
         new_course.relevance = [0,0]
         punctuationset = set(string.punctuation)
         description = new_course.description
