@@ -204,10 +204,19 @@ class Conversation:
         else:
             tm_course = tm_courses[0]
             self.student_profile.relevant_class = tm_course
-            self.student_profile.current_classes.append(tm_course)
-            newCredits = 6 if tm_course.credits is None else tm_course.credits
-            self.student_profile.current_credits += newCredits
-            self.student_profile.total_credits += newCredits
+
+            # trying to catch the case where the student is already registered
+            # for the course
+            current_class_names = []
+            for course in self.student_profile.current_classes:
+                current_class_names.append(course.name)
+
+            if tm_course.name not in current_class_names:
+                self.student_profile.current_classes.append(tm_course)
+                newCredits = 6 if tm_course.credits is None else tm_course.credits
+                self.student_profile.current_credits += newCredits
+                self.student_profile.total_credits += newCredits
+
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
                     , self.decision_tree.get_next_node()]
 
