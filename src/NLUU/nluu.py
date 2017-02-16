@@ -193,12 +193,12 @@ class nLUU:
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
         s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
-        if userQuery.object.relevant_class.time == None:
+        if userQuery.object.relevant_class.time == "":
             time = "an unknown time"
         else:
             time = str(userQuery.object.relevant_class.time)
         print(userQuery.object.relevant_class.faculty_name)
-        if userQuery.object.relevant_class.faculty_name == None:
+        if userQuery.object.relevant_class.faculty_name == "":
             prof = "unknown"
         else:
             prof = userQuery.object.relevant_class.faculty_name
@@ -287,6 +287,11 @@ class nLUU:
     def create_tm_clarify_res(self, userQuery):
         s = constants.Responses.TM_CLARIFY[0]
         return s
+
+    def create_tm_course_clarify_res(self, userQuery):
+        s = constants.Responses.TM_COURSE_CLARIFY[0]
+        return s
+
 
     def stem(self, s):
         return(self.stemmer.stem(s))
