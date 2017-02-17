@@ -195,24 +195,28 @@ class nLUU:
     def create_new_class_description_res(self, userQuery):
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
-
-        if userQuery.object.relevant_class.time == "":
-            time = "an unknown time"
-        else:
-            time = str(userQuery.object.relevant_class.time)
-        print(userQuery.object.relevant_class.faculty_name)
-        if userQuery.object.relevant_class.faculty_name != "":
-            prof = userQuery.object.relevant_class.faculty_name
-        if userQuery.object.relevant_class.prereqs == []:
-            prereqs = "This class has no prereqs"
-        else:
-            prereqs = "The prereqs for this class are" + str(userQuery.object.relevant_class.prereqs)
-        if userQuery.object.relevant_class.faculty_name != "":
-            s = constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]
-            return s.format(userQuery.object.relevant_class.id, userQuery.object.relevant_class.name, time, prof, prereqs, userQuery.object.relevant_class.description)
-        else:
-            s = constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]
-            return s.format(userQuery.object.relevant_class.id, userQuery.object.relevant_class.name, time, prereqs, userQuery.object.relevant_class.description)
+        a = ""
+        pot_course = set(userQuery.object.potential_courses)
+        print(len(pot_course))
+        for course in pot_course:
+            if course.time == "":
+                time = "an unknown time"
+            else:
+                time = str(course.time)
+            print(course.faculty_name)
+            if course.faculty_name != "":
+                prof = course.faculty_name
+            if course.prereqs == []:
+                prereqs = "This class has no prereqs"
+            else:
+                prereqs = "The prereqs for this class are" + str(course.prereqs)
+            if course.faculty_name != "":
+                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]) + "\n"
+                a = a + s.format(course.id, course.name, time, prof, prereqs, course.description)
+            else:
+                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]) + "\n"
+                a = a + s.format(course.id, course.name, time, prereqs, course.description)
+        return a
 
     def create_schedule_class_res_res(self, userQuery):
         if len(userQuery.object.current_classes) == 0:
@@ -257,9 +261,13 @@ class nLUU:
         return s.format(previous_classes)
 
     def create_student_info_interests_res_res(self, userQuery):
-        s = constants.Responses.STUDENT_INFO_INTERESTS_RES[0]
-        s = s.format(str(userQuery.object.relevant_class))
-        return s
+        pot_course = set(userQuery.object.potential_courses)
+        a = constants.Responses.STUDENT_INFO_INTERESTS_RESA
+        for course in pot_course:
+            s = constants.Responses.STUDENT_INFO_INTERESTS_RESB[0]
+            s = s.format(str(course)) + "\n"
+            a += s
+        return a
 
     def create_student_info_time_left_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_TIME_LEFT_RES[0]
