@@ -135,6 +135,9 @@ class Conversation:
                 self.student_profile.concentration.append(dept)
                 return [self.decision_tree.get_next_node()]
 
+    def remove_concentration(self, input, luisAI, luis_intent, luis_entities):
+        pass
+
     def handleStudentMajorRequest(self, input, luisAI, luis_intent, luis_entities):
         # takes the Luis query, and lowers any word in the sequence so long as
         # the word isn't I. NLTK will be able to recognize the majors as nouns if
@@ -147,21 +150,14 @@ class Conversation:
                     tm_major = self.task_manager_department_match(entity.entity)
                     print("tm major: ", format(tm_major))
                     self.student_profile.major.add(tm_major)
-                else:
-                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+
 
         major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
         print("major: ", major_list)
-
-        if major_list is None:  # making sure we actually query on something
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
-        else:
-            self.student_profile.major.add(major_string)
+        for major in major_list:
+            self.student_profile.major.add(major)
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                 self.decision_tree.get_next_node()]
-
-    def remove_concentration(self, input, luisAI, luis_intent, luis_entities):
-        pass
 
     def handleRemoveMajor(self, input, luisAI, luis_intent, luis_entities):
         # removes a major
@@ -181,7 +177,7 @@ class Conversation:
             else:
                 for entity in luis_entities:
                     if entity.type == "department":
-                            tm_major = TaskManager.department_match(entity.entity)
+                            tm_major = self.task_manager_department_match(entity.entity)
                             print("tm major: ", format(tm_major))
                             if tm_major in self.student_profile.concentration:
                                 self.student_profile.concentration.remove(tm_major)
@@ -209,39 +205,63 @@ class Conversation:
         # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
         # tokenizes the query that has been adjusted by the code above
         # @return a list of departments from NLUU
-        string = " "
-        major_list = []
+        pot_query = luisAI.query
         dept = []
-        major = self.nluu.find_departments(luisAI.query)
-        for word in major:
-            if word != "major" and word != "concentration":
-                dept.append(TaskManager.department_match(word))
+        double = False
+        if "and" in luisAI.query:
+            if "women and gender" in pot_query:
+                self.student_profile.major.add(self.task_manager_department_match("wgst"))
+                pot_query = pot_query.replace("women and gender", "")
+            elif "cinema and media" in pot_query:
+                self.student_profile.major.add(self.task_manager_department_match("cams"))
+                pot_query = pot_query.replace("cinema and media", "")
+
+            else:
+                double = True
+        else:
+            double = False
+        if double:
+            majors = luisAI.query.split("and")
+            print("major split: " + majors)
+            for maj in majors:
+                dept.append(self.nluu.find_departments(maj))
+        else:
+            major = self.nluu.find_departments(pot_query)
+            print("single major: " + str(major))
+            for word in major:
+                if word != "major" and word != "concentration" and word != "studies":
+                    dept.append(self.task_manager_department_match(word))
         return dept
 
     def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities):
         return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
 
     def handleScheduleClass(self, input, luisAI, luis_intent, luis_entities):
-        tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
-        if tm_courses is None:
+        index = self.nluu.get_number_from_ordinal_str(input)
+        tm_courses = None
+        if len(self.student_profile.potential_courses) != 0 and index is not None:
+            index = index - 1 if index != float('inf') else len(self.student_profile.potential_courses) - 1
+            tm_courses = [self.student_profile.potential_courses[index]]
+        tm_courses = tm_courses or self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities,specific=True)
+        tm_courses = tm_courses or [self.student_profile.potential_courses[0]]
+        if tm_courses[0] is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
-        else:
-            tm_course = tm_courses[0]
-            if tm_course is None:
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
-            if tm_course in self.student_profile.current_classes:
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res),
-                        self.decision_tree.get_next_node()]
-            self.student_profile.relevant_class = tm_course
-            self.student_profile.current_classes.append(tm_course)
-            newCredits = 6 if tm_course.credits is None else tm_course.credits
-            self.student_profile.current_credits += newCredits
-            self.student_profile.total_credits += newCredits
-            if self.student_profile.current_credits >= 18:
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check),
-                        self.decision_tree.get_next_node()]
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
-                    , self.decision_tree.get_next_node()]
+        tm_course = tm_courses[0]
+        if tm_course is None:
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
+        if tm_course in self.student_profile.current_classes:
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res),
+                    self.decision_tree.get_next_node()]
+        self.student_profile.relevant_class = tm_course
+        self.student_profile.current_classes.append(tm_course)
+        newCredits = 6 if tm_course.credits is None else tm_course.credits
+        self.student_profile.current_credits += newCredits
+        self.student_profile.total_credits += newCredits
+        if self.student_profile.current_credits >= 18:
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check),
+                    self.decision_tree.get_next_node()]
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                , self.decision_tree.get_next_node()]
 
     def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities):
         if "interest" in input:
