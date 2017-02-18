@@ -131,6 +131,21 @@ class Conversation:
             self.student_profile.concentration.append(dept)
             return [self.decision_tree.get_next_node()]
 
+    def findMajor(self, query):
+        tokens = nltk.word_tokenize(query)
+        pos = nltk.pos_tag(tokens)
+        major_list = []
+        major = [word for word, p in pos if
+                 p in ['JJ', 'NN', 'NNS', "NNP"]]  # getting adj and nouns from sentence and proper nouns
+        print(major)
+        # print("Printing pos")
+        # print(pos)
+        for word in major:
+            if word != "major" and word != "concentration":
+                major_list.append(word)
+        major_string = " ".join(major_list)  # ok we need to either figure out way to join a list or have the tm accept a list
+        print("major: ", major_string)  # ^ I wrote that comment.
+        return major, major_string
 
     def handleStudentMajorRequest(self, input, luisAI, luis_intent, luis_entities):
         # takes the Luis query, and lowers any word in the sequence so long as
@@ -147,20 +162,8 @@ class Conversation:
                 adjusted_query_array[i] = adjusted_query_array[i].upper()
 
         adjusted_query = " ".join(adjusted_query_array)
-
+        major, major_string = find_major(luisAI.query)
         # tokenizes the query that has been adjusted by the code above
-        tokens = nltk.word_tokenize(adjusted_query)
-        pos = nltk.pos_tag(tokens)
-        string = " "
-        major_list = []
-        major = [word for word, p in pos if p in ['JJ','NN','NNS',"NNP"]] #getting adj and nouns from sentence and proper nouns
-        print(major)
-        #print("Printing pos")
-        #print(pos)
-        for word in major:
-            if word != "major" and word != "concentration":
-                major_list.append(word)
-        major_string = string.join(major_list) #ok we need to either figure out way to join a list or have the tm accept a list
         print("major: ", major_string) #^ I wrote that comment.
         if format(luis_intent) == "student_info_concentration":
             if major:
@@ -202,6 +205,18 @@ class Conversation:
                                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
 
+    def remove_major(self, input, luisAI, luis_intent, luis_entities):
+        # removes a major
+        major_string = find_major(luisAI.query)
+        if format(luis_intent) == "student_info_concentration":
+            if major:
+                if major[0] not in self.student_profile.concentration:
+                    self.student_profile.concentration.append(major[0])
+                else:
+                    return [self.decision_tree.get_next_node()]
+            else:
+                self.student_profile.concentration = []
+            print(self.student_profile.concentration)
 
     def getDepartmentStringFromLuis(self, input, luisAI, luis_intent, luis_entities):
         # takes the Luis query, and lowers any word in the sequence so long as
@@ -368,6 +383,7 @@ class Conversation:
                 self.student_profile.potential_courses = tm_courses
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
             else:
+                self.student_profile.all_classes.add(tm_courses)
                 self.student_profile.potential_courses = tm_courses
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
         except:
@@ -691,3 +707,10 @@ class Conversation:
                 return None
         else:
             return tm_class_match
+
+    def remove_dupe_classes(self, courses):
+        returned_courses = []
+        for course in courses:
+            if course not in self.student_profile.all_classes:
+                returned_courses.append(course)
+        return returned_courses
