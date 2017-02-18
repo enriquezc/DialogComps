@@ -251,6 +251,57 @@ class Conversation:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
             , self.decision_tree.get_next_node()]
 
+    def handleStudentInfoYear(self, input, luisAI, luis_intent, luis_entities):
+        cur_term = "fall"
+        if datetime.datetime.now().month < 4:
+            cur_term = "winter"
+        elif datetime.datetime.now().month < 9:
+            cur_term = "spring"
+
+        freshYear = str(datetime.datetime.now().year + 3)
+        sophYear = str(datetime.datetime.now().year + 2)
+        juniorYear = str(datetime.datetime.now().year + 1)
+        seniorYear = str(datetime.datetime.now().year)
+        query = luisAI.query.lower()
+        updated = False
+        if "fresh" in query or "frosh" in query or (freshYear[2:] + " ") in (
+            query + " ") or "first" in query:
+            updated = True
+            self.student_profile.major.add("undeclared")
+            self.student_profile.terms_left = 11
+            if cur_term == "fall":
+                self.student_profile.terms_left = 11
+            elif cur_term == "winter":
+                self.student_profile.terms_left = 10
+        elif "soph" in query or "second" in query or (sophYear[2:] + " ") in (query + " "):
+            updated = True
+            self.student_profile.terms_left = 8
+            if cur_term == "fall":
+                self.student_profile.terms_left = 7
+                self.student_profile.major.add("undeclared")
+            elif cur_term == "winter":
+                self.student_profile.terms_left = 6
+                self.student_profile.major.add("undeclared")
+
+        elif "junior" in query or "third" in query or (juniorYear[2:] + " ") in (query + " "):
+            updated = True
+            self.student_profile.terms_left = 5
+            if cur_term == "fall":
+                self.student_profile.terms_left = 4
+            elif cur_term == "winter":
+                self.student_profile.terms_left = 3
+        elif "senior" in query or "fourth" in query or seniorYear[2:] in query or "final" in query or "last" in query:
+            updated = True
+            self.student_profile.terms_left = 0
+            if cur_term == "fall":
+                self.student_profile.terms_left = 2
+            elif cur_term == "winter":
+                self.student_profile.terms_left = 1
+        if updated:
+            return [self.decision_tree.get_next_node()]
+        else:
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
+
 
     def handleStudentNameInfo(self, input, luisAI, luis_intent, luis_entities):
         if len(luis_entities) == 0:
@@ -394,50 +445,9 @@ class Conversation:
         return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
 
     def handle_student_info_time_left(self, input, luisAI, luis_intent, luis_entities): #14
-        cur_term = "fall"
-        if datetime.datetime.now().month < 4:
-            cur_term = "winter"
-        elif datetime.datetime.now().month < 9:
-            cur_term = "spring"
 
-        freshYear = str(datetime.datetime.now().year + 3)
-        sophYear = str(datetime.datetime.now().year + 2)
-        juniorYear = str(datetime.datetime.now().year + 1)
-        seniorYear = str(datetime.datetime.now().year)
-
-        if "fresh" in luisAI.query or "frosh" in luisAI.query or (freshYear[2:] + " ") in (luisAI.query + " ") or "first" in luisAI.query:
-
-            self.student_profile.major.add("undeclared")
-            self.student_profile.terms_left = 11
-            if cur_term == "fall":
-                self.student_profile.terms_left = 11
-            elif cur_term == "winter":
-                self.student_profile.terms_left = 10
-        elif "soph" in luisAI.query or "second" in luisAI.query or (sophYear[2:] + " ") in (luisAI.query + " "):
-
-            self.student_profile.terms_left = 8
-            if cur_term == "fall":
-                self.student_profile.terms_left = 7
-                self.student_profile.major.add("undeclared")
-            elif cur_term == "winter":
-                self.student_profile.terms_left = 6
-                self.student_profile.major.add("undeclared")
-        elif "junior" in luisAI.query or "third" in luisAI.query or (juniorYear[2:] + " ") in (luisAI.query + " "):
-
-            self.student_profile.terms_left = 5
-            if cur_term == "fall":
-                self.student_profile.terms_left = 4
-            elif cur_term == "winter":
-                self.student_profile.terms_left = 3
-        elif "senior" in luisAI.query or "fourth" in luisAI.query or (seniorYear[2:] + " ") in (luisAI.query + " ") or "final" in luisAI.query or "last" in luisAI.query:
-            self.student_profile.terms_left = 2
-            if cur_term == "fall":
-                self.student_profile.terms_left = 1
-            elif cur_term == "winter":
-                self.student_profile.terms_left = 3
-        else:
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
-        return [self.decision_tree.get_next_node()]
+        return self.handleStudentInfoYear(input, luisAI, luis_intent, luis_entities)
+        #return self.decision_tree.get_next_node()
 
     def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities): #16
         if "nothing" in self.last_query or "none" in self.last_query:
@@ -538,7 +548,7 @@ class Conversation:
         self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)
 
     def handle_new_class_request(self, input, luisAI, luis_intent, luis_entities):  # 37
-        if " ok" in self.last_query or "sure" == self.last_query or "reccommend" in self.last_query:
+        if " ok" in self.last_query or "sure" == self.last_query or "recommend" in self.last_query:
             print("they have gotten to the point where they want a course from us")
             print("Lets fix this later")
         if "no " in self.last_query or "I don" in self.last_query or "I've" in self.last_query or "know" in self.last_query or "I'm" in self.last_query:
