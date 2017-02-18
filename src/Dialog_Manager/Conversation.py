@@ -9,6 +9,7 @@ from src.Task_Manager import TaskManager
 from src.Dialog_Manager import Student, Course, User_Query, DecisionTree
 import datetime
 from nltk.corpus import stopwords
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 class Conversation:
     nltk_PoS_codes = {"CC": "Coordinating conjunction",
@@ -40,6 +41,7 @@ class Conversation:
         self.nluu = nluu.nLUU(luis_url)
         self.utterancesStack = []
         self.mapOfIntents = {}
+        self.sentimentAnalyzer = SentimentIntensityAnalyzer()
 
         TaskManager.init()
 
