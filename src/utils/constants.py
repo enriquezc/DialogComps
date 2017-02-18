@@ -25,7 +25,7 @@ class Responses:
     STUDENT_INFO_INTERESTS = ("What are some of your interests?",)
     STUDENT_INFO_INTERESTS_RESA = ("I'll try to find some classes for you to look at that relate to your interests:\n ")
     STUDENT_INFO_INTERESTS_RESB = ('{}',)
-    STUDENT_INFO_TIME_LEFT = ("How many terms do you have left at Carleton?",)
+    STUDENT_INFO_TIME_LEFT = ("What year are you?",)
     STUDENT_INFO_TIME_LEFT_RES = ("I'll keep the number of terms you have left in mind.",)
     STUDENT_INFO_ABROAD = ("Do you have any plans to study abroad?",)
     STUDENT_INFO_ABROAD_RES = ("That sounds like an awesome experience.",)

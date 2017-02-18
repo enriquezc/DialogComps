@@ -157,7 +157,8 @@ class Conversation:
             self.student_profile.major.add(major)
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                 self.decision_tree.get_next_node()]
-
+                
+                
     def handleRemoveMajor(self, input, luisAI, luis_intent, luis_entities):
         # removes a major
         major_string = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
@@ -419,31 +420,32 @@ class Conversation:
 
     def handle_student_info_time_left(self, input, luisAI, luis_intent, luis_entities): #14
         cur_term = "fall"
-        if datetime.now().month < 4:
+        if datetime.datetime.now().month < 4:
             cur_term = "winter"
-        elif datetime.now().month < 9:
+        elif datetime.datetime.now().month < 9:
             cur_term = "spring"
-        freshYear = str(datetime.now().year + 3)
-        sophYear = str(datetime.now().year + 2)
-        juniorYear = str(datetime.now().year + 1)
-        seniorYear = str(datetime.now().year)
 
-        if "fresh" in self.last_query or "frosh" in self.last_query or freshYear in self.last_query or "first" in self.last_query:
-            self.student_profile.major = "undeclared"
+        freshYear = str(datetime.datetime.now().year + 3)
+        sophYear = str(datetime.datetime.now().year + 2)
+        juniorYear = str(datetime.datetime.now().year + 1)
+        seniorYear = str(datetime.datetime.now().year)
+
+        if "fresh" in luisAI.query or "frosh" in luisAI.query or freshYear in luisAI.query or "first" in luisAI.query:
+            self.student_profile.major.add("undeclared")
             self.student_profile.terms_left = 11
             if cur_term == "fall":
                 self.student_profile.terms_left = 11
             elif cur_term == "winter":
                 self.student_profile.terms_left = 10
-        elif "soph" in self.last_query or "second" in self.last_query or sophYear in self.last_query:
+        elif "soph" in luisAI.query or "second" in luisAI.query or sophYear in self.last_query:
             self.student_profile.terms_left = 8
             if cur_term == "fall":
                 self.student_profile.terms_left = 7
-                self.student_profile.major = "undeclared"
+                self.student_profile.major.add("undeclared")
             elif cur_term == "winter":
                 self.student_profile.terms_left = 6
-                self.student_profile.major = "undeclared"
-        elif "junior" in self.last_query or "third" in self.last_query or juniorYear in self.last_query:
+                self.student_profile.major.add("undeclared")
+        elif "junior" in luisAI.query or "third" in luisAI.query or juniorYear in self.last_query:
             self.student_profile.terms_left = 5
             if cur_term == "fall":
                 self.student_profile.terms_left = 4
