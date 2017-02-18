@@ -177,37 +177,40 @@ class Conversation:
         else: #can only query on expansion if it is not a concentration
             if not major:  # making sure we actually query on something
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
-            try:
-                for major in major_list:
-                    tm_major = TaskManager.department_match(major) #weird output with
-                    if tm_major is None:
-                        pass
-                        #return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
-                    elif tm_major in self.student_profile.major:
-                        pass
-                        #return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
-                                #self.decision_tree.get_next_node()]
-                    self.student_profile.major.append(tm_major)
-                    
-                if student_profile.major == []:
-                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
-                            self.decision_tree.get_next_node()]
-            except:
-                if len(luis_entities) == 0:
-                    print(self.student_profile.major)
-                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
-                else:
-                    for entity in luis_entities:
-                        if entity.type == "department":
-                            try:
-                                tm_major = TaskManager.department_match(entity.entity)
-                                print("tm major: ", format(tm_major))
-                                self.student_profile.major.append(tm_major)
-                                
-                            except:
-                                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
+        #try:
+            for major in major_list:
+                tm_major = TaskManager.department_match(major) #weird output with
+                if tm_major is None:
+                    pass
+                    #return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+                elif tm_major in self.student_profile.major:
+                    pass
+                    #return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
+                            #self.decision_tree.get_next_node()]
+                self.student_profile.major.append(tm_major)
+                
+            if self.student_profile.major == []:
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+            #return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
+                      #  self.decision_tree.get_next_node()]
+        #except:
+            if self.student_profile.major == []:
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
+
+            if len(luis_entities) == 0:
+                print(self.student_profile.major)
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+            else:
+                for entity in luis_entities:
+                    if entity.type == "department":
+                        try:
+                            tm_major = TaskManager.department_match(entity.entity)
+                            print("tm major: ", format(tm_major))
+                            self.student_profile.major.append(tm_major)
+                            
+                        except:
+                            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
 
 
     def getDepartmentStringFromLuis(self, input, luisAI, luis_intent, luis_entities):
