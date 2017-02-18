@@ -160,7 +160,6 @@ class Conversation:
                 student_profile.major.append(TaskManager.department_match("wgst"))
             elif "media" in adjusted_query:
                 student_profile.major.append(TaskManager.department_match("cams"))
-            elif "media" in 
             else:
                 double = True
         else:
@@ -433,14 +432,14 @@ class Conversation:
 
     def handle_student_info_time_left(self, input, luisAI, luis_intent, luis_entities): #14
         cur_term = "fall"
-        if datetime.now().month < 4:
+        if datetime.datetime.now().month < 4:
             cur_term = "winter"
-        elif datetime.now().month < 9:
+        elif datetime.datetime.now().month < 9:
             cur_term = "spring"
-        freshYear = str(datetime.now().year + 3)
-        sophYear = str(datetime.now().year + 2)
-        juniorYear = str(datetime.now().year + 1)
-        seniorYear = str(datetime.now().year)
+        freshYear = str(datetime.datetime.now().year + 3)
+        sophYear = str(datetime.datetime.now().year + 2)
+        juniorYear = str(datetime.datetime.now().year + 1)
+        seniorYear = str(datetime.datetime.now().year)
 
         if "fresh" in self.last_query or "frosh" in self.last_query or freshYear in self.last_query or "first" in self.last_query:
             self.student_profile.major = "undeclared"
