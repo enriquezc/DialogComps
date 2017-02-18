@@ -196,9 +196,11 @@ class nLUU:
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
         a = ""
-        pot_course = set(userQuery.object.potential_courses)
+        pot_course = userQuery.object.potential_courses
         print(len(pot_course))
         for course in pot_course:
+            if course is None:
+                continue
             if course.time == "":
                 time = "an unknown time"
             else:
@@ -261,7 +263,7 @@ class nLUU:
         return s.format(previous_classes)
 
     def create_student_info_interests_res_res(self, userQuery):
-        pot_course = set(userQuery.object.potential_courses)
+        pot_course = userQuery.object.potential_courses
         a = constants.Responses.STUDENT_INFO_INTERESTS_RESA
         for course in pot_course:
             s = constants.Responses.STUDENT_INFO_INTERESTS_RESB[0]
@@ -316,7 +318,7 @@ class nLUU:
     def find_course(self, utterance):
         tokens = nltk.word_tokenize(utterance)
         pos = nltk.pos_tag(tokens)
-        return [word for word,p in pos if p in ['JJ','NNP','NN']]
+        return [word for word,p in pos if p in ['JJ','NNP','NN'] and word.lower() != "register"]
 
     def find_name(self, utterance):
         tokens = nltk.word_tokenize(utterance)
@@ -332,6 +334,27 @@ class nLUU:
         tokens = nltk.word_tokenize(utterance)
         pos = nltk.pos_tag(tokens)
         return [word for word, p in pos if p in ['JJ', 'NN', 'NNS', "NNP"]]  # getting adj and nouns from sentence and proper nouns
+
+    def get_number_from_ordinal_str(self, ordinal_str):
+        strs = ordinal_str.split()
+        ordinal_dict = {
+            "first": 1,
+            "second": 2,
+            "third": 3,
+            "fourth": 4,
+            "fifth": 5,
+            "sixth": 6,
+            "seventh": 7,
+            "eighth": 8,
+            "ninth": 9,
+            "tenth": 10,
+            "last": float("inf")
+        }
+        for s in strs:
+            if s in ordinal_dict:
+                return ordinal_dict[s]
+        return None
+
 
 
 #if __name__ == '__main__':

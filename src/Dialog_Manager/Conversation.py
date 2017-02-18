@@ -228,12 +228,16 @@ class Conversation:
     def handleScheduleClass(self, input, luisAI, luis_intent, luis_entities):
         tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=True)
         if tm_courses is None:
-            tm_courses = [self.student_profile.relevant_class]
+            ordinal = self.nluu.get_number_from_ordinal_str(input)
+            if ordinal is not None:
+                index = ordinal - 1
+                if index == float("inf"):
+                    index = len(self.student_profile.potential_courses) - 1
+                tm_courses = [self.student_profile.potential_courses[index]]
+            tm_courses = tm_courses or [self.student_profile.relevant_class]
             if tm_courses[0] is None:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
         tm_course = tm_courses[0]
-        if tm_course is None:
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
         if tm_course in self.student_profile.current_classes:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res),
                     self.decision_tree.get_next_node()]
@@ -587,7 +591,7 @@ class Conversation:
         :return None if no entities and no help from TM else list of courses that might be of interest:
         """
         toReturn = None
-        if len(luis_entities) == 0 and not specific:
+        if len(luis_entities) == 0:
             possibilities = self.nluu.find_course(luisAI.query)
             if len(possibilities) == 0:
                 return None
