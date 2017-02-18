@@ -160,14 +160,14 @@ class Conversation:
                 self.student_profile.major.append(TaskManager.department_match("wgst"))
             elif "media" in adjusted_query:
                 self.student_profile.major.append(TaskManager.department_match("cams"))
-            elif "media" in 
+            elif "media" in
             else:
                 double = True
         else:
             double = False
-        
-        
-        
+
+
+
         major = [word for word, p in pos if p in ['JJ','NN','NNS',"NNP"]] #getting adj and nouns from sentence and proper nouns
         print(major)
         #print("Printing pos")
@@ -203,7 +203,7 @@ class Conversation:
                     #return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                             #self.decision_tree.get_next_node()]
                 self.student_profile.major.append(tm_major)
-                
+
             if self.student_profile.major == []:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
@@ -222,7 +222,7 @@ class Conversation:
                             tm_major = TaskManager.department_match(entity.entity)
                             print("tm major: ", format(tm_major))
                             self.student_profile.major.append(tm_major)
-                            
+
                         except:
                             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
