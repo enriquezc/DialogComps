@@ -219,7 +219,10 @@ class nLUU:
                 s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]) + "\n"
                 a = a + s.format(course.id, course.name, time, prereqs, course.description)
         return a
-
+    def create_student_info_major_requirements_res(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS[0]
+        return s       
+        
     def create_schedule_class_res_res(self, userQuery):
         if len(userQuery.object.current_classes) == 0:
             s = constants.Responses.EMPTY_SCHEDULE_RES[0]
