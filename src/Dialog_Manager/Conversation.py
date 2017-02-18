@@ -155,6 +155,19 @@ class Conversation:
         pos = nltk.pos_tag(tokens)
         string = " "
         major_list = []
+        if "and" in adjusted_query:
+            if "women" in adjusted_query:
+                student_profile.major.append(TaskManager.department_match("wgst"))
+            elif "media" in adjusted_query:
+                student_profile.major.append(TaskManager.department_match("cams"))
+            elif "media" in 
+            else:
+                double = True
+        else:
+            double = False
+        
+        
+        
         major = [word for word, p in pos if p in ['JJ','NN','NNS',"NNP"]] #getting adj and nouns from sentence and proper nouns
         print(major)
         #print("Printing pos")
@@ -178,6 +191,8 @@ class Conversation:
             if not major:  # making sure we actually query on something
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
         #try:
+            if not double:
+                major_list = [major_string]
             for major in major_list:
                 tm_major = TaskManager.department_match(major) #weird output with
                 if tm_major is None:
