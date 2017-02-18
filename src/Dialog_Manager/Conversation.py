@@ -146,6 +146,7 @@ class Conversation:
                     tm_major = self.task_manager_department_match(entity.entity)
                     print("tm major: ", format(tm_major))
                     self.student_profile.major.add(tm_major)
+
         major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
         print("major: ", major_list)
         for major in major_list:
@@ -352,7 +353,7 @@ class Conversation:
                     self.student_profile.interests.add(entity.entity)'''
         try:
             print(interests)
-            tm_courses = TaskManager.query_by_keywords(interests)[0:9]
+            tm_courses = TaskManager.query_by_keywords(interests)[0:4]
             if set(self.student_profile.interests).issuperset(set(interests)): #need to implement no repeated courses
                 print("in same length")
                 self.student_profile.potential_courses = tm_courses
@@ -397,12 +398,14 @@ class Conversation:
             cur_term = "winter"
         elif datetime.datetime.now().month < 9:
             cur_term = "spring"
+
         freshYear = str(datetime.datetime.now().year + 3)
         sophYear = str(datetime.datetime.now().year + 2)
         juniorYear = str(datetime.datetime.now().year + 1)
         seniorYear = str(datetime.datetime.now().year)
 
         if "fresh" in luisAI.query or "frosh" in luisAI.query or freshYear in luisAI.query or "first" in luisAI.query:
+
             self.student_profile.major.add("undeclared")
             self.student_profile.terms_left = 11
             if cur_term == "fall":
@@ -410,6 +413,7 @@ class Conversation:
             elif cur_term == "winter":
                 self.student_profile.terms_left = 10
         elif "soph" in luisAI.query or "second" in luisAI.query or sophYear in luisAI.query:
+
             self.student_profile.terms_left = 8
             if cur_term == "fall":
                 self.student_profile.terms_left = 7
@@ -418,6 +422,7 @@ class Conversation:
                 self.student_profile.terms_left = 6
                 self.student_profile.major.add("undeclared")
         elif "junior" in luisAI.query or "third" in luisAI.query or juniorYear in luisAI.query:
+
             self.student_profile.terms_left = 5
             if cur_term == "fall":
                 self.student_profile.terms_left = 4
@@ -584,7 +589,7 @@ class Conversation:
             if len(possibilities) == 0:
                 return None
             if not specific: #return to potential courses not relavent class (for class description)
-                tm_courses = self.task_manager_keyword(possibilities)[0:4]  # type checked in tm keyword
+                tm_courses = self.task_manager_keyword(possibilities)[0:4] # type checked in tm keyword
                 if tm_courses is None:
                     return None
                 elif not type(tm_courses) is list:
