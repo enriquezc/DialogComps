@@ -108,7 +108,7 @@ def query_courses(course):
                 if len(name) > 0 and len(name[0]) > 0:
                     result_course.faculty_name = name[0][0]
         results.append(result_course)
-    return results
+    return list(set(results))
 
 
 # Takes a title string and a potential department, returns a list of classes
@@ -218,7 +218,7 @@ def query_by_title(title_string, department = None):
 
         courses.append(result_course)
 
-    return courses
+    return list(set(courses))
 
 # Helper function
 def makeCooccurenceMatrix():
@@ -347,6 +347,10 @@ def create_stop_words_set():
     #stop_words_file = open('stop_words.txt', 'r')
     for word in stop_words_file:
         stop_words.add(word.strip())
+    stop_words.add("register")
+    stop_words.add("course")
+    stop_words.add("interest")
+    stop_words.add("major")
 
 # takes a list of keywords, returns a list of classes
 # @params List object 'keywords' which contains words to query on
@@ -365,7 +369,7 @@ def query_by_keywords(keywords, threshold = 3):
         #new_keywords.append(kss)
         ks = kss.split()
         for k in ks:
-            if k not in stop_words:
+            if k.lower() not in stop_words:
                 new_keywords.append(k.upper())
 
     # trying to catch any errors if new_keywords is never changed
@@ -376,7 +380,6 @@ def query_by_keywords(keywords, threshold = 3):
     query = "SELECT * FROM occurence where words {};".format(keywords_str)
     global conn
     cur = conn.cursor()
-    print(cur.mogrify(query))
     cur.execute(query)
     results = cur.fetchall()
     for result in results:
@@ -461,6 +464,7 @@ def query_by_keywords(keywords, threshold = 3):
 
     courses.sort(key = lambda course: (course.relevance[0], course.relevance[1]))
     courses.reverse()
+    courses = list(set(courses))
     max = courses[0].weighted_score
     for course in courses:
         val = max - threshold
