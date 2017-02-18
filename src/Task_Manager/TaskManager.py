@@ -507,6 +507,7 @@ def edit_distance(s1, s2):
 # @params String object 'str_in' which is a department code or description
 # @return String object that is the best guess for a valid, capitalized dept code
 def department_match(str_in):
+    print(str_in)
     if str_in.isspace():
         return None
     global dept_dict
@@ -514,9 +515,9 @@ def department_match(str_in):
     cur_best = 100
     dept_items = dept_dict.items()
     for key, value in dept_items:
-        if str_in.upper() in key:
+        if str_in.upper() == key:
             return value
-        if str_in.lower() in value.lower():
+        if str_in.lower() == value.lower():
             return value
 
     for key in dept_dict:
