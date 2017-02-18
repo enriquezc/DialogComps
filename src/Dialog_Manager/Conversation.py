@@ -250,7 +250,6 @@ class Conversation:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
             , self.decision_tree.get_next_node()]
 
-
     def handleStudentInfoYear(self, input, luisAI, luis_intent, luis_entities):
         cur_term = "fall"
         if datetime.datetime.now().month < 4:
@@ -290,8 +289,7 @@ class Conversation:
                 self.student_profile.terms_left = 4
             elif cur_term == "winter":
                 self.student_profile.terms_left = 3
-        elif "senior" in query or "fourth" in query or (seniorYear[2:] + " ") in (
-            query + " ") or "final" in query or "last" in query:
+        elif "senior" in query or "fourth" in query or seniorYear[2:] in query or "final" in query or "last" in query:
             updated = True
             self.student_profile.terms_left = 0
             if cur_term == "fall":
@@ -446,7 +444,7 @@ class Conversation:
         return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
 
     def handle_student_info_time_left(self, input, luisAI, luis_intent, luis_entities): #14
-        self.handleStudentInfoYear(input, luisAI, luis_intent, luis_entities)
+        return self.handleStudentInfoYear(input, luisAI, luis_intent, luis_entities)
         #return self.decision_tree.get_next_node()
 
     def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities): #16
