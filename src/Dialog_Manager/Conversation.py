@@ -403,7 +403,7 @@ class Conversation:
         seniorYear = str(datetime.datetime.now().year)
 
         if "fresh" in self.last_query or "frosh" in self.last_query or freshYear in self.last_query or "first" in self.last_query:
-            self.student_profile.major.append("undeclared")
+            self.student_profile.major.add("undeclared")
             self.student_profile.terms_left = 11
             if cur_term == "fall":
                 self.student_profile.terms_left = 11
@@ -413,10 +413,10 @@ class Conversation:
             self.student_profile.terms_left = 8
             if cur_term == "fall":
                 self.student_profile.terms_left = 7
-                self.student_profile.major.append("undeclared")
+                self.student_profile.major.add("undeclared")
             elif cur_term == "winter":
                 self.student_profile.terms_left = 6
-                self.student_profile.major.append("undeclared")
+                self.student_profile.major.add("undeclared")
         elif "junior" in self.last_query or "third" in self.last_query or juniorYear in self.last_query:
             self.student_profile.terms_left = 5
             if cur_term == "fall":
@@ -529,7 +529,7 @@ class Conversation:
         self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)
 
     def handle_new_class_request(self, input, luisAI, luis_intent, luis_entities):  # 37
-        if " ok" in self.last_query or "sure" == self.last_query or "reccommend" in self.last_query:
+        if " ok" in self.last_query or "sure" == self.last_query or "recommend" in self.last_query:
             print("they have gotten to the point where they want a course from us")
             print("Lets fix this later")
         if "no " in self.last_query or "I don" in self.last_query or "I've" in self.last_query or "know" in self.last_query or "I'm" in self.last_query:
