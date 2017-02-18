@@ -189,7 +189,7 @@ class Conversation:
                                 #self.decision_tree.get_next_node()]
                     self.student_profile.major.append(tm_major)
                     
-                if student_profile.major == []:
+                if self.student_profile.major == []:
                     return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                             self.decision_tree.get_next_node()]
@@ -204,7 +204,6 @@ class Conversation:
                                 tm_major = TaskManager.department_match(entity.entity)
                                 print("tm major: ", format(tm_major))
                                 self.student_profile.major.append(tm_major)
-                                
                             except:
                                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
@@ -239,6 +238,8 @@ class Conversation:
             index = index - 1 if index != float('inf') else len(self.student_profile.potential_courses) - 1
             tm_courses = self.student_profile.potential_courses[index]
         tm_courses = tm_courses or self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=True)
+        if tm_courses is None and len(self.student_profile.potential_courses) == 0:
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
         tm_courses = tm_courses or [self.student_profile.potential_courses[0]]
         if tm_courses[0] is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
