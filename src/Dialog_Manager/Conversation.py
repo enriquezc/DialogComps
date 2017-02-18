@@ -11,7 +11,6 @@ import datetime
 from nltk.corpus import stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-
 class Conversation:
     nltk_PoS_codes = {"CC": "Coordinating conjunction",
                       "CD": "Cardinal number", "DT": "Determiner", "EX": "Existential there",
@@ -129,14 +128,11 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, self.current_node.userQuery)]
 
     def handleStudentConcentration(self, input, luisAI, luis_intent, luis_entities):
-        dept = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
-        for dep in dept:
-            if dep not in self.student_profile.concentration:
-                self.student_profile.concentration.append(dept)
-                return [self.decision_tree.get_next_node()]
+        depts = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
+        for dept in depts:
+            self.student_profile.concentration.add(dept)
+        return [self.decision_tree.get_next_node()]
 
-    def remove_concentration(self, input, luisAI, luis_intent, luis_entities):
-        pass
 
     def handleStudentMajorRequest(self, input, luisAI, luis_intent, luis_entities):
         # takes the Luis query, and lowers any word in the sequence so long as
@@ -169,33 +165,12 @@ class Conversation:
                         try:
                             tm_major = TaskManager.department_match(entity.entity)
                             print("tm major: ", format(tm_major))
-                            if tm_major in self.student_profile.major:
-                                self.student_profile.major.remove(tm_major)
+                            self.student_profile.major.append(tm_major)
+
                         except:
                             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
 
-            else:
-                for entity in luis_entities:
-                    if entity.type == "department":
-                            tm_major = self.task_manager_department_match(entity.entity)
-                            print("tm major: ", format(tm_major))
-                            if tm_major in self.student_profile.concentration:
-                                self.student_profile.concentration.remove(tm_major)
-                            else:
-                                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
-        if format(luis_intent) != "student_info_concentration":
-            if major_string != "":
-                self.student_profile.major.remove(major)
-                return [self.decision_tree.get_next_node()]
-            else:
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
-        else:
-            if major_string != "":
-                if major_string in self.student_profile.concentration:
-                    self.student_profile.concentration.remove(major)
-                    return [self.decision_tree.get_next_node()]
-            else:
-                return [self.decision_tree.get_next_node()]
 
     def getDepartmentStringFromLuis(self, input, luisAI, luis_intent, luis_entities):
         # takes the Luis query, and lowers any word in the sequence so long as
@@ -204,7 +179,6 @@ class Conversation:
         # prevent problems in the common case, we check for the presence of I.
         # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
         # tokenizes the query that has been adjusted by the code above
-        # @return a list of departments from NLUU
         pot_query = luisAI.query
         dept = []
         double = False
@@ -232,6 +206,7 @@ class Conversation:
                 if word != "major" and word != "concentration" and word != "studies":
                     dept.append(self.task_manager_department_match(word))
         return dept
+
 
     def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities):
         return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
@@ -384,7 +359,6 @@ class Conversation:
                 self.student_profile.potential_courses = tm_courses
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
             else:
-                self.student_profile.all_classes.add(tm_courses)
                 self.student_profile.potential_courses = tm_courses
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
         except:
@@ -431,6 +405,7 @@ class Conversation:
         seniorYear = str(datetime.datetime.now().year)
 
         if "fresh" in luisAI.query or "frosh" in luisAI.query or freshYear in luisAI.query or "first" in luisAI.query:
+
             self.student_profile.major.add("undeclared")
             self.student_profile.terms_left = 11
             if cur_term == "fall":
@@ -445,6 +420,7 @@ class Conversation:
             elif cur_term == "winter":
                 self.student_profile.terms_left = 6
                 self.student_profile.major.add("undeclared")
+
         elif "junior" in luisAI.query or "third" in luisAI.query or juniorYear in self.last_query:
             self.student_profile.terms_left = 5
             if cur_term == "fall":
@@ -712,11 +688,3 @@ class Conversation:
                 return None
         else:
             return tm_class_match
-
-    def remove_dupe_classes(self, courses):
-        returned_courses = []
-        for course in courses:
-            if course not in self.student_profile.all_classes:
-                returned_courses.append(course)
-        return returned_courses
-
