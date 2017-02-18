@@ -226,26 +226,27 @@ class Conversation:
         return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
 
     def handleScheduleClass(self, input, luisAI, luis_intent, luis_entities):
-        tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
+        tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=True)
         if tm_courses is None:
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
-        else:
-            tm_course = tm_courses[0]
-            if tm_course is None:
+            tm_courses = [self.student_profile.relevant_class]
+            if tm_courses[0] is None:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
-            if tm_course in self.student_profile.current_classes:
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res),
-                        self.decision_tree.get_next_node()]
-            self.student_profile.relevant_class = tm_course
-            self.student_profile.current_classes.append(tm_course)
-            newCredits = 6 if tm_course.credits is None else tm_course.credits
-            self.student_profile.current_credits += newCredits
-            self.student_profile.total_credits += newCredits
-            if self.student_profile.current_credits >= 18:
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check),
-                        self.decision_tree.get_next_node()]
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
-                    , self.decision_tree.get_next_node()]
+        tm_course = tm_courses[0]
+        if tm_course is None:
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
+        if tm_course in self.student_profile.current_classes:
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res),
+                    self.decision_tree.get_next_node()]
+        self.student_profile.relevant_class = tm_course
+        self.student_profile.current_classes.append(tm_course)
+        newCredits = 6 if tm_course.credits is None else tm_course.credits
+        self.student_profile.current_credits += newCredits
+        self.student_profile.total_credits += newCredits
+        if self.student_profile.current_credits >= 18:
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.full_schedule_check),
+                    self.decision_tree.get_next_node()]
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
+                , self.decision_tree.get_next_node()]
 
     def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities):
         if "interest" in input:
@@ -591,7 +592,7 @@ class Conversation:
         :return None if no entities and no help from TM else list of courses that might be of interest:
         """
         toReturn = None
-        if len(luis_entities) == 0:
+        if len(luis_entities) == 0 and not specific:
             possibilities = self.nluu.find_course(luisAI.query)
             if len(possibilities) == 0:
                 return None
