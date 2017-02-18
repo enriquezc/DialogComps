@@ -157,9 +157,9 @@ class Conversation:
         major_list = []
         if "and" in adjusted_query:
             if "women" in adjusted_query:
-                student_profile.major.append(TaskManager.department_match("wgst"))
+                self.student_profile.major.append(TaskManager.department_match("wgst"))
             elif "media" in adjusted_query:
-                student_profile.major.append(TaskManager.department_match("cams"))
+                self.student_profile.major.append(TaskManager.department_match("cams"))
             elif "media" in 
             else:
                 double = True
