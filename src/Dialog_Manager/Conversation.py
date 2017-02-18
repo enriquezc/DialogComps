@@ -65,6 +65,7 @@ class Conversation:
                 our_str_response = ""
                 if type(userQueries) is list:
                     for userQuery in userQueries:
+                        
                         ###
                         if User_Query.QueryType.full_schedule_check == userQuery.type:
                             print (self.nluu.create_response(userQuery) + '\n')
@@ -442,6 +443,7 @@ class Conversation:
         return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
 
     def handle_student_info_time_left(self, input, luisAI, luis_intent, luis_entities): #14
+
         return self.handleStudentInfoYear(input, luisAI, luis_intent, luis_entities)
         #return self.decision_tree.get_next_node()
 
@@ -465,22 +467,25 @@ class Conversation:
         return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
 
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities):  # 17
-        if "nothing" in self.last_query or "none" in self.last_query:
-            self.decision_tree.current_node.answered = True
-            return self.decision_tree.get_next_node()
+
+        if len(self.last_query.split(" ")) < 2:
+            responseSentiment = self.sentimentAnalyzer.polarity_scores(self.last_query)
+            if responseSentiment["neg"] > responseSentiment["pos"]:
+                return [self.decision_tree.get_next_node()]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
         if luis_entities:
             for entity in luis_entities:
                 if entity.type == "class":
                     self.student_profile.major_classes_needed.append(Course.Course(entity.entity))
             if len(self.student_profile.major_classes_needed) != 0:
-                return self.decision_tree.get_next_node()
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_requirements_res), self.decision_tree.get_next_node()]
         if ',' in self.last_query:
             listOfWords = self.last_query.split(",")
             for word in listOfWords:
                 if len(word.split()) < 4:
                     self.student_profile.major_classes_needed.append(Course.Course(word))
             if len(self.student_profile.major_classes_needed) != 0:
-                return self.decision_tree.get_next_node()
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_requirements_res), self.decision_tree.get_next_node()]
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
 
     def handle_student_info_concentration(self, input, luisAI, luis_intent, luis_entities): #18
