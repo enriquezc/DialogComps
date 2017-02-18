@@ -4,8 +4,8 @@ class Student:
     def __init__(self):
         self.name = None
         self.current_classes = []
-        self.major = []
-        self.concentration = []
+        self.major = set()
+        self.concentration = set()
         self.previous_classes = []
         self.distributions_needed = []
         self.major_classes_needed = []
