@@ -75,8 +75,6 @@ class Conversation:
                                 print("Smell ya later! Thanks for chatting.")
                                 return
                         else:
-
-                        ###
                             self.utterancesStack.append(userQuery)
                             self.last_user_query.append(userQuery)
                             if userQuery.type == User_Query.QueryType.goodbye:
