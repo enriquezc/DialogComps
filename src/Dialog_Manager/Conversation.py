@@ -8,6 +8,9 @@ import luis
 from src.Task_Manager import TaskManager
 from src.Dialog_Manager import Student, Course, User_Query, DecisionTree
 import datetime
+from nltk.corpus import stopwords
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
 
 class Conversation:
     nltk_PoS_codes = {"CC": "Coordinating conjunction",
@@ -39,6 +42,7 @@ class Conversation:
         self.nluu = nluu.nLUU(luis_url)
         self.utterancesStack = []
         self.mapOfIntents = {}
+        self.sentimentAnalyzer = SentimentIntensityAnalyzer()
 
         TaskManager.init()
 
@@ -124,13 +128,7 @@ class Conversation:
     def get_current_node(self):
         return [User_Query.UserQuery(self.student_profile, self.current_node.userQuery)]
 
-    def handleStudentConcentration(self, input, luisAI, luis_intent, luis_entities):
-        dept = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
-        if dept not in self.student_profile.concentration:
-            self.student_profile.concentration.append(dept)
-            return [self.decision_tree.get_next_node()]
-
-    def findMajor(self, query):
+    def find_major(self, query):
         tokens = nltk.word_tokenize(query)
         pos = nltk.pos_tag(tokens)
         major_list = []
@@ -142,9 +140,16 @@ class Conversation:
         for word in major:
             if word != "major" and word != "concentration":
                 major_list.append(word)
-        major_string = " ".join(major_list)  # ok we need to either figure out way to join a list or have the tm accept a list
+        major_string = " ".join(
+            major_list)  # ok we need to either figure out way to join a list or have the tm accept a list
         print("major: ", major_string)  # ^ I wrote that comment.
         return major, major_string
+
+    def handleStudentConcentration(self, input, luisAI, luis_intent, luis_entities):
+        dept = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
+        if dept not in self.student_profile.concentration:
+            self.student_profile.concentration.append(dept)
+            return [self.decision_tree.get_next_node()]
 
     def handleStudentMajorRequest(self, input, luisAI, luis_intent, luis_entities):
         # takes the Luis query, and lowers any word in the sequence so long as
@@ -161,7 +166,7 @@ class Conversation:
                 adjusted_query_array[i] = adjusted_query_array[i].upper()
 
         adjusted_query = " ".join(adjusted_query_array)
-        major, major_string = find_major(luisAI.query)
+        major, major_string = self.find_major(luisAI.query)
         # tokenizes the query that has been adjusted by the code above
         print("major: ", major_string) #^ I wrote that comment.
         if format(luis_intent) == "student_info_concentration":
@@ -211,7 +216,7 @@ class Conversation:
 
     def remove_major(self, input, luisAI, luis_intent, luis_entities):
         # removes a major
-        major, major_string = find_major(luisAI.query)
+        major, major_string = self.find_major(luisAI.query)
         if luis_entities:
             if format(luis_intent) != "student_info_concentration":
                 for entity in luis_entities:
@@ -223,6 +228,7 @@ class Conversation:
                                 self.student_profile.major.append(tm_major)
                         except:
                             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+
             else:
                 for entity in luis_entities:
                     if entity.type == "department":
@@ -233,24 +239,25 @@ class Conversation:
                                 self.student_profile.concentration.append(tm_major)
                         except:
                             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
-        if format(luis_intent) == "student_info_concentration":
+        if format(luis_intent) != "student_info_concentration":
+            if major:
+                for maj in major:
+                    if maj in self.student_profile.major:
+                        self.student_profile.major.remove(maj)
+                else:
+                    return [self.decision_tree.get_next_node()]
+
+            if not major:  # making sure we actually query on something
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+        else:
             if major:
                 for maj in major:
                     if maj in self.student_profile.concentration:
                         self.student_profile.concentration.remove(maj)
                 else:
                     return [self.decision_tree.get_next_node()]
-
-        if not major:  # making sure we actually query on something
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
-        try:
-            for major in major_list:
-                tm_major = TaskManager.department_match(major)  # weird output with
-                if tm_major is None:
-                    pass
-                    # return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
-                elif tm_major in self.student_profile.major:
-
+            if not major:  # making sure we actually query on something
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
     def getDepartmentStringFromLuis(self, input, luisAI, luis_intent, luis_entities):
         # takes the Luis query, and lowers any word in the sequence so long as
@@ -750,3 +757,4 @@ class Conversation:
             if course not in self.student_profile.all_classes:
                 returned_courses.append(course)
         return returned_courses
+
