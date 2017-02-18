@@ -151,7 +151,6 @@ class Conversation:
                     print("tm major: ", format(tm_major))
                     self.student_profile.major.add(tm_major)
 
-
         major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
         print("major: ", major_list)
         for major in major_list:
@@ -378,7 +377,7 @@ class Conversation:
                     self.student_profile.interests.add(entity.entity)'''
         try:
             print(interests)
-            tm_courses = TaskManager.query_by_keywords(interests)[0:9]
+            tm_courses = TaskManager.query_by_keywords(interests)[0:4]
             if set(self.student_profile.interests).issuperset(set(interests)): #need to implement no repeated courses
                 print("in same length")
                 self.student_profile.potential_courses = tm_courses
@@ -611,7 +610,7 @@ class Conversation:
             if len(possibilities) == 0:
                 return None
             if not specific: #return to potential courses not relavent class (for class description)
-                tm_courses = self.task_manager_keyword(possibilities)[0:4]  # type checked in tm keyword
+                tm_courses = self.task_manager_keyword(possibilities)[0:4] # type checked in tm keyword
                 if tm_courses is None:
                     return None
                 elif not type(tm_courses) is list:
