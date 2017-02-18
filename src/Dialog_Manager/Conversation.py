@@ -8,7 +8,7 @@ import luis
 from src.Task_Manager import TaskManager
 from src.Dialog_Manager import Student, Course, User_Query, DecisionTree
 import datetime
-
+from nltk.corpus import stopwords
 
 class Conversation:
     nltk_PoS_codes = {"CC": "Coordinating conjunction",
@@ -253,9 +253,9 @@ class Conversation:
             return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
         tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
         if tm_courses is None:
-            self.handleStudentInterests(input, luisAI, luis_intent, luis_entities) #if we do not get a course back, lets try interests?
+            return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities) #if we do not get a course back, lets try interests?
         else:
-            self.student_profile.relevant_class = tm_courses[0]
+            self.student_profile.potential_courses = tm_courses
             self.student_profile.current_class, self.decision_tree.current_course = tm_courses[0], tm_courses[0]
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
             , self.decision_tree.get_next_node()]
@@ -363,18 +363,13 @@ class Conversation:
                     self.student_profile.interests.add(entity.entity)'''
         try:
             print(interests)
-            #print(self.student_profile.interests[len(interests):])
-            #print(interests[0:])
-            tm_courses = TaskManager.query_by_keywords(interests)
-            if set(self.student_profile.interests).issuperset(set(interests)) and len(tm_courses) > i:
+            tm_courses = TaskManager.query_by_keywords(interests)[0:9]
+            if set(self.student_profile.interests).issuperset(set(interests)): #need to implement no repeated courses
                 print("in same length")
-
-                self.student_profile.relevant_class = tm_courses[i]
-                i += 1
+                self.student_profile.potential_courses = tm_courses
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
             else:
-                i = 0
-                self.student_profile.relevant_class = tm_courses[0]
+                self.student_profile.potential_courses = tm_courses
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
         except:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
@@ -596,13 +591,22 @@ class Conversation:
             possibilities = self.nluu.find_course(luisAI.query)
             if len(possibilities) == 0:
                 return None
-            tm_courses = self.task_manager_keyword(possibilities)  # type checked in tm keyword
-            if tm_courses is None:
-                return None
-            elif not type(tm_courses) is list:
-                toReturn = [tm_courses]
-            else:
-                toReturn = tm_courses
+            if not specific: #return to potential courses not relavent class (for class description)
+                tm_courses = self.task_manager_keyword(possibilities)[0:4]  # type checked in tm keyword
+                if tm_courses is None:
+                    return None
+                elif not type(tm_courses) is list:
+                    toReturn = [tm_courses]
+                else:
+                    toReturn = tm_courses
+            else: #for schedule class
+                tm_courses = self.task_manager_class_title_match(possibilities)  # type checked in tm keyword
+                if tm_courses is None:
+                    return None
+                elif not type(tm_courses) is list:
+                    toReturn = [tm_courses]
+                else:
+                    toReturn = tm_courses
         for entity in luis_entities:
             course = Course.Course()
             if entity.type == 'class':
@@ -650,11 +654,11 @@ class Conversation:
         print("We done")
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
-                return tm_courses[0]
+                return tm_courses
             else:
                 return None
         else:
-            return tm_courses
+            return [tm_courses]
 
     # @params course to add to student classes
     # @return 0 for added successfully, 1 for not added
@@ -662,11 +666,11 @@ class Conversation:
         tm_courses = TaskManager.query_by_keywords(keywords)
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
-                return tm_courses[0]
+                return tm_courses
             else:
                 return None
         else:
-            return tm_courses
+            return [tm_courses]
 
 
     def task_manager_department_match(self, dept):
