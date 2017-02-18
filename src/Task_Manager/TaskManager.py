@@ -142,7 +142,7 @@ def query_by_title(title_string, department = None):
             new_string = new_string  + " " + new_word_array[i].lower() + "%"
             if word_array[i].upper() not in dept_dict:
                 # do nothing if a stop word is currently being read
-                if word_array[i] in stop_words:
+                if word_array[i].lower() in stop_words:
                     continue
                 else:
                     cur_string = cur_string + " " + word_array[i].lower() + "%"
@@ -461,7 +461,7 @@ def query_by_keywords(keywords, threshold = 3):
         new_course.relevance[0] = new_course.relevance[0] + len(distinct_keywords2)
         new_course.weighted_score = 10 * new_course.relevance[0] + new_course.relevance[1]
         courses.append(new_course)
-        
+
     courses = list(set(courses))
     courses.sort(key = lambda course: (course.relevance[0], course.relevance[1]))
     courses.reverse()
