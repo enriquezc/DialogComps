@@ -461,10 +461,10 @@ def query_by_keywords(keywords, threshold = 3):
         new_course.relevance[0] = new_course.relevance[0] + len(distinct_keywords2)
         new_course.weighted_score = 10 * new_course.relevance[0] + new_course.relevance[1]
         courses.append(new_course)
-
+        
+    courses = list(set(courses))
     courses.sort(key = lambda course: (course.relevance[0], course.relevance[1]))
     courses.reverse()
-    courses = list(set(courses))
     max = courses[0].weighted_score
     for course in courses:
         val = max - threshold
