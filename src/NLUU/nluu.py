@@ -319,7 +319,7 @@ class nLUU:
     def find_course(self, utterance):
         tokens = nltk.word_tokenize(utterance)
         pos = nltk.pos_tag(tokens)
-        return [word for word,p in pos if p in ['JJ','NNP','NN'] and word.lower() != "register"]
+        return [word for word,p in pos if p in ['JJ','NNP','NN','NNS'] and word.lower() != "register"]
 
     def find_name(self, utterance):
         tokens = nltk.word_tokenize(utterance)
