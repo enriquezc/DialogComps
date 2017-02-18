@@ -512,8 +512,14 @@ def department_match(str_in):
     global dept_dict
     cur_match = None
     cur_best = 100
-    if str_in.upper() in dept_dict.keys():
-        return dept_dict[str_in.upper()]
+    dept_items = dept_dict.items()
+    for key, value in dept_items:
+        if str_in.upper() in key:
+            return value
+        if str_in.lower() in value.lower():
+            return value
+
+    elif str_in in dept_dict.values()
     for key in dept_dict:
         dist = edit_distance(key,str_in.upper())
         if dist < cur_best:
