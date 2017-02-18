@@ -402,14 +402,14 @@ class Conversation:
         juniorYear = str(datetime.datetime.now().year + 1)
         seniorYear = str(datetime.datetime.now().year)
 
-        if "fresh" in self.last_query or "frosh" in self.last_query or freshYear in self.last_query or "first" in self.last_query:
+        if "fresh" in luisAI.query or "frosh" in luisAI.query or freshYear in luisAI.query or "first" in luisAI.query:
             self.student_profile.major.add("undeclared")
             self.student_profile.terms_left = 11
             if cur_term == "fall":
                 self.student_profile.terms_left = 11
             elif cur_term == "winter":
                 self.student_profile.terms_left = 10
-        elif "soph" in self.last_query or "second" in self.last_query or sophYear in self.last_query:
+        elif "soph" in luisAI.query or "second" in luisAI.query or sophYear in luisAI.query:
             self.student_profile.terms_left = 8
             if cur_term == "fall":
                 self.student_profile.terms_left = 7
@@ -417,13 +417,13 @@ class Conversation:
             elif cur_term == "winter":
                 self.student_profile.terms_left = 6
                 self.student_profile.major.add("undeclared")
-        elif "junior" in self.last_query or "third" in self.last_query or juniorYear in self.last_query:
+        elif "junior" in luisAI.query or "third" in luisAI.query or juniorYear in luisAI.query:
             self.student_profile.terms_left = 5
             if cur_term == "fall":
                 self.student_profile.terms_left = 4
             elif cur_term == "winter":
                 self.student_profile.terms_left = 3
-        elif "senior" in self.last_query or "fourth" in self.last_query or seniorYear in self.last_query or "final" in self.last_query or "last" in self.last_query:
+        elif "senior" in luisAI.query or "fourth" in luisAI.query or seniorYear in luisAI.query or "final" in luisAI.query or "last" in luisAI.query:
             self.student_profile.terms_left = 2
             if cur_term == "fall":
                 self.student_profile.terms_left = 1
