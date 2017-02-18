@@ -157,17 +157,24 @@ class Conversation:
                 
     def handleRemoveMajor(self, input, luisAI, luis_intent, luis_entities):
         # removes a major
-        major_string = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
+        major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
+        for major in major_list:
+            if major in self.student_profile.major:
+                self.student_profile.major.remove(major)
         if luis_entities:
             if format(luis_intent) != "student_info_concentration":
                 for entity in luis_entities:
                     if entity.type == "department":
-                        try:
-                            tm_major = TaskManager.department_match(entity.entity)
-                            print("tm major: ", format(tm_major))
-                            self.student_profile.major.append(tm_major)
-
-                        except:
+                        if entity.entity in self.student_profile.major:
+                            self.student_profile.major.remove(entity.entity)
+                        else:
+                            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+            else:
+                for entity in luis_entities:
+                    if entity.type == "department":
+                        if entity.entity in self.student_profile.major:
+                            self.student_profile.concentration.remove(entity.entity)
+                        else:
                             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
 
@@ -179,6 +186,7 @@ class Conversation:
         # prevent problems in the common case, we check for the presence of I.
         # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
         # tokenizes the query that has been adjusted by the code above
+        # returns a list
         pot_query = luisAI.query
         dept = []
         double = False
@@ -344,18 +352,11 @@ class Conversation:
                 self.student_profile.interests.add(interest)
         interests = new_interests
 
-        '''else:
-            interests = []
-            for entity in luis_entities:
-                print(entity)
-                if entity.type == "class" or entity.type == "department" or entity.type == "sentiment":
-                    interests.append(entity.entity)
-                    self.student_profile.interests.add(entity.entity)'''
         try:
             print(interests)
             tm_courses = TaskManager.query_by_keywords(interests)[0:4]
+            self.student_profile.related_courses
             if set(self.student_profile.interests).issuperset(set(interests)): #need to implement no repeated courses
-                print("in same length")
                 self.student_profile.potential_courses = tm_courses
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
             else:
@@ -525,10 +526,10 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
 
     def handle_new_class_requirements(self, input, luisAI, luis_intent, luis_entities): #34
-        pass
+        self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)
 
     def handle_new_class_time(self, input, luisAI, luis_intent, luis_entities):  # 35
-        pass
+        self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)
 
     def handle_new_class_description(self, input, luisAI, luis_intent, luis_entities):  # 36
         self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)
