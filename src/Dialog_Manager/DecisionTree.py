@@ -200,7 +200,9 @@ class DecisionTree:
     # @params: the current node of the tree
     # @return: the next node of the tree
     def get_next_node(self):
+        
         past_node = self.current_node
+        print(past_node.userQuery)
         '''if query_number != self.current_node:
             past_node = self.mapOfNodes[query_number]'''
 
