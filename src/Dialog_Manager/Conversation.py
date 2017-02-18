@@ -211,16 +211,25 @@ class Conversation:
 
     def remove_major(self, input, luisAI, luis_intent, luis_entities):
         # removes a major
-        major_string = find_major(luisAI.query)
+        major, major_string = find_major(luisAI.query)
         if format(luis_intent) == "student_info_concentration":
             if major:
-                if major[0] not in self.student_profile.concentration:
-                    self.student_profile.concentration.append(major[0])
+                for maj in major:
+                    if maj in self.student_profile.concentration:
+                        self.student_profile.concentration.remove(maj)
                 else:
                     return [self.decision_tree.get_next_node()]
-            else:
-                self.student_profile.concentration = []
-            print(self.student_profile.concentration)
+
+        if not major:  # making sure we actually query on something
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+        try:
+            for major in major_list:
+                tm_major = TaskManager.department_match(major)  # weird output with
+                if tm_major is None:
+                    pass
+                    # return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+                elif tm_major in self.student_profile.major:
+                    
 
     def getDepartmentStringFromLuis(self, input, luisAI, luis_intent, luis_entities):
         # takes the Luis query, and lowers any word in the sequence so long as
