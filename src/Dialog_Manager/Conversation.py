@@ -218,7 +218,7 @@ class Conversation:
             index = index - 1 if index != float('inf') else len(self.student_profile.potential_courses) - 1
             tm_courses = [self.student_profile.potential_courses[index]]
         tm_courses = tm_courses or self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities,specific=True)
-        tm_courses = tm_courses or [self.student_profile.potential_courses[0]]
+        tm_courses = tm_courses or [self.student_profile.potential_courses[0]] if len(self.student_profile.potential_courses) > 0 else [None]
         if tm_courses[0] is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
         tm_course = tm_courses[0]
@@ -595,7 +595,7 @@ class Conversation:
                     toReturn = [tm_courses]
                 else:
                     toReturn = tm_courses
-            else: #for schedule class
+            if specific: #for schedule class
                 tm_courses = self.task_manager_class_title_match(possibilities)  # type checked in tm keyword
                 if tm_courses is None:
                     return None
@@ -645,6 +645,7 @@ class Conversation:
 
 
     def task_manager_information(self, course):
+        #returns a list
         print("We here")
         tm_courses = TaskManager.query_courses(course)
         print("We done")
@@ -656,9 +657,8 @@ class Conversation:
         else:
             return [tm_courses]
 
-    # @params course to add to student classes
-    # @return 0 for added successfully, 1 for not added
     def task_manager_keyword(self, keywords):
+        #returns a list
         tm_courses = TaskManager.query_by_keywords(keywords)
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
@@ -680,6 +680,7 @@ class Conversation:
             return tm_department
 
     def task_manager_class_title_match(self, class_string, department = None):
+        #returns a course object
         tm_class_match = TaskManager.query_by_title(class_string, department)
         if type(tm_class_match) is list:
             if len(tm_class_match) > 0:
