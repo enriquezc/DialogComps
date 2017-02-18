@@ -8,7 +8,6 @@ import luis
 from src.Task_Manager import TaskManager
 from src.Dialog_Manager import Student, Course, User_Query, DecisionTree
 import datetime
-from nltk.corpus import stopwords
 
 class Conversation:
     nltk_PoS_codes = {"CC": "Coordinating conjunction",
@@ -240,7 +239,6 @@ class Conversation:
             major_list)  # ok we need to either figure out way to join a list or have the tm accept a list
         dept = TaskManager.department_match(major_string)
         return dept
-
 
     def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities):
         return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
