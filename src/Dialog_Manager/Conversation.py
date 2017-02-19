@@ -65,7 +65,7 @@ class Conversation:
                 our_str_response = ""
                 if type(userQueries) is list:
                     for userQuery in userQueries:
-                        
+
                         ###
                         if User_Query.QueryType.full_schedule_check == userQuery.type:
                             print (self.nluu.create_response(userQuery) + '\n')
@@ -150,11 +150,11 @@ class Conversation:
         major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
         print("major: ", major_list)
         for major in major_list:
-            self.student_profile.major.add(major[0])
+            self.student_profile.major.add(major)
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                 self.decision_tree.get_next_node()]
-                
-                
+
+
     def handleRemoveMajor(self, input, luisAI, luis_intent, luis_entities):
         # removes a major
         major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)

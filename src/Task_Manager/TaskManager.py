@@ -62,52 +62,7 @@ def query_courses(course):
 
     #print(course_query)
 
-    results = []
-
-    for result in course_results:
-        result_course = Course.Course()
-        result_course.department = result[17]
-        result_course.course_num = result[2]
-        result_course.id = result[13]
-        result_course.name = result[16]
-        result_course.term = result[19]
-        result_course.credits = result[11]
-        classroom_str = result[24]
-        if classroom_str != None:
-            classroom_str = classroom_str.split()
-            if len(classroom_str) > 1:
-                classroom = classroom_str[0] + " " + classroom_str[1]
-                result_course.classroom = classroom
-            else:
-                result_course.classroom = None
-        result_course.description = result[29]
-
-        if result[21] != None:
-            result_course.faculty_id = result[21]
-            if '|' in result_course.faculty_id:
-                prof_ids = result_course.faculty_id.split('|')
-                query_str = "SELECT DISTINCT * FROM professors WHERE id = \'"
-                for id_num in prof_ids:
-                    query_str = query_str + str(int(id_num)) + "' OR id = '"
-                query_str = query_str[:-10]
-                cur.execute(query_str)
-                names = cur.fetchall()
-                result_course.faculty_id = ""
-                for result in names:
-                    result_course.faculty_id = result_course.faculty_id + result[0] + ", "
-                    result_course.faculty_name = result_course.faculty_name + result[1] + ", "
-
-                if result_course.faculty_name != "" and result_course.faculty_id != "":
-                    result_course.faculty_name = result_course.faculty_name[:-2]
-                    result_course.faculty_id = result_course.faculty_id[:-2]
-            else:
-                query_str = "SELECT name FROM professors WHERE id = \'" \
-                             + str(int(result_course.faculty_id)) + "'"
-                cur.execute(query_str)
-                name = cur.fetchall()
-                if len(name) > 0 and len(name[0]) > 0:
-                    result_course.faculty_name = name[0][0]
-        results.append(result_course)
+    results = fill_out_courses(course_results)
     return list(set(results))
 
 
@@ -170,10 +125,21 @@ def query_by_title(title_string, department = None):
         query_string = query_string + " AND sec_subject = '" + department + "'"
 
     cur = conn.cursor()
-    #print(cur.mogrify(query_string))
     cur.execute(query_string)
 
     results = cur.fetchall()
+    courses = fill_out_courses(results)
+
+    return list(set(courses))
+
+# Helper function that takes the SQL results list, and fills out a list of
+# course objects according to the contents of the SQL list. Only works if the
+# SQL query is run on course with a SELECT * function. Otherwise, will have an
+# index out of bounds error.
+# returns a list of course objects
+def fill_out_courses(results, new_keywords = None):
+    global conn
+    cur = conn.cursor()
     courses = []
     for result in results:
         result_course = Course.Course()
@@ -216,9 +182,34 @@ def query_by_title(title_string, department = None):
                 if len(name) > 0 and len(name[0]) > 0:
                     result_course.faculty_name = name[0][0]
 
+        # only runs in the case where this is called by query_by_keywords
+        # uses the new_keywords list in the query_by_keywords function
+        if new_keywords != None:
+            result_course.relevance = [0,0]
+            punctuationset = set(string.punctuation)
+            description = result_course.description
+            description = ''.join(ch for ch in description if ch not in punctuationset)
+            title = result_course.name
+            title = ''.join(ch for ch in title if ch not in punctuationset)
+            words = description.split()
+            words2 = title.split()
+            distinct_keywords = set([])
+            distinct_keywords2 = set([])
+            for word in words:
+                if word.upper() in new_keywords:
+                    result_course.relevance[1] = result_course.relevance[1] + 1
+                    distinct_keywords.add(word.upper())
+            for word in words2:
+                if word.upper() in new_keywords:
+                    result_course.relevance[1] = result_course.relevance[1] + 1
+                    distinct_keywords2.add(word.upper())
+            result_course.relevance[0] = len(distinct_keywords)
+            result_course.relevance[0] = result_course.relevance[0] + len(distinct_keywords2)
+            result_course.weighted_score = 10 * result_course.relevance[0] + result_course.relevance[1]
+
         courses.append(result_course)
 
-    return list(set(courses))
+    return courses
 
 # Helper function
 def makeCooccurenceMatrix():
@@ -406,62 +397,7 @@ def query_by_keywords(keywords, threshold = 3):
     query = query + " AND sec_name NOT LIKE '%WL%'"
     cur.execute(query)
     results = cur.fetchall()
-    courses = []
-    for result in results:
-        new_course = Course.Course()
-        new_course.department = result[17]
-        new_course.course_num = result[2]
-        new_course.id = result[13]
-        new_course.name = result[16]
-        new_course.description = result[29]
-        new_course.credits = result[11]
-        if result[21] != None:
-            new_course.faculty_id = result[21]
-            if '|' in new_course.faculty_id:
-                prof_ids = new_course.faculty_id.split('|')
-                query_str = "SELECT * FROM professors WHERE id = \'"
-                for id_num in prof_ids:
-                    query_str = query_str + str(int(id_num)) + "' OR id = '"
-                query_str = query_str[:-10]
-                cur.execute(query_str)
-                names = cur.fetchall()
-                new_course.faculty_id = ""
-                for result in names:
-                    new_course.faculty_id = new_course.faculty_id + result[0] + ", "
-                    new_course.faculty_name = new_course.faculty_name + result[1] + ", "
-                if new_course.faculty_id != "" and new_course.faculty_id != "":
-                    new_course.faculty_name = new_course.faculty_name[:-2]
-                    new_course.faculty_id = new_course.faculty_id[:-2]
-            else:
-                query_str = "SELECT name FROM professors WHERE id = \'" \
-                             + str(int(new_course.faculty_id)) + "'"
-                cur.execute(query_str)
-                name = cur.fetchall()
-                if len(name) > 0 and len(name[0]) > 0:
-                    new_course.faculty_name = name[0][0]
-        new_course.relevance = [0,0]
-        punctuationset = set(string.punctuation)
-        description = new_course.description
-        description = ''.join(ch for ch in description if ch not in punctuationset)
-        title = new_course.name
-        title = ''.join(ch for ch in title if ch not in punctuationset)
-        words = description.split()
-        words2 = title.split()
-        distinct_keywords = set([])
-        distinct_keywords2 = set([])
-        for word in words:
-            if word.upper() in new_keywords:
-                new_course.relevance[1] = new_course.relevance[1] + 1
-                distinct_keywords.add(word.upper())
-        for word in words2:
-            if word.upper() in new_keywords:
-                new_course.relevance[1] = new_course.relevance[1] + 1
-                distinct_keywords2.add(word.upper())
-        new_course.relevance[0] = len(distinct_keywords)
-        new_course.relevance[0] = new_course.relevance[0] + len(distinct_keywords2)
-        new_course.weighted_score = 10 * new_course.relevance[0] + new_course.relevance[1]
-        courses.append(new_course)
-
+    courses = fill_out_courses(results, new_keywords)
     courses = list(set(courses))
     courses.sort(key = lambda course: (course.relevance[0], course.relevance[1]))
     courses.reverse()
@@ -471,6 +407,40 @@ def query_by_keywords(keywords, threshold = 3):
         if course.weighted_score < val:
             courses.remove(course)
     return courses
+# queries a list of classes that fill out a distribution
+def query_by_distribution(distribution, department = None):
+    global dept_dict
+    global conn
+    # resetting the department to be the four letter code
+    if department != None:
+        dept_items = dept_dict.items()
+        for key, value in dept_items:
+            if department == key or department == value:
+                department = key
+                print(department)
+    # Building the query string
+    query_string = "SELECT DISTINCT course_name FROM distribution WHERE {} > 0".format(distribution)
+    if department != None:
+        query_string = query_string + "AND actual_dept = '{}".format(department)
+        query_string = query_string + "'"
+
+    cur = conn.cursor()
+
+    cur.execute(query_string)
+
+    results = cur.fetchall()
+    course_results = []
+    for result in results:
+        try:
+            course = Course.Course()
+            course.department = result[0][:-3]
+            course.course_num = result[0][-3:]
+
+            course_results.extend(query_courses(course))
+        except:
+            continue
+
+    return course_results
 
 # called in the init function, reads the file to create a dictionary
 def create_dept_dict():
@@ -547,7 +517,7 @@ def get_n_best_indices(row, n):
 if __name__ == "__main__":
     init()
 
-    results = smart_department_search(["sports"])
+    results = query_by_distribution("literary_analysis", "English")
     for course in results:
         print(course.name)
         print(course.description)
