@@ -75,9 +75,8 @@ class Conversation:
                             if responseSentiment["neg"] > responseSentiment["pos"]:
                                 print("Smell ya later! Thanks for chatting.")
                                 return
-                        else:
-
                         ###
+                        else:
                             self.utterancesStack.append(userQuery)
                             self.last_user_query.append(userQuery)
                             if userQuery.type == User_Query.QueryType.goodbye:
@@ -88,7 +87,7 @@ class Conversation:
                     # This mess of code stops descriptions with accents from
                     # throwing an error
                     our_str_response = our_str_response.encode("ascii", "ignore")
-                    our_str_response =  our_str_response.decode("ascii")
+                    our_str_response = our_str_response.decode("ascii")
                     print(str(our_str_response))
                 else:
                     self.utterancesStack.append(userQueries)
@@ -326,22 +325,8 @@ class Conversation:
         else:
             return [self.decision_tree.get_next_node()]
 
-
-    def handleClassSentiment(self, input, luisAI, luis_intent, luis_entities):
-        '''prev_course = None
-        if self.student_profile.all_classes:
-            if prev_course in self.student_profile.all_classes:
-
-        else:
-            return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
-
-        return [User_Query.UserQuery(prev_course, User_Query.QueryType.class_info_sentiment)]'''
-
-
-
     def handleWelcomeResponse(self, input, luisAI, luis_intent, luis_entities):
         return [self.decision_tree.get_next_node()]
-
 
     def handleClassDescriptionResponse(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
@@ -367,15 +352,6 @@ class Conversation:
         course = Course.Course()
         self.task_manager_information(course)
         return [self.decision_tree.get_next_node()]
-
-
-    # done
-    def handleClassTimeResponse(self, input, luisAI, luis_intent, luis_entities):
-        for entity in luis_entities:
-            for course in self.student_profile.all_classes:
-                if entity == course:
-                    return [User_Query.UserQuery(course, User_Query.QueryType.class_info_description)]
-
 
     def handleClassTimeRequest(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
@@ -407,13 +383,8 @@ class Conversation:
         try:
             print(interests)
             tm_courses = TaskManager.query_by_keywords(interests)[0:4]
-            self.student_profile.related_courses
-            if set(self.student_profile.interests).issuperset(set(interests)): #need to implement no repeated courses
-                self.student_profile.potential_courses = tm_courses
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
-            else:
-                self.student_profile.potential_courses = tm_courses
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
+            self.student_profile.potential_courses = tm_courses
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
         except:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
