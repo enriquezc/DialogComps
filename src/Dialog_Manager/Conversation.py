@@ -65,7 +65,7 @@ class Conversation:
                 our_str_response = ""
                 if type(userQueries) is list:
                     for userQuery in userQueries:
-                        
+
                         ###
                         if User_Query.QueryType.full_schedule_check == userQuery.type:
                             print (self.nluu.create_response(userQuery) + '\n')
@@ -86,7 +86,7 @@ class Conversation:
                     # This mess of code stops descriptions with accents from
                     # throwing an error
                     our_str_response = our_str_response.encode("ascii", "ignore")
-                    our_str_response =  our_str_response.decode("ascii")
+                    our_str_response = our_str_response.decode("ascii")
                     print(str(our_str_response))
                 else:
                     self.utterancesStack.append(userQueries)
@@ -149,24 +149,31 @@ class Conversation:
         major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
         print("major: ", major_list)
         for major in major_list:
-            self.student_profile.major.add(major[0])
+            self.student_profile.major.add(major)
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                 self.decision_tree.get_next_node()]
-                
-                
+
+
     def handleRemoveMajor(self, input, luisAI, luis_intent, luis_entities):
         # removes a major
-        major_string = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
+        major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
+        for major in major_list:
+            if major in self.student_profile.major:
+                self.student_profile.major.remove(major)
         if luis_entities:
             if format(luis_intent) != "student_info_concentration":
                 for entity in luis_entities:
                     if entity.type == "department":
-                        try:
-                            tm_major = TaskManager.department_match(entity.entity)
-                            print("tm major: ", format(tm_major))
-                            self.student_profile.major.append(tm_major)
-
-                        except:
+                        if entity.entity in self.student_profile.major:
+                            self.student_profile.major.remove(entity.entity)
+                        else:
+                            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+            else:
+                for entity in luis_entities:
+                    if entity.type == "department":
+                        if entity.entity in self.student_profile.major:
+                            self.student_profile.concentration.remove(entity.entity)
+                        else:
                             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
 
@@ -178,6 +185,7 @@ class Conversation:
         # prevent problems in the common case, we check for the presence of I.
         # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
         # tokenizes the query that has been adjusted by the code above
+        # returns a list
         pot_query = luisAI.query
         dept = []
         double = False
@@ -320,7 +328,6 @@ class Conversation:
     def handleWelcomeResponse(self, input, luisAI, luis_intent, luis_entities):
         return [self.decision_tree.get_next_node()]
 
-
     def handleClassDescriptionResponse(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
         self.task_manager_information(course)
@@ -345,15 +352,6 @@ class Conversation:
         course = Course.Course()
         self.task_manager_information(course)
         return [self.decision_tree.get_next_node()]
-
-
-    # done
-    def handleClassTimeResponse(self, input, luisAI, luis_intent, luis_entities):
-        for entity in luis_entities:
-            for course in self.student_profile.all_classes:
-                if entity == course:
-                    return [User_Query.UserQuery(course, User_Query.QueryType.class_info_description)]
-
 
     def handleClassTimeRequest(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
@@ -519,10 +517,10 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
 
     def handle_new_class_requirements(self, input, luisAI, luis_intent, luis_entities): #34
-        pass
+        self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)
 
     def handle_new_class_time(self, input, luisAI, luis_intent, luis_entities):  # 35
-        pass
+        self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)
 
     def handle_new_class_description(self, input, luisAI, luis_intent, luis_entities):  # 36
         self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)
@@ -590,7 +588,7 @@ class Conversation:
                     toReturn = [tm_courses]
                 else:
                     toReturn = tm_courses
-            else: #for schedule class
+            if specific: #for schedule class
                 tm_courses = self.task_manager_class_title_match(possibilities)  # type checked in tm keyword
                 if tm_courses is None:
                     return None
@@ -640,6 +638,7 @@ class Conversation:
 
 
     def task_manager_information(self, course):
+        #returns a list
         print("We here")
         tm_courses = TaskManager.query_courses(course)
         print("We done")
@@ -651,9 +650,8 @@ class Conversation:
         else:
             return [tm_courses]
 
-    # @params course to add to student classes
-    # @return 0 for added successfully, 1 for not added
     def task_manager_keyword(self, keywords):
+        #returns a list
         tm_courses = TaskManager.query_by_keywords(keywords)
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
@@ -675,6 +673,7 @@ class Conversation:
             return tm_department
 
     def task_manager_class_title_match(self, class_string, department = None):
+        #returns a course object
         tm_class_match = TaskManager.query_by_title(class_string, department)
         if type(tm_class_match) is list:
             if len(tm_class_match) > 0:
