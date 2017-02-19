@@ -1,5 +1,5 @@
 class Course:
-    def __init__(self, name=""):
+    def __init__(self, name = ""):
         #name of class
         self.name = name
         self.id = ""
