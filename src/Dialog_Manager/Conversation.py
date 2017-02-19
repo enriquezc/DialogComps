@@ -217,7 +217,7 @@ class Conversation:
             index = index - 1 if index != float('inf') else len(self.student_profile.potential_courses) - 1
             tm_courses = [self.student_profile.potential_courses[index]]
         tm_courses = tm_courses or self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities,specific=True)
-        tm_courses = tm_courses or [self.student_profile.potential_courses[0]]
+        tm_courses = tm_courses or [self.student_profile.potential_courses[0]] if len(self.student_profile.potential_courses) > 0 else [None]
         if tm_courses[0] is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
         tm_course = tm_courses[0]
@@ -317,18 +317,6 @@ class Conversation:
             return [self.decision_tree.get_next_node()]
 
 
-    def handleClassSentiment(self, input, luisAI, luis_intent, luis_entities):
-        '''prev_course = None
-        if self.student_profile.all_classes:
-            if prev_course in self.student_profile.all_classes:
-
-        else:
-            return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
-
-        return [User_Query.UserQuery(prev_course, User_Query.QueryType.class_info_sentiment)]'''
-
-
-
     def handleWelcomeResponse(self, input, luisAI, luis_intent, luis_entities):
         return [self.decision_tree.get_next_node()]
 
@@ -393,17 +381,9 @@ class Conversation:
                 new_interests.append(interest)
                 self.student_profile.interests.add(interest)
         interests = new_interests
-
-        '''else:
-            interests = []
-            for entity in luis_entities:
-                print(entity)
-                if entity.type == "class" or entity.type == "department" or entity.type == "sentiment":
-                    interests.append(entity.entity)
-                    self.student_profile.interests.add(entity.entity)'''
         try:
             print(interests)
-            tm_courses = TaskManager.query_by_keywords(interests)[0:4]
+            tm_courses = self.task_manager_keyword(interests)
             if set(self.student_profile.interests).issuperset(set(interests)): #need to implement no repeated courses
                 print("in same length")
                 self.student_profile.potential_courses = tm_courses
@@ -467,7 +447,6 @@ class Conversation:
         return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
 
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities):  # 17
-
         if len(self.last_query.split(" ")) < 2:
             responseSentiment = self.sentimentAnalyzer.polarity_scores(self.last_query)
             if responseSentiment["neg"] > responseSentiment["pos"]:

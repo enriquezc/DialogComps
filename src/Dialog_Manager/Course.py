@@ -1,7 +1,7 @@
 class Course:
-    def __init__(self):
+    def __init__(self, name=""):
         #name of class
-        self.name = ""
+        self.name = name
         self.id = ""
         self.term = ""
         self.department = ""
