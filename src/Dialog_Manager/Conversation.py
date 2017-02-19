@@ -150,7 +150,7 @@ class Conversation:
         major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
         print("major: ", major_list)
         for major in major_list:
-            self.student_profile.major.add(major)
+            self.student_profile.major.add(major[0])
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                 self.decision_tree.get_next_node()]
                 
@@ -204,7 +204,7 @@ class Conversation:
             double = False
         if double:
             majors = luisAI.query.split("and")
-            print("major split: " + majors)
+            print("major split: ", majors)
             for maj in majors:
                 dept.append(self.nluu.find_departments(maj))
         else:
@@ -441,12 +441,15 @@ class Conversation:
         return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
 
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities):  # 17
-
+        # getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False)
         if len(self.last_query.split(" ")) < 2:
             responseSentiment = self.sentimentAnalyzer.polarity_scores(self.last_query)
-            if responseSentiment["neg"] > responseSentiment["pos"]:
+            if responseSentiment["neg"] > responseSentiment["pos"] or "nothing" in self.last_query:
                 return [self.decision_tree.get_next_node()]
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
+            courses = getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False)
+            if len(courses) == 0:
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
+            self.student_profile.major_classes_needed.extend(courses)
         if luis_entities:
             for entity in luis_entities:
                 if entity.type == "class":
