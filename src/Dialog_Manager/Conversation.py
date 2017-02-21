@@ -411,7 +411,9 @@ class Conversation:
                             pass
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)]
         if tm_courses is None:
-            self.student_profile.current_classes.remove(self.student_profile.relevant_class)
+            to_remove = self.student_profile.relevant_class
+            if to_remove in self.student_profile.current_classes:
+                self.student_profile.current_classes.remove(self.student_profile.relevant_class)
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)]
         else:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
@@ -456,7 +458,7 @@ class Conversation:
             if responseSentiment["neg"] > responseSentiment["pos"] or "nothing" in self.last_query:
                 return [self.decision_tree.get_next_node()]
             courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False)
-            if len(courses) == 0:
+            if courses is None or len(courses) == 0:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
             self.student_profile.major_classes_needed.extend(courses)
         if luis_entities:
@@ -587,7 +589,7 @@ class Conversation:
             if len(possibilities) == 0:
                 return None
             if not specific: #return to potential courses not relavent class (for class description)
-                tm_courses = self.task_manager_keyword(possibilities)[0:4] # type checked in tm keyword
+                tm_courses = self.task_manager_keyword(possibilities)
                 if tm_courses is None:
                     return None
                 elif not type(tm_courses) is list:
