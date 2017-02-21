@@ -36,23 +36,27 @@ def query_courses(course):
     '''
 
     #print("ENTERING QUERY COURSES FUNCTION")
+    print("QUERYING COURSES: ")
 
     course_query = "SELECT * FROM COURSE WHERE ((sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND "
 
     if course.department != "":
         course_query = course_query + "sec_subject = '" + course.department.upper()
         course_query = course_query + "' AND "
+        print(course.department)
 
     if course.course_num != "":
         course_query = course_query + "sec_course_no = '" \
         + str(course.course_num)
         course_query = course_query + "' AND "
+        print(course.course_num)
 
     if course.name != "":
         course_name = smart_description_expansion(str(course.name))
         course_query = course_query + "lower(sec_short_title) = '" \
         + course_name
         course_query = course_query + "' AND "
+        print(course.name)
 
     course_query = course_query + "sec_name NOT LIKE '%WL%' AND sec_avail_status = 'Open'"
 
@@ -76,6 +80,10 @@ def query_by_title(title_string, department = None):
     # just confirming that we are being given a string
     if type(title_string) != type("this is a string"):
         return []
+
+    print("QUERYING BY COURSES: " + title_string)
+    if department != None:
+        print(department)
 
     global conn
     word_array = title_string.split()
@@ -312,6 +320,7 @@ def makeCooccurenceMatrix():
 # @params String object 'description' which contains some keywords for query
 # @return String object which has all shorthand keywords expanded
 def smart_description_expansion(description):
+    print("EXPANDING DESCRIPTION: " + description)
     global conn
     new_description = ""
     cur = conn.cursor()
@@ -329,6 +338,7 @@ def smart_description_expansion(description):
             new_description += " {}".format(word)
     if len(new_description) > 0 and new_description[0] == ' ':
         new_description = new_description[1:]
+        print("RETURNING EXPANDED: " + new_description)
         return new_description
     else:
         return description
@@ -359,6 +369,7 @@ def query_by_keywords(keywords, exclude=None, threshold = 3, department = None):
     if type(keywords) != type([]):
         return []
 
+    print("QUERYING BY KEYWORDS: " + keywords)
     global stop_words
     recommended_departments = set()
     new_keywords = []
@@ -428,6 +439,8 @@ def query_by_keywords(keywords, exclude=None, threshold = 3, department = None):
 def query_by_distribution(distribution, department = None):
     global dept_dict
     global conn
+
+    print("QUERYING BY DISTRO: " + distribution)
     # resetting the department to be the four letter code
     if department != None:
         dept_items = dept_dict.items()
@@ -494,7 +507,7 @@ def edit_distance(s1, s2):
 # @params String object 'str_in' which is a department code or description
 # @return String object that is the best guess for a valid, capitalized dept code
 def department_match(str_in):
-    print(str_in)
+    print("MATCHING DEPT: " + str_in)
     if str_in.isspace():
         return None
     global dept_dict
@@ -523,6 +536,7 @@ def department_match(str_in):
         if dist < cur_best:
             cur_match = dept_dict[key]
             cur_best = dist
+    print("MATCHED: " + cur_match)
     return cur_match
 
 def distro_match(str_in):
