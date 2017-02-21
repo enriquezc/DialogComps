@@ -18,9 +18,10 @@ class QueryType(Enum):
     full_schedule_check = 6
     #clarifying a none return from the data base
     tm_clarify = 7
-
-
-
+    #clarifying a none return from database searching on course titles
+    tm_course_clarify = 8
+    #we've already talked about all the relevant courses
+    already_talked_about = 9
     #ask for more info about student
     # their name
     student_info_name = 10
@@ -59,6 +60,8 @@ class QueryType(Enum):
     class_info_scrunch = 25
     #What time of day the class was
     class_info_time = 26
+    #What distributions a class fulfills
+    class_info_distributions = 27
     #ask for more info about a class they want to take
     #If name is given, as if they want to take this class
     #If class object is given, this indicates they have an idea of what they want to take

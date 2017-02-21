@@ -25,23 +25,13 @@ class NodeObject:
         self.potential_next_questions = []
         self.potential_next_questions.extend(potentialQ)
         self.node_function = None
-
-    def answer(self):
-        pass
-
-    def relevant_course(*args):
-        pass
-
-    def call_database(self):
-        pass
-
 class DecisionTree:
     def __init__(self, student):
         self.mapOfNodes = {}
         self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.welcome), [], [])
         self.build_Tree()
         self.current_node = self.head_node
-        self.current_course = Course.Course()
+        self.current_courses = [Course.Course()]
         self.student = student
 
 
@@ -65,7 +55,7 @@ class DecisionTree:
             node.answered = False
             return False
         elif node.userQuery.value == 5: #schedule_class_res
-            if self.current_course in self.student.current_classes:
+            if self.current_courses[0] in self.student.current_classes:
                 node.answered = True
                 return True
             node.answered = False
@@ -109,9 +99,8 @@ class DecisionTree:
         elif node.userQuery.value == 16: #student_info_requirements
             if self.student.distributions_needed:
                 node.answered = True
-                return True
-            node.answered = False
-            return False
+                return True    
+            return node.answered
         elif node.userQuery.value == 17: #student_info_major_requirements
             if self.student.major_classes_needed:
                 node.answered = True
@@ -132,37 +121,42 @@ class DecisionTree:
             return False
 
         elif node.userQuery.value == 30: #new_class_name
-            if self.current_course.name or self.current_course.id:
+            if self.current_courses[0].name or self.current_courses[0].id:
                 node.answered = True
                 return True
             node.answered = False
             return False
         elif node.userQuery.value == 31: #new_class_prof
-            if self.current_course.prof:
+            if self.current_courses[0].prof:
                 node.answered = True
                 return True
             node.answered = False
             return False
         elif node.userQuery.value == 32: #new_class_dept
-            if self.current_course.department:
+            if self.current_courses[0].department:
                 node.answered = True
                 return True
             node.answered = False
             return False
         elif node.userQuery.value == 33: #new_class_sentiment
-            if self.current_course.sentiment:
+            if self.current_courses[0].sentiment:
                 node.answered = True
                 return True
             node.answered = False
             return False
         elif node.userQuery.value == 35: #new_class_time
-            if self.current_course.time:
+            if self.current_courses[0].time:
                 node.answered = True
                 return True
             node.answered = False
             return False
         elif node.userQuery.value == 37: #new_class_res
             return False
+        elif node.userQuery.value == 34:
+            return False
+        else:
+            return False
+            
 
     def build_Tree(self):
         for query_type in User_Query.QueryType:
@@ -174,21 +168,21 @@ class DecisionTree:
         self.mapOfNodes[User_Query.QueryType.schedule_class_res].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
         self.mapOfNodes[User_Query.QueryType.full_schedule_check].required_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
         self.mapOfNodes[User_Query.QueryType.full_schedule_check].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
-
-        self.mapOfNodes[User_Query.QueryType.student_info_name].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # time left / year
-        self.mapOfNodes[User_Query.QueryType.student_info_name].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # time left / year
-        self.mapOfNodes[User_Query.QueryType.student_info_major].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_concentration],])
+        self.mapOfNodes[User_Query.QueryType.student_info_time_left].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  
+        self.mapOfNodes[User_Query.QueryType.student_info_name].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_time_left], self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # time left / year
+        self.mapOfNodes[User_Query.QueryType.student_info_name].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_time_left], self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])    # time left / year
+        self.mapOfNodes[User_Query.QueryType.student_info_major].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_concentration],self.mapOfNodes[User_Query.QueryType.student_info_major_requirements],])
         self.mapOfNodes[User_Query.QueryType.student_info_major].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_interests]])
+        self.mapOfNodes[User_Query.QueryType.student_info_major_requirements].required_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_name])  # Ask if they want to take a course that fills these reqs
+        self.mapOfNodes[User_Query.QueryType.student_info_major_requirements].potential_next_questions.append(self.mapOfNodes[User_Query.QueryType.student_info_interests])  # interests
         self.mapOfNodes[User_Query.QueryType.student_info_previous_classes].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_interests]])
-        self.mapOfNodes[User_Query.QueryType.student_info_interests].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
+        self.mapOfNodes[User_Query.QueryType.student_info_interests].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_requirements], self.mapOfNodes[User_Query.QueryType.new_class_name]])
         self.mapOfNodes[User_Query.QueryType.student_info_abroad].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_concentration]])  # concentration, major requirements
         self.mapOfNodes[User_Query.QueryType.student_info_major_requirements].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name], self.mapOfNodes[User_Query.QueryType.class_info_name], self.mapOfNodes[User_Query.QueryType.new_class_description]])  # department, prof, recommend
-        self.mapOfNodes[User_Query.QueryType.student_info_time_left].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_concentration], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # major, concentration, distros, interests
+        self.mapOfNodes[User_Query.QueryType.student_info_time_left].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_requirements], self.mapOfNodes[User_Query.QueryType.student_info_concentration], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # major, concentration, distros, interests
         self.mapOfNodes[User_Query.QueryType.student_info_requirements].potential_next_questions.append(self.mapOfNodes[User_Query.QueryType.student_info_interests])  # interests
-        self.mapOfNodes[User_Query.QueryType.student_info_requirements].required_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_dept])  # ask if they want to take a course that fills these reqs
-        self.mapOfNodes[User_Query.QueryType.student_info_major_requirements].required_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_dept])  # Ask if they want to take a course that fills these reqs
-        self.mapOfNodes[User_Query.QueryType.student_info_major_requirements].potential_next_questions.append(self.mapOfNodes[User_Query.QueryType.student_info_interests])  # interests
-        self.mapOfNodes[User_Query.QueryType.student_info_concentration].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # major reqs, distros, interests
+        self.mapOfNodes[User_Query.QueryType.student_info_requirements].required_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_requirements])  # ask if they want to take a course that fills these reqs
+        self.mapOfNodes[User_Query.QueryType.student_info_concentration].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major_requirements], self.mapOfNodes[User_Query.QueryType.student_info_requirements], self.mapOfNodes[User_Query.QueryType.new_class_name], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # major reqs, distros, interests
         self.mapOfNodes[User_Query.QueryType.class_info_name].potential_next_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_request])  # recommend
         self.mapOfNodes[User_Query.QueryType.new_class_name].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.schedule_class_res], self.mapOfNodes[User_Query.QueryType.new_class_request]])  # prof, recommend
         self.mapOfNodes[User_Query.QueryType.new_class_dept].potential_next_questions.extend(
@@ -210,7 +204,9 @@ class DecisionTree:
     # @params: the current node of the tree
     # @return: the next node of the tree
     def get_next_node(self):
+        
         past_node = self.current_node
+        print(past_node.userQuery)
         '''if query_number != self.current_node:
             past_node = self.mapOfNodes[query_number]'''
 
@@ -260,59 +256,3 @@ class DecisionTree:
             return self.get_next_node()
         self.current_node = self.mapOfNodes[User_Query.QueryType.welcome]
         return self.get_next_node()
-
-        '''try:
-            if self.current_node.answered == 1:
-                for node in self.current_node.required_questions:
-                    if node.asked or self.is_answered(node):
-                        pass
-                    else:
-
-                        self.current_node = self.current_node.required_questions
-                for node in self.current_node.potential_next_questions:
-                    if node.asked or self.is_answered(node):
-                        pass
-                    else:
-                        self.current_node = node
-
-                for node in self.current_node.required_questions:
-                    if self.is_answered(node):
-                        pass
-                    else:
-                        self.current_node = node
-
-                for node in self.current_node.required_questions:
-                    if self.is_answered(node):
-                        pass
-                    else:
-                        self.current_node = node
-
-            if self.current_node.answered == 0:
-                for node in self.current_node.potential_next_questions:
-                    if node.asked or node.answered:
-                        pass
-                    else:
-                        self.current_node = node
-
-                # have looped through and no node that is asked or answered, now loop to find one that is just not answered
-                for node in self.current_node.potential_next_questions:
-                    if node.answered:
-                        pass
-                    else:
-                        self.current_node = node
-                if past_node == self.current_node:
-                    return self.current_node
-
-
-            return [User_Query.UserQuery(self.student, self.current_node.userQuery)]
-
-        except ValueError:
-            print("Unexpected error:", sys.exc_info()[0])
-            raise
-    '''
-    '''if __name__ == "__main__":
-        student = Student.Student()
-        decision_tree = DecisionTree.DecisionTree(student)
-        next_node = decision_tree.get_next_node(36)
-        print(next_node.type)'''
-

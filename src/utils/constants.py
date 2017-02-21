@@ -1,10 +1,15 @@
 class Responses:
-    WELCOME = ("Hi, my name is DLNbot3000. Welcome to my office!",)
+    WELCOME = ("Hi, my name is DLNbot3000. Welcome to my office!\nAsk me about a specific course, or tell me some of your interests and I can find a related course.",)
     GOODBYE = ("Goodbye, {}",
                "See ya",
                "Smell ya later!",)
-    CLARIFY = ("Could you clarify what you just said?",)
+    CLARIFY = ("Could you clarify what you just said?",
+               "I'm not sure I understand, could you repeat that?",
+               "Hmmm, I don't quite follow. Maybe ask me in a different manner?",
+               "I'm sorry, I didn't get that. Could you clarify?",
+               )
     TM_CLARIFY = ("I wasn't able to find anything related to what you just said. Please ask me about something else.",)
+    TM_COURSE_CLARIFY = ("I couldn't find a course related to that. Maybe it isn't offered at Carleton?.", )
     SPECIFY = ("Can you be more specific on that regard?",)
     PLEASANTRY = ("Suh",)
     STUDENT_INFO_NAME = ("What's your name?",)
@@ -12,18 +17,19 @@ class Responses:
     STUDENT_INFO_MAJOR = ("What's your major?",)
     STUDENT_INFO_MAJOR_RES = ("So you're a {} major?",
                               "{} major, huh? I've heard they're the best students.",)
-    STUDENT_INFO_CONCENTRATION = ("Do you have a concentration?",)
+    STUDENT_INFO_CONCENTRATION = ("Do you have a concentration? If so, what is it?",)
     STUDENT_INFO_CONCENTRATION_RES = ("Ok, so you concentrations include:\n {}", 
                                       "So you don't have any concentrations?")
     STUDENT_INFO_PREVIOUS_CLASSES = ("Can you tell me about classes you've already taken?",)
     STUDENT_INFO_PREVIOUS_CLASSES_RES = ("I'll try to find classes for you to look at other than:\n {}",)
     STUDENT_INFO_INTERESTS = ("What are some of your interests?",)
-    STUDENT_INFO_INTERESTS_RES = ("I'll try to find some classes for you to look at that relate to your interests:\n {}",)
-    STUDENT_INFO_TIME_LEFT = ("How many terms do you have left at Carleton?",)
+    STUDENT_INFO_INTERESTS_RESA = ("I'll try to find some classes for you to look at that relate to your interests:\n ")
+    STUDENT_INFO_INTERESTS_RESB = ('{}',)
+    STUDENT_INFO_TIME_LEFT = ("What year are you?",)
     STUDENT_INFO_TIME_LEFT_RES = ("I'll keep the number of terms you have left in mind.",)
     STUDENT_INFO_ABROAD = ("Do you have any plans to study abroad?",)
     STUDENT_INFO_ABROAD_RES = ("That sounds like an awesome experience.",)
-    STUDENT_INFO_REQUIREMENTS = ("Are there any general graduation requirements you still need to complete?",)
+    STUDENT_INFO_REQUIREMENTS = ("Are there any general graduation requirements (distros) you still need to complete?",)
     STUDENT_INFO_REQUIREMENTS_RES = ("Let's try to find some courses to fill these requirements.",)
     STUDENT_INFO_MAJOR_REQUIREMENTS = ("What classes do you still have to take to complete your major?",)
     STUDENT_INFO_MAJOR_REQUIREMENTS_RES = ("Let's try to find some classes to fill these requirements.",)
@@ -39,12 +45,19 @@ class Responses:
     CLASS_INFO_SCRUNCH = ("Did you scrunch {}?",)
     CLASS_INFO_TIME = ("What time was {}?",)
     CLASS_INFO_TIME_RES = ("{} is during {}.",)
+    CLASS_INFO_DISTRIBUTIONS = ("Which, if any, of those requirements would you like to fulfill this term?",)
+    CLASS_INFO_DISTRIBUTIONS_RES = ("{}",)
     NEW_CLASS_NAME = ("Are there any classes that you'd like to take?",)
     NEW_CLASS_PROF = ("Is there a professor that you'd like to take a class with?",)
     NEW_CLASS_DEPT = ("Do you want to take a class in any particular department?",)
     NEW_CLASS_SENTIMENT = ("What do you think about taking {}?",)
     NEW_CLASS_REQUIREMENTS = ("Which requirements would you like to complete?",)
     NEW_CLASS_TIME = ("What time of day would you like your classes to be?",)
-    NEW_CLASS_DESCRIPTION = ("So, here's what I know about {}.\n {} is available next term as a {}, taught by {}.\n {}. Here's its official description:\n {}",)
-    SCHEDULE_CLASS_RES = ("Here are the classes you're currently registered for:\n {}.",)
+    NEW_CLASS_DESCRIPTIONA = ("So, here's what I know about {}.\n {} is available next term at {}, taught by {}.",)
+    NEW_CLASS_DESCRIPTIONB = ("So, here's what I know about {}.\n {} is available next term at {}",)
+    NEW_CLASS_DESCRIPTIONC = ("\n {}. Here's its official description:\n {}",)
+    SCHEDULE_CLASS_RES = ("Here are the classes you're currently registered for:\n {}",)
+    EMPTY_SCHEDULE_RES = ("You are not currently registered for any classes.",)
     FULL_SCHEDULE_CHECK = ("Here are the classes you're currently registered for:\n {} You're registered for {} credits, do you want to register for more classes?",)
+    ALREADY_TALKED_ABOUT = ("We already talked about all the relevant courses to these interests. Ask about something else.",)
+

@@ -1,7 +1,7 @@
 class Course:
-    def __init__(self):
+    def __init__(self, name = ""):
         #name of class
-        self.name = ""
+        self.name = name
         self.id = ""
         self.term = ""
         self.department = ""
@@ -9,6 +9,7 @@ class Course:
         self.classroom = ""
         self.faculty_id = ""
         self.faculty_name = ""
+        self.gen_distributions = []
         #A score from 1-10 of how much they liked the class
         self.sentiment = 0
         #how confident are we in this sentiment
@@ -16,7 +17,7 @@ class Course:
         self.scrunch = ""
         self.requirements_fulfilled = []
         #Some way of storing start time, end time, and days of the week. Format undecided as of yet.
-        self.time = None
+        self.time = ""
         self.prereqs = []
         #description from enroll
         self.description = ""
@@ -29,7 +30,10 @@ class Course:
         self.weighted_score = 0.0
 
     def __str__(self):
-        return "{} : {}\n{}".format(self.id, self.name, self.description)
+        return "{} ({}) : {}\n{}".format(self.id, self.weighted_score, self.name, self.description)
 
     def __eq__(self, other):
         return other is not None and self.department == other.department and self.course_num == other.course_num
+
+    def __hash__(self):
+        return hash((self.department, self.course_num))
