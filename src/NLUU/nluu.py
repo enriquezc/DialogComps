@@ -1,6 +1,7 @@
 import nltk
 import luis
 import random
+import pickle
 from src.Dialog_Manager import Student, Course, User_Query
 from src.Dialog_Manager.User_Query import QueryType
 from src.utils import constants
@@ -10,6 +11,7 @@ class nLUU:
     def __init__(self, luisurl):
         self.luis = luis.Luis(luisurl)
         self.response_dict = {}
+        self.stem_dict = pickle.load(open('src/utils/stem_dict.dat', 'rb'))
         self.stemmer = SnowballStemmer("english")
         #Requires a local copy of atis.cfg
         #atis_grammar = nltk.data.load("atis.cfg")
@@ -31,6 +33,12 @@ class nLUU:
             Part-of-speech taging for str
         '''
         return nltk.pos_tag(s)
+
+    def expand_keyword(self, s):
+        '''
+            Returns a list containing all words with the same stem as the keyword s
+        '''
+        return self.stem_dict[s]
 
 
     def create_syntax_tree(self, s):
