@@ -38,7 +38,10 @@ class nLUU:
         '''
             Returns a list containing all words with the same stem as the keyword s
         '''
-        return self.stem_dict[s]
+        if s in stem_dict:
+            return self.stem_dict[s]
+        else
+            return [s]
 
 
     def create_syntax_tree(self, s):
