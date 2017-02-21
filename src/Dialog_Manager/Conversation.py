@@ -10,6 +10,7 @@ from src.Dialog_Manager import Student, Course, User_Query, DecisionTree
 import datetime
 from nltk.corpus import stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from copy import deepcopy
 
 class Conversation:
     nltk_PoS_codes = {"CC": "Coordinating conjunction",
@@ -141,7 +142,7 @@ class Conversation:
         # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
         updated = False
         if "not" in luisAI.query:
-            self.handleRemoveMajor(input, luisAI, luis_intent, luis_entities)
+            return self.handleRemoveMajor(input, luisAI, luis_intent, luis_entities)
         if luis_entities:
             for entity in luis_entities:
                 if entity.type == "department":
@@ -162,25 +163,39 @@ class Conversation:
 
     def handleRemoveMajor(self, input, luisAI, luis_intent, luis_entities):
         # removes a major
+        relavent_major = deepcopy(self.student_profile.major)
         major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
-        for major in major_list:
-            if major in self.student_profile.major:
-                self.student_profile.major.remove(major)
+        print(major_list)
         if luis_entities:
             if format(luis_intent) != "student_info_concentration":
                 for entity in luis_entities:
                     if entity.type == "department":
-                        if entity.entity in self.student_profile.major:
-                            self.student_profile.major.remove(entity.entity)
+                        dept = self.task_manager_department_match(entity.entity)
+                        if dept in relavent_major:
+                            try:
+                                self.student_profile.major.remove(dept)
+                            except KeyError:
+                                pass
                         else:
                             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
             else:
                 for entity in luis_entities:
                     if entity.type == "department":
-                        if entity.entity in self.student_profile.major:
-                            self.student_profile.concentration.remove(entity.entity)
+                        dept = self.task_manager_department_match(entity.entity)
+                        if dept in relavent_major:
+                            try:
+                                self.student_profile.concentration.remove(dept)
+                            except KeyError:
+                                pass
                         else:
                             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
+        else:
+            for major in major_list:
+                if major in relavent_major:
+                    try:
+                        self.student_profile.major.remove(major)
+                    except KeyError:
+                        pass
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
 
 
@@ -422,7 +437,6 @@ class Conversation:
     def handleClassDistribution(self, input, luisAI, luis_intent, luis_entities):
         #occurs when the user wants to get courses that satisfy a given distribution
         #returns a list of courses that all satisfy the distribution
-        #TODO: weight major and interests in the returned courses
         distro_list = []
         max_occ = 0
         for entity in luis_entities:
