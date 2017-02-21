@@ -682,7 +682,8 @@ class Conversation:
 
     def task_manager_keyword(self, keywords):
         #returns a list
-        tm_courses = TaskManager.query_by_keywords(keywords)
+        stud = self.student_profile
+        tm_courses = TaskManager.query_by_keywords(keywords, student_department=stud.major, student_interests=stud.interests)
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
                 return tm_courses

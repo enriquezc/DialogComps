@@ -467,8 +467,9 @@ def calculate_course_relevance(course_obj, new_keywords, student_major_dept, stu
     relevance[0] = len(distinct_keywords)
     relevance[0] += len(distinct_keywords2)
     if student_major_dept is not None:
-        stud_dept_code = department_match(student_major_dept)
-        relevance[2] = int(course_obj.department == stud_dept_code)
+        for major in student_major_dept:
+            if department_match(course_obj.department) == department_match(major):
+                relevance[2] += 1
     if student_interests is not None:
         for interest in student_interests:
             if interest in course_obj.description:
