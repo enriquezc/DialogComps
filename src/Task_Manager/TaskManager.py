@@ -366,11 +366,12 @@ def create_distro_list():
 # @params Optional int 'threshold' which limits number of courses to return
 # @return List of length >= 0 containing Course objects which matched keywords
 def query_by_keywords(keywords, exclude=None, threshold = 3, department = None):
+    print("QUERYING BY KEYWORDS:")
+    print(keywords)
     if type(keywords) != type([]):
         print("QUERY BY KEYWORDS NOT PASSED LIST TYPE")
         return []
 
-    print("QUERYING BY KEYWORDS: " + keywords)
     global stop_words
     recommended_departments = set()
     new_keywords = []
@@ -436,6 +437,7 @@ def query_by_keywords(keywords, exclude=None, threshold = 3, department = None):
         if course not in excludeCourses:
             coursesToReturn.append(course)
     return coursesToReturn
+
 # queries a list of classes that fill out a distribution
 def query_by_distribution(distribution, department = None):
     global dept_dict
