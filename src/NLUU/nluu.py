@@ -40,7 +40,7 @@ class nLUU:
         '''
         if s in stem_dict:
             return self.stem_dict[s]
-        else
+        else:
             return [s]
 
 
