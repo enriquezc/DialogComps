@@ -144,6 +144,8 @@ class Conversation:
             for entity in luis_entities:
                 if entity.type == "department":
                     tm_major = self.task_manager_department_match(entity.entity)
+                    if tm_major is None:
+                        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
                     print("tm major: ", format(tm_major))
                     updated = True
                     self.student_profile.major.add(tm_major)
@@ -384,6 +386,8 @@ class Conversation:
         try:
             print(interests)
             tm_courses = self.task_manager_keyword(interests)
+            if tm_courses is None or len(tm_courses) < 1:
+                raise
             if set(self.student_profile.interests).issuperset(set(interests)): #need to implement no repeated courses
                 print("in same length")
                 self.student_profile.potential_courses = tm_courses
