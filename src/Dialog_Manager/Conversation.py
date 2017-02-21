@@ -140,6 +140,7 @@ class Conversation:
         # prevent problems in the common case, we check for the presence of I.
         # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
         updated = False
+        if "not"
         if luis_entities:
             for entity in luis_entities:
                 if entity.type == "department":
@@ -394,7 +395,6 @@ class Conversation:
         except:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
-
     def handleUnregisterRequest(self, input, luisAI, luis_intent, luis_entities):
         tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
         if not tm_courses is None and len(tm_courses) > 0: # We got returned a list
@@ -412,6 +412,12 @@ class Conversation:
         else:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
+    def handleClassDistribution(self, input, luisAI, luis_intent, luis_entities):
+        distributions = self.nluu.
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), self.decision_tree.get_next_node]
+
+    def handle_class_distribution(self, input, luisAI, luis_intent, luis_entities):
+        return self.handleClassDistribution(input, luisAI, luis_intent, luis_entities)
 
     def handle_student_info_name(self, input, luisAI, luis_intent, luis_entities): #10
         return self.handleStudentNameInfo(input, luisAI, luis_intent, luis_entities)

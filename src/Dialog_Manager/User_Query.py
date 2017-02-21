@@ -60,6 +60,8 @@ class QueryType(Enum):
     class_info_scrunch = 25
     #What time of day the class was
     class_info_time = 26
+    #What distributions a class fulfills
+    class_info_distributions = 27
     #ask for more info about a class they want to take
     #If name is given, as if they want to take this class
     #If class object is given, this indicates they have an idea of what they want to take

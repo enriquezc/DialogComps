@@ -9,6 +9,7 @@ class Course:
         self.classroom = ""
         self.faculty_id = ""
         self.faculty_name = ""
+        self.gen_distributions = []
         #A score from 1-10 of how much they liked the class
         self.sentiment = 0
         #how confident are we in this sentiment
