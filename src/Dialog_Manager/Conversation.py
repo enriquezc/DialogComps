@@ -424,18 +424,37 @@ class Conversation:
         #returns a list of courses that all satisfy the distribution
         #TODO: weight major and interests in the returned courses
         distro_list = []
+        
+        print(distro_list)
         max_occ = 0
-        for entity in luis_entities:
-            if entity.type == "distribution":
-                distros = self.task_manager_distribution_match(entity)
-                distro_list.extend(distros)
+        for course in self.student_profile.distributions_needed:
+            print(course.name)
+            #print(course.gen_distributions)
+            distros = self.task_manager_distribution_match(course.name)
+            distro_list.extend(distros)
         for distro in distro_list: #somehow get max occurance (a course name will show up more than once if it fills more than one distro
-            if distro_list.count(distro.name) > max_occ: #using max occurance / replacement concept, but shouldn't
-                max_occ = distro_list.count(distro.name)
-
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_distributions), self.decision_tree.get_next_node]
+            print(distro)
+            print(distro.name)
+            self.student_profile.potential_courses = []
+            if distro_list.count(distro) > 1: #using max occurance / replacement concept, but shouldn't
+                self.student_profile.potential_courses.append(distro)
+                max_occ = distro_list.count(distro)
+        if self.student_profile.potential_courses == []:
+            self.student_profile.potential_courses = list(set(distro_list))[1:3]
+        else:
+            self.student_profile.potential_courses = list(set(self.student_profile.potential_courses))
+            
+                
+            
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.class_info_distributions_res), self.decision_tree.get_next_node()]
 
     def handle_class_info_distributions(self, input, luisAI, luis_intent, luis_entities):
+        print("hey there! Did you say yes or no? I hope you did. OOooooohWeeEEE")
+        responseSentiment = self.sentimentAnalyzer.polarity_scores(input)
+        if responseSentiment["neg"] > responseSentiment["pos"]:
+            print("We don't need no distrobutions")
+            return [self.decision_tree.get_next_node]
+        print("we need some distros")
         return self.handleClassDistribution(input, luisAI, luis_intent, luis_entities)
 
     def handle_student_info_requirements_res(self, input, luisAI, luis_intent, luis_entities):
@@ -455,17 +474,30 @@ class Conversation:
 
         return self.handleStudentInfoYear(input, luisAI, luis_intent, luis_entities)
         #return self.decision_tree.get_next_node()
-
+    
+    def handleStudentRequirementRequest(self, input, luisAI, luis_intent, luis_entities):
+        print("ayyyyy")
+        return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities)
+    
+    #def handle_class_info_distributions(self, input, luisAI, luis_intent, luis_entities): 
+       # return self.handle_new_class_requirements(input, luisAI, luis_intent, luis_entities)
+    
     def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities): #16
         if "nothing" in self.last_query or "none" in self.last_query:
+            print("we bout to graduate boyz")
             self.decision_tree.current_node.answered = True
             return self.decision_tree.get_next_node()
         if luis_entities:
             for entity in luis_entities:
-                if entity.type == "class":
+                print("i still gotta finish up that yung" + entity.entity)
+                if entity.type == "distribution":
                     self.student_profile.distributions_needed.append(Course.Course(entity.entity))
             if len(self.student_profile.distributions_needed) != 0:
-                return [self.decision_tree.get_next_node()]
+                
+                #return [self.decision_tree.get_next_node()]
+                next_node = self.decision_tree.get_next_node()
+                print(next_node.type)
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res), next_node]
         if ',' in self.last_query:
             listOfWords = self.last_query.split(",")
             for word in listOfWords:
@@ -717,8 +749,11 @@ class Conversation:
 
     def task_manager_distribution_match(self, distribution, dept = None):
         tm_distro = TaskManager.distro_match(distribution)
-        tm_department = TaskManager.department_match(dept)
-        class_match = TaskManager.query_by_distribution(tm_distro, tm_department)
+        if dept != None:
+            tm_department = TaskManager.department_match(dept)
+            class_match = TaskManager.query_by_distribution(tm_distro, tm_department)
+        else:
+            class_match = TaskManager.query_by_distribution(tm_distro)
         if len(class_match) > 0:
             return class_match
         else:
