@@ -169,7 +169,7 @@ class nLUU:
         s = constants.Responses.STUDENT_INFO_REQUIREMENTS[0]
         return s
     
-     def create_student_info_requirements_res_res(self, userQuery):
+    def create_student_info_requirements_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[0]
         return s
 

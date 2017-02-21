@@ -308,7 +308,7 @@ class Conversation:
             elif cur_term == "winter":
                 self.student_profile.terms_left = 1
         if updated:
-            return [self.decision_tree.get_next_node()]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_time_left_res), self.decision_tree.get_next_node()]
         else:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
 
@@ -317,13 +317,13 @@ class Conversation:
         if len(luis_entities) == 0:
             name = self.nluu.find_name(luisAI.query)
             self.student_profile.name = name
-            return [self.decision_tree.get_next_node()]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name_res), self.decision_tree.get_next_node()]
 
         for entity in luis_entities:
             if entity.type == "personname":
                 self.student_profile.name = entity.entity
         if self.student_profile.name:
-            return [self.decision_tree.get_next_node()]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name_res), self.decision_tree.get_next_node()]
 
         else:
             return [self.decision_tree.get_next_node()]
@@ -355,7 +355,7 @@ class Conversation:
     def handleStudentRequirementResponse(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
         self.task_manager_information(course)
-        return [self.decision_tree.get_next_node()]
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res), self.decision_tree.get_next_node()]
 
     def handleClassTimeRequest(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
