@@ -690,3 +690,12 @@ class Conversation:
                 return None
         else:
             return tm_class_match
+
+    def task_manager_distribution_match(self, distribution, dept = None):
+        tm_distro = TaskManager.distro_match(distribution)
+        tm_department = TaskManager.department_match(dept)
+        class_match = TaskManager.query_by_distribution(tm_distro, tm_department)
+        if len(class_match) > 0:
+            return class_match
+        else:
+            return [None]
