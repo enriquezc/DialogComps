@@ -347,7 +347,7 @@ def create_stop_words_set():
 # @params List object 'keywords' which contains words to query on
 # @params Optional int 'threshold' which limits number of courses to return
 # @return List of length >= 0 containing Course objects which matched keywords
-def query_by_keywords(keywords, threshold = 3):
+def query_by_keywords(keywords, exclude=None, threshold = 3):
     if type(keywords) != type([]):
         return []
 
@@ -406,7 +406,14 @@ def query_by_keywords(keywords, threshold = 3):
         val = max - threshold
         if course.weighted_score < val:
             courses.remove(course)
-    return courses
+    if exclude is None:
+        return courses
+    coursesToReturn = []
+    excludeCourses = set(exclude)
+    for course in courses:
+        if course not in excludeCourses:
+            coursesToReturn.append(course)
+    return coursesToReturn
 # queries a list of classes that fill out a distribution
 def query_by_distribution(distribution, department = None):
     global dept_dict

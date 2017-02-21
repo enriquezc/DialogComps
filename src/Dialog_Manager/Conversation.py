@@ -75,7 +75,6 @@ class Conversation:
                             if responseSentiment["neg"] > responseSentiment["pos"]:
                                 print("Smell ya later! Thanks for chatting.")
                                 return
-                        ###
                         else:
                             self.utterancesStack.append(userQuery)
                             self.last_user_query.append(userQuery)
@@ -140,17 +139,19 @@ class Conversation:
         # they are lowercase, but will also think i is a noun. Therefore, to
         # prevent problems in the common case, we check for the presence of I.
         # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
+        updated = False
         if luis_entities:
             for entity in luis_entities:
                 if entity.type == "department":
                     tm_major = self.task_manager_department_match(entity.entity)
                     print("tm major: ", format(tm_major))
+                    updated = True
                     self.student_profile.major.add(tm_major)
-
-        major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
-        print("major: ", major_list)
-        for major in major_list:
-            self.student_profile.major.add(major)
+        if not updated:
+            major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
+            print("major: ", major_list)
+            for major in major_list:
+                self.student_profile.major.add(major)
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                 self.decision_tree.get_next_node()]
 
@@ -325,6 +326,7 @@ class Conversation:
         else:
             return [self.decision_tree.get_next_node()]
 
+
     def handleWelcomeResponse(self, input, luisAI, luis_intent, luis_entities):
         return [self.decision_tree.get_next_node()]
 
@@ -379,12 +381,16 @@ class Conversation:
                 new_interests.append(interest)
                 self.student_profile.interests.add(interest)
         interests = new_interests
-
         try:
             print(interests)
-            tm_courses = TaskManager.query_by_keywords(interests)[0:4]
-            self.student_profile.potential_courses = tm_courses
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
+            tm_courses = self.task_manager_keyword(interests)
+            if set(self.student_profile.interests).issuperset(set(interests)): #need to implement no repeated courses
+                print("in same length")
+                self.student_profile.potential_courses = tm_courses
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
+            else:
+                self.student_profile.potential_courses = tm_courses
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
         except:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
@@ -441,12 +447,11 @@ class Conversation:
         return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
 
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities):  # 17
-        # getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False)
         if len(self.last_query.split(" ")) < 2:
             responseSentiment = self.sentimentAnalyzer.polarity_scores(self.last_query)
             if responseSentiment["neg"] > responseSentiment["pos"] or "nothing" in self.last_query:
                 return [self.decision_tree.get_next_node()]
-            courses = getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False)
+            courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False)
             if len(courses) == 0:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
             self.student_profile.major_classes_needed.extend(courses)

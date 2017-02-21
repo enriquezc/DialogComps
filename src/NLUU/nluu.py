@@ -337,7 +337,7 @@ class nLUU:
     def find_departments(self, utterance):
         tokens = nltk.word_tokenize(utterance)
         pos = nltk.pos_tag(tokens)
-        return [word for word, p in pos if p in ['JJ', 'NN', 'NNS', "NNP"]]  # getting adj and nouns from sentence and proper nouns
+        return [word for word, p in pos if p in ['JJ', 'NN', 'NNS', "NNP"] and word != "major"]  # getting adj and nouns from sentence and proper nouns
 
     def get_number_from_ordinal_str(self, ordinal_str):
         strs = ordinal_str.split()
