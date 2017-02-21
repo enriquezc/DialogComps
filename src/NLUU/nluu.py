@@ -168,6 +168,10 @@ class nLUU:
     def create_student_info_requirements_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_REQUIREMENTS[0]
         return s
+    
+     def create_student_info_requirements_res_res(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[0]
+        return s
 
     def create_student_info_major_requirements(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS[0]
@@ -191,7 +195,15 @@ class nLUU:
 
     def create_new_class_time_res(self, userQuery):
         return constants.Responses.NEW_CLASS_TIME[0]
-
+        
+    def create_new_class_info_distributions_res(self, userQuery):
+        return constants.Responses.CLASS_INFO_DISTRIBUTIONS[0]
+        
+    def create_new_class_info_distributions_res_res(self, userQuery):
+        s = constants.Responses.CLASS_INFO_DISTRIBUTIONS_RES[0]
+        pot_course = [str(c) for c in userQuery.object.potential_courses]
+        return s.format("\n".join(pot_course))
+        
     def create_new_class_description_res(self, userQuery):
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
