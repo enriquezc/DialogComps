@@ -520,6 +520,9 @@ def department_match(str_in):
     if str_in in stop_words:
         return None
 
+    if str_in.lower() == "major":
+        return None
+
     cur_match = None
     cur_best = 100
     dept_items = dept_dict.items()
