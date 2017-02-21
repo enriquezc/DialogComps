@@ -353,7 +353,6 @@ def query_by_keywords(keywords, exclude=None, threshold = 3, student_department=
         print("QUERY BY KEYWORDS NOT PASSED LIST TYPE")
         return []
 
-    print("QUERYING BY KEYWORDS: " + keywords)
     global stop_words
     recommended_departments = set()
     new_keywords = []
@@ -535,6 +534,9 @@ def department_match(str_in):
 
     # if the string is in our set of stop words, we return nothing
     if str_in in stop_words:
+        return None
+
+    if str_in.lower() == "major":
         return None
 
     cur_match = None
