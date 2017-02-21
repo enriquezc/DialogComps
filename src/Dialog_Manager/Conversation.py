@@ -140,6 +140,8 @@ class Conversation:
         # prevent problems in the common case, we check for the presence of I.
         # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
         updated = False
+        if "not" in luisAI.query:
+            self.handleRemoveMajor(input, luisAI, luis_intent, luis_entities)
         if luis_entities:
             for entity in luis_entities:
                 if entity.type == "department":
@@ -421,8 +423,17 @@ class Conversation:
         #occurs when the user wants to get courses that satisfy a given distribution
         #returns a list of courses that all satisfy the distribution
         #TODO: weight major and interests in the returned courses
-        tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description), self.decision_tree.get_next_node]
+        distro_list = []
+        max_occ = 0
+        for entity in luis_entities:
+            if entiy.type == "distribution":
+                distros = self.task_manager_distribution_match(entity)
+                distro_list.extend(distros)
+        for distro in distro_list: #somehow get max occurance (a course name will show up more than once if it fills more than one distro
+            if distro_list.count(distro.name) > max_occ: #using max occurance / replacement concept, but shouldn't
+                max_occ = distro_list.count(distro.name)
+
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_distributions), self.decision_tree.get_next_node]
 
     def handle_class_info_distributions(self, input, luisAI, luis_intent, luis_entities):
         return self.handleClassDistribution(input, luisAI, luis_intent, luis_entities)
