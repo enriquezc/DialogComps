@@ -367,6 +367,7 @@ def create_distro_list():
 # @return List of length >= 0 containing Course objects which matched keywords
 def query_by_keywords(keywords, exclude=None, threshold = 3, department = None):
     if type(keywords) != type([]):
+        print("QUERY BY KEYWORDS NOT PASSED LIST TYPE")
         return []
 
     print("QUERYING BY KEYWORDS: " + keywords)
