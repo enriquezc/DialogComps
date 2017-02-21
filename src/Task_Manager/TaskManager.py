@@ -140,7 +140,7 @@ def query_by_title(title_string, department = None):
 # SQL query is run on course with a SELECT * function. Otherwise, will have an
 # index out of bounds error.
 # returns a list of course objects
-def fill_out_courses(results, new_keywords = None, student_major=None, student_interests=None):
+def fill_out_courses(results, new_keywords=None, student_major=None, student_interests=None):
     global conn
     cur = conn.cursor()
     courses = []
@@ -474,7 +474,7 @@ def calculate_course_relevance(course_obj, new_keywords, student_major_dept, stu
         for interest in student_interests:
             if interest in course_obj.description:
                 relevance[3] += 1
-    weights = [10, 1, 5, 3]
+    weights = [10, 1, 6, 3]
     weighted_score = sum([relevance[i] * weights[i] for i in range(len(relevance))])
     return relevance, weighted_score
 
