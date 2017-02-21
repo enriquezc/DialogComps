@@ -231,7 +231,8 @@ class Conversation:
             index = index - 1 if index != float('inf') else len(self.student_profile.potential_courses) - 1
             tm_courses = [self.student_profile.potential_courses[index]]
         tm_courses = tm_courses or self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities,specific=True)
-        tm_courses = tm_courses or [self.student_profile.potential_courses[0]] if len(self.student_profile.potential_courses) > 0 else [None]
+        if tm_courses is None:
+            tm_courses = [self.student_profile.potential_courses[0]] if len(self.student_profile.potential_courses) > 0 else [None]
         if tm_courses[0] is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
         tm_course = tm_courses[0]
@@ -622,7 +623,7 @@ class Conversation:
                 else:
                     toReturn = tm_courses
             if specific: #for schedule class
-                tm_courses = self.task_manager_class_title_match(possibilities)  # type checked in tm keyword
+                tm_courses = self.task_manager_class_title_match(" ".join(possibilities))  # type checked in tm keyword
                 if tm_courses is None:
                     return None
                 elif not type(tm_courses) is list:
