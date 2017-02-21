@@ -10,11 +10,13 @@ from src.Dialog_Manager import Course
 
 conn = None
 dept_dict = {}
+distro_list = []
 stop_words = None
 
 def init():
     connect_to_db()
     create_dept_dict()
+    create_distro_list()
     create_stop_words_set()
 
 
@@ -326,6 +328,12 @@ def create_stop_words_set():
     stop_words.add("interest")
     stop_words.add("major")
 
+def create_distro_list():
+    global distro_list
+    distro_list = "a_and_i;arts_practice;statistical_reasoning;lab;literary_analysis;humanistic_inquiry;social_inquiry;\
+        writing_rich_1;writing_rich_2;quantitative_reasoning;\
+        intercultural_domestic_studies;international_studies".split(';')
+
 # takes a list of keywords, returns a list of classes
 # @params List object 'keywords' which contains words to query on
 # @params Optional int 'threshold' which limits number of courses to return
@@ -523,7 +531,7 @@ def department_match(str_in):
             return value
         if str_in.lower() == value.lower():
             return value
-    # otherwise, use edit distane to find the nearest major
+    # otherwise, use edit distance to find the nearest major
     for key in dept_dict:
         dist = edit_distance(key,str_in.upper())
         if dist < cur_best:
@@ -536,8 +544,41 @@ def department_match(str_in):
     return cur_match
 
 def distro_match(str_in):
-    ## TODO Implement This!!
-    return None
+    if str_in.isspace():
+        return None
+    elif str_in == "":
+        return None
+    elif str_in == None:
+        return None
+
+    global dept_dict
+    global distro_list
+    global stop_words
+
+    # if the string is in our set of stop words, we return nothing
+    if str_in in stop_words:
+        return None
+
+    if '&' in str_in:
+        return "a_and_i"
+    elif "science" in str_in.split():
+        return "lab"
+    elif "art" in str_in.split() or "arts" in str_in.split():
+        return "arts_practice"
+    elif "domestic" in str_in.split() or "intercultural" in str_in.split():
+        return "intercultural_domestic_studies"
+    else:
+        cur_best = 100
+        cur_match = None
+        str_expand = smart_description_expansion(str_in)
+        for distro in distro_list:
+            distro_str = distro.replace('_',' ')
+            edit_dist = edit_distance(distro_str, str_expand)
+            if edit_dist < cur_best:
+                cur_best = edit_dist
+                cur_match = distro
+        return cur_match
+
 
 
 def get_n_best_indices(row, n):
@@ -554,8 +595,9 @@ def get_n_best_indices(row, n):
 
 if __name__ == "__main__":
     init()
-
-    results = query_by_distribution("literary_analysis", "English")
+    '''
+    results = query_by_distribution("literary_analysis", "ENGL")
     for course in results:
         print(course.name)
         print(course.description)
+        '''

@@ -140,6 +140,8 @@ class Conversation:
         # prevent problems in the common case, we check for the presence of I.
         # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
         updated = False
+        if "not" in luisAI.query:
+            self.handleRemoveMajor(input, luisAI, luis_intent, luis_entities)
         if luis_entities:
             for entity in luis_entities:
                 if entity.type == "department":
@@ -308,7 +310,7 @@ class Conversation:
             elif cur_term == "winter":
                 self.student_profile.terms_left = 1
         if updated:
-            return [self.decision_tree.get_next_node()]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_time_left_res), self.decision_tree.get_next_node()]
         else:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
 
@@ -317,13 +319,13 @@ class Conversation:
         if len(luis_entities) == 0:
             name = self.nluu.find_name(luisAI.query)
             self.student_profile.name = name
-            return [self.decision_tree.get_next_node()]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name_res), self.decision_tree.get_next_node()]
 
         for entity in luis_entities:
             if entity.type == "personname":
                 self.student_profile.name = entity.entity
         if self.student_profile.name:
-            return [self.decision_tree.get_next_node()]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name_res), self.decision_tree.get_next_node()]
 
         else:
             return [self.decision_tree.get_next_node()]
@@ -355,7 +357,7 @@ class Conversation:
     def handleStudentRequirementResponse(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
         self.task_manager_information(course)
-        return [self.decision_tree.get_next_node()]
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res), self.decision_tree.get_next_node()]
 
     def handleClassTimeRequest(self, input, luisAI, luis_intent, luis_entities):
         course = Course.Course()
@@ -421,8 +423,17 @@ class Conversation:
         #occurs when the user wants to get courses that satisfy a given distribution
         #returns a list of courses that all satisfy the distribution
         #TODO: weight major and interests in the returned courses
-        tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description), self.decision_tree.get_next_node]
+        distro_list = []
+        max_occ = 0
+        for entity in luis_entities:
+            if entiy.type == "distribution":
+                distros = self.task_manager_distribution_match(entity)
+                distro_list.extend(distros)
+        for distro in distro_list: #somehow get max occurance (a course name will show up more than once if it fills more than one distro
+            if distro_list.count(distro.name) > max_occ: #using max occurance / replacement concept, but shouldn't
+                max_occ = distro_list.count(distro.name)
+
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_distributions), self.decision_tree.get_next_node]
 
     def handle_class_info_distributions(self, input, luisAI, luis_intent, luis_entities):
         return self.handleClassDistribution(input, luisAI, luis_intent, luis_entities)
@@ -454,14 +465,14 @@ class Conversation:
                 if entity.type == "class":
                     self.student_profile.distributions_needed.append(Course.Course(entity.entity))
             if len(self.student_profile.distributions_needed) != 0:
-                return self.decision_tree.get_next_node()
+                return [self.decision_tree.get_next_node()]
         if ',' in self.last_query:
             listOfWords = self.last_query.split(",")
             for word in listOfWords:
                 if len(word.split()) < 4:
                     self.student_profile.distributions_needed.append(Course.Course(word))
             if len(self.student_profile.distributions_needed) != 0:
-                return self.decision_tree.get_next_node()
+                return [self.decision_tree.get_next_node()]
         return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
 
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities):  # 17
