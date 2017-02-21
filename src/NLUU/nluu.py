@@ -352,7 +352,12 @@ class nLUU:
     def find_interests(self, utterance):
         tokens = self.tokenize(utterance)
         pos = self.pos_tag(tokens)
-        return [word for word, p in pos if p in ['NNP', 'NNS', 'JJ', 'VBG', 'NN']]
+        interests = []
+        for word, pos in pos:
+            if pos in ['NNP', 'NNS', 'JJ', 'VBG', 'NN']:
+                stem = self.stem(word)
+                interests.extend(self.expand_keyword(stem))
+        return interests
 
     def find_departments(self, utterance):
         tokens = nltk.word_tokenize(utterance)
