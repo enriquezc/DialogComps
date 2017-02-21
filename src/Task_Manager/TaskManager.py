@@ -481,15 +481,22 @@ def department_match(str_in):
     if str_in.isspace():
         return None
     global dept_dict
+    global stop_words
+
+    # if the string is in our set of stop words, we return nothing
+    if str_in in stop_words:
+        return None
+
     cur_match = None
     cur_best = 100
     dept_items = dept_dict.items()
+    # check to see if the input already matches a department
     for key, value in dept_items:
         if str_in.upper() == key:
             return value
         if str_in.lower() == value.lower():
             return value
-
+    # otherwise, use edit distane to find the nearest major
     for key in dept_dict:
         dist = edit_distance(key,str_in.upper())
         if dist < cur_best:
