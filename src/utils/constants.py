@@ -45,7 +45,7 @@ class Responses:
     CLASS_INFO_SCRUNCH = ("Did you scrunch {}?",)
     CLASS_INFO_TIME = ("What time was {}?",)
     CLASS_INFO_TIME_RES = ("{} is during {}.",)
-    CLASS_INFO_DISTRIBUTIONS = ("Which, if any, of those requirements would you like to fulfill this term?",)
+    CLASS_INFO_DISTRIBUTIONS = ("Would you like to fulfill some of those requirements this term?",)
     CLASS_INFO_DISTRIBUTIONS_RES = ("{}",)
     NEW_CLASS_NAME = ("Are there any classes that you'd like to take?",)
     NEW_CLASS_PROF = ("Is there a professor that you'd like to take a class with?",)
