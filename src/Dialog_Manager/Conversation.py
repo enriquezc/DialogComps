@@ -163,7 +163,7 @@ class Conversation:
 
     def handleRemoveMajor(self, input, luisAI, luis_intent, luis_entities):
         # removes a major
-        relavent_major = deepcopy(self.student_profile.major)
+        relevant_major = deepcopy(self.student_profile.major)
         major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
         print(major_list)
         if luis_entities:
@@ -171,7 +171,7 @@ class Conversation:
                 for entity in luis_entities:
                     if entity.type == "department":
                         dept = self.task_manager_department_match(entity.entity)
-                        if dept in relavent_major:
+                        if dept in relevant_major:
                             try:
                                 self.student_profile.major.remove(dept)
                             except KeyError:
@@ -182,7 +182,7 @@ class Conversation:
                 for entity in luis_entities:
                     if entity.type == "department":
                         dept = self.task_manager_department_match(entity.entity)
-                        if dept in relavent_major:
+                        if dept in relevant_major:
                             try:
                                 self.student_profile.concentration.remove(dept)
                             except KeyError:
@@ -191,7 +191,7 @@ class Conversation:
                             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
         else:
             for major in major_list:
-                if major in relavent_major:
+                if major in relevant_major:
                     try:
                         self.student_profile.major.remove(major)
                     except KeyError:
