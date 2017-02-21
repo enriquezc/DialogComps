@@ -465,14 +465,14 @@ class Conversation:
                 if entity.type == "class":
                     self.student_profile.distributions_needed.append(Course.Course(entity.entity))
             if len(self.student_profile.distributions_needed) != 0:
-                return self.decision_tree.get_next_node()
+                return [self.decision_tree.get_next_node()]
         if ',' in self.last_query:
             listOfWords = self.last_query.split(",")
             for word in listOfWords:
                 if len(word.split()) < 4:
                     self.student_profile.distributions_needed.append(Course.Course(word))
             if len(self.student_profile.distributions_needed) != 0:
-                return self.decision_tree.get_next_node()
+                return [self.decision_tree.get_next_node()]
         return [User_Query.UserQuery(None, User_Query.QueryType.clarify)]
 
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities):  # 17
