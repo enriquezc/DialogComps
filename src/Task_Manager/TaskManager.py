@@ -142,12 +142,13 @@ def query_by_title(title_string, department = None):
 
     return list(set(courses))
 
+
 # Helper function that takes the SQL results list, and fills out a list of
 # course objects according to the contents of the SQL list. Only works if the
 # SQL query is run on course with a SELECT * function. Otherwise, will have an
 # index out of bounds error.
 # returns a list of course objects
-def fill_out_courses(results, new_keywords = None):
+def fill_out_courses(results, new_keywords=None, student_major=None, student_interests=None):
     global conn
     cur = conn.cursor()
     courses = []
@@ -194,29 +195,11 @@ def fill_out_courses(results, new_keywords = None):
 
         # only runs in the case where this is called by query_by_keywords
         # uses the new_keywords list in the query_by_keywords function
-        if new_keywords != None:
-            result_course.relevance = [0,0]
-            punctuationset = set(string.punctuation)
-            description = result_course.description
-            description = ''.join(ch for ch in description if ch not in punctuationset)
-            title = result_course.name
-            title = ''.join(ch for ch in title if ch not in punctuationset)
-            words = description.split()
-            words2 = title.split()
-            distinct_keywords = set([])
-            distinct_keywords2 = set([])
-            for word in words:
-                if word.upper() in new_keywords:
-                    result_course.relevance[1] = result_course.relevance[1] + 1
-                    distinct_keywords.add(word.upper())
-            for word in words2:
-                if word.upper() in new_keywords:
-                    result_course.relevance[1] = result_course.relevance[1] + 1
-                    distinct_keywords2.add(word.upper())
-            result_course.relevance[0] = len(distinct_keywords)
-            result_course.relevance[0] = result_course.relevance[0] + len(distinct_keywords2)
-            result_course.weighted_score = 10 * result_course.relevance[0] + result_course.relevance[1]
-
+        if new_keywords is not None:
+            relevance_list, weighted_relevance = calculate_course_relevance(result_course, new_keywords,
+                                                                            student_major, student_interests)
+            result_course.relevance = relevance_list
+            result_course.weighted_score = weighted_relevance
         courses.append(result_course)
 
     return courses
@@ -365,9 +348,7 @@ def create_distro_list():
 # @params List object 'keywords' which contains words to query on
 # @params Optional int 'threshold' which limits number of courses to return
 # @return List of length >= 0 containing Course objects which matched keywords
-def query_by_keywords(keywords, exclude=None, threshold = 3, department = None):
-    print("QUERYING BY KEYWORDS:")
-    print(keywords)
+def query_by_keywords(keywords, exclude=None, threshold = 3, student_department=None, student_interests=None):
     if type(keywords) != type([]):
         print("QUERY BY KEYWORDS NOT PASSED LIST TYPE")
         return []
@@ -418,9 +399,10 @@ def query_by_keywords(keywords, exclude=None, threshold = 3, department = None):
     query = query + " AND sec_name NOT LIKE '%WL%'"
     cur.execute(query)
     results = cur.fetchall()
-    courses = fill_out_courses(results, new_keywords)
+    courses = fill_out_courses(results, new_keywords, student_major=student_department,
+                               student_interests=student_interests)
     courses = list(set(courses))
-    courses.sort(key = lambda course: (course.relevance[0], course.relevance[1]))
+    courses.sort(key = lambda course: course.weighted_score)
     courses.reverse()
     if len(courses) < 1:
         return []
@@ -474,6 +456,40 @@ def query_by_distribution(distribution, department = None):
             continue
 
     return course_results
+
+
+def calculate_course_relevance(course_obj, new_keywords, student_major_dept, student_interests):
+    relevance = [0, 0, 0, 0]
+    punctuationset = set(string.punctuation)
+    description = course_obj.description
+    description = ''.join(ch for ch in description if ch not in punctuationset)
+    title = course_obj.name
+    title = ''.join(ch for ch in title if ch not in punctuationset)
+    words = description.split()
+    words2 = title.split()
+    distinct_keywords = set([])
+    distinct_keywords2 = set([])
+    for word in words:
+        if word.upper() in new_keywords:
+            relevance[1] += 1
+            distinct_keywords.add(word.upper())
+    for word in words2:
+        if word.upper() in new_keywords:
+            relevance[1] += 1
+            distinct_keywords2.add(word.upper())
+    relevance[0] = len(distinct_keywords)
+    relevance[0] += len(distinct_keywords2)
+    if student_major_dept is not None:
+        for major in student_major_dept:
+            if department_match(course_obj.department) == department_match(major):
+                relevance[2] += 1
+    if student_interests is not None:
+        for interest in student_interests:
+            if interest in course_obj.description:
+                relevance[3] += 1
+    weights = [10, 1, 6, 3]
+    weighted_score = sum([relevance[i] * weights[i] for i in range(len(relevance))])
+    return relevance, weighted_score
 
 # called in the init function, reads the file to create a dictionary
 def create_dept_dict():

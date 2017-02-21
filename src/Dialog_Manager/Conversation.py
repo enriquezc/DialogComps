@@ -426,7 +426,7 @@ class Conversation:
         distro_list = []
         max_occ = 0
         for entity in luis_entities:
-            if entiy.type == "distribution":
+            if entity.type == "distribution":
                 distros = self.task_manager_distribution_match(entity)
                 distro_list.extend(distros)
         for distro in distro_list: #somehow get max occurance (a course name will show up more than once if it fills more than one distro
@@ -682,9 +682,9 @@ class Conversation:
 
     def task_manager_keyword(self, keywords):
         #returns a list
-        print(keywords)
-        print("got here")
-        tm_courses = TaskManager.query_by_keywords(keywords)
+        stud = self.student_profile
+        tm_courses = TaskManager.query_by_keywords(keywords,
+                                                   student_department=stud.major, student_interests=stud.interests)
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
                 return tm_courses
