@@ -208,10 +208,10 @@ class nLUU:
     def create_new_class_time_res(self, userQuery):
         return constants.Responses.NEW_CLASS_TIME[0]
         
-    def create_new_class_info_distributions_res(self, userQuery):
+    def create_class_info_distributions_res(self, userQuery):
         return constants.Responses.CLASS_INFO_DISTRIBUTIONS[0]
         
-    def create_new_class_info_distributions_res_res(self, userQuery):
+    def create_class_info_distributions_res_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_DISTRIBUTIONS_RES[0]
         pot_course = [str(c) for c in userQuery.object.potential_courses]
         return s.format("\n".join(pot_course))

@@ -67,6 +67,8 @@ class QueryType(Enum):
     #If class object is given, this indicates they have an idea of what they want to take
     #but we can't identify the name. Probably a rare case
     #If no class object passed, ask general question about specific classes they'd like to take
+    class_info_distributions_res = 28
+    
     new_class_name = 30
     #Ask about what professor they'd like to take, if any
     new_class_prof = 31
