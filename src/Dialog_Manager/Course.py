@@ -30,7 +30,7 @@ class Course:
         self.weighted_score = 0.0
 
     def __str__(self):
-        return "{} : {}\n{}".format(self.id, self.name, self.description)
+        return "{} ({}) : {}\n{}".format(self.id, self.weighted_score, self.name, self.description)
 
     def __eq__(self, other):
         return other is not None and self.department == other.department and self.course_num == other.course_num
