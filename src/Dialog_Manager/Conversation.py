@@ -419,8 +419,7 @@ class Conversation:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
     def handleClassDistribution(self, input, luisAI, luis_intent, luis_entities):
-        distributions = self.nluu.
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), self.decision_tree.get_next_node]
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description), self.decision_tree.get_next_node]
 
     def handle_class_distribution(self, input, luisAI, luis_intent, luis_entities):
         return self.handleClassDistribution(input, luisAI, luis_intent, luis_entities)
