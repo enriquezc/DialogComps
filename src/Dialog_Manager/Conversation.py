@@ -643,6 +643,9 @@ class Conversation:
             if len(possibilities) == 0:
                 return None
             if not specific: #return to potential courses not relavent class (for class description)
+                interests = set()
+                for w in self.nluu.find_interests(" ".join(self.student_profile.interests)):
+                    interests.append(w)
                 tm_courses = self.task_manager_keyword(possibilities)
                 if tm_courses is None:
                     return None

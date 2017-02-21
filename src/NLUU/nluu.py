@@ -1,6 +1,7 @@
 import nltk
 import luis
 import random
+import pickle
 from src.Dialog_Manager import Student, Course, User_Query
 from src.Dialog_Manager.User_Query import QueryType
 from src.utils import constants
@@ -10,6 +11,7 @@ class nLUU:
     def __init__(self, luisurl):
         self.luis = luis.Luis(luisurl)
         self.response_dict = {}
+        self.stem_dict = pickle.load(open('src/utils/stem_dict.dat', 'rb'))
         self.stemmer = SnowballStemmer("english")
         #Requires a local copy of atis.cfg
         #atis_grammar = nltk.data.load("atis.cfg")
@@ -31,6 +33,16 @@ class nLUU:
             Part-of-speech taging for str
         '''
         return nltk.pos_tag(s)
+
+    def expand_keyword(self, s):
+        '''
+            Returns a list containing all words with the same stem as the keyword s
+        '''
+        s_stem = self.stem(s)
+        if s_stem in self.stem_dict:
+            return self.stem_dict[s_stem]
+        else:
+            return [s]
 
 
     def create_syntax_tree(self, s):
@@ -344,7 +356,13 @@ class nLUU:
     def find_interests(self, utterance):
         tokens = self.tokenize(utterance)
         pos = self.pos_tag(tokens)
-        return [word for word, p in pos if p in ['NNP', 'NNS', 'JJ', 'VBG', 'NN']]
+        interests = []
+        for word, pos in pos:
+            if pos in ['NNP', 'NNS', 'JJ', 'VBG', 'NN']:
+                stem = self.stem(word)
+                interests.extend(self.expand_keyword(stem))
+                interests.append(word)
+        return interests
 
     def find_departments(self, utterance):
         tokens = nltk.word_tokenize(utterance)
