@@ -38,8 +38,9 @@ class nLUU:
         '''
             Returns a list containing all words with the same stem as the keyword s
         '''
-        if s in stem_dict:
-            return self.stem_dict[s]
+        s_stem = self.stem(s)
+        if s_stem in self.stem_dict:
+            return self.stem_dict[s_stem]
         else:
             return [s]
 
@@ -360,6 +361,7 @@ class nLUU:
             if pos in ['NNP', 'NNS', 'JJ', 'VBG', 'NN']:
                 stem = self.stem(word)
                 interests.extend(self.expand_keyword(stem))
+                interests.append(word)
         return interests
 
     def find_departments(self, utterance):
