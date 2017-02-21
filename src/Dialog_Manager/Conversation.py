@@ -682,6 +682,8 @@ class Conversation:
 
     def task_manager_keyword(self, keywords):
         #returns a list
+        print(keywords)
+        print("got here")
         tm_courses = TaskManager.query_by_keywords(keywords)
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
