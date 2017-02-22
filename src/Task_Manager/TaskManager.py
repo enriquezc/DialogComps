@@ -167,6 +167,9 @@ def fill_out_courses(results, new_keywords=None, student_major=None, student_int
             classroom = classroom_str[0] + " " + classroom_str[1]
             result_course.classroom = classroom
         result_course.description = result[29]
+        if result[30] != None:
+            result_course.prereqs = result[30]
+        print(result_course.prereqs)
         # adding professor information based on id found in courses
         if result[21] != None:
             result_course.faculty_id = result[21]
@@ -569,7 +572,6 @@ def distro_match(str_in):
     elif str_in == None:
         return None
 
-    global dept_dict
     global distro_list
     global stop_words
 

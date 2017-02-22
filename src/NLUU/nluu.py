@@ -180,7 +180,7 @@ class nLUU:
     def create_student_info_requirements_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_REQUIREMENTS[0]
         return s
-    
+
     def create_student_info_requirements_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[0]
         return s
@@ -207,15 +207,15 @@ class nLUU:
 
     def create_new_class_time_res(self, userQuery):
         return constants.Responses.NEW_CLASS_TIME[0]
-        
+
     def create_class_info_distributions_res(self, userQuery):
         return constants.Responses.CLASS_INFO_DISTRIBUTIONS[0]
-        
+
     def create_class_info_distributions_res_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_DISTRIBUTIONS_RES[0]
         pot_course = [str(c) for c in userQuery.object.potential_courses]
         return s.format("\n".join(pot_course))
-        
+
     def create_new_class_description_res(self, userQuery):
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
@@ -235,7 +235,7 @@ class nLUU:
             if course.prereqs == []:
                 prereqs = "This class has no prereqs"
             else:
-                prereqs = "The prereqs for this class are" + str(course.prereqs)
+                prereqs = "The prereqs for this class are " + str(course.prereqs)
             if course.faculty_name != "":
                 s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]) + "\n"
                 a = a + s.format(course.id, course.name, time, prof, prereqs, course.description)
@@ -245,8 +245,8 @@ class nLUU:
         return a
     def create_student_info_major_requirements_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS[0]
-        return s       
-        
+        return s
+
     def create_schedule_class_res_res(self, userQuery):
         if len(userQuery.object.current_classes) == 0:
             s = constants.Responses.EMPTY_SCHEDULE_RES[0]
