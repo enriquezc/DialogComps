@@ -16,7 +16,8 @@ class Responses:
     STUDENT_INFO_NAME_RES = ("Nice to meet you, {}.",)
     STUDENT_INFO_MAJOR = ("What's your major?",)
     STUDENT_INFO_MAJOR_RES = ("So you're a {} major?",
-                              "{} major, huh? I've heard they're the best students.",)
+                              "{} major, huh? I've heard they're the best students.",
+                              "So you haven't chosen your major yet?",)
     STUDENT_INFO_CONCENTRATION = ("Do you have a concentration? If so, what is it?",)
     STUDENT_INFO_CONCENTRATION_RES = ("Ok, so you concentrations include:\n {}", 
                                       "So you don't have any concentrations?")

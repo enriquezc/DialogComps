@@ -272,13 +272,14 @@ class nLUU:
     def create_student_info_major_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_RES[0]
         major = list(userQuery.object.major)
-        if len(major) == 1:
+        if major is None or major[0] is None or len(major) == 0:
+            s = constants.Responses.STUDENT_INFO_MAJOR_RES[2]
+            print("There are no majors")
+            return s
+        elif len(major) == 1:
             if "cs" in major[0] or "computer" in major[0]:
                 s = constants.Responses.STUDENT_INFO_MAJOR_RES[1]
             return s.format(major[0])
-        elif len(major) == 0:
-            print("There are no majors")
-            return s
         else:
             majors = major[0] + " and " + major[1]
             return s.format(majors)
