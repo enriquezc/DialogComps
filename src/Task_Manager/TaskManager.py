@@ -7,17 +7,23 @@ import string
 import io
 import string
 from src.Dialog_Manager import Course
+import src.utils.debug as debug
 
 conn = None
 dept_dict = {}
 distro_list = []
 stop_words = None
+debug_value = None
 
-def init():
+def init(init_debug = False):
     connect_to_db()
     create_dept_dict()
     create_distro_list()
     create_stop_words_set()
+
+    global debug
+    debug_value = init_debug
+
 
 
 def connect_to_db():
@@ -35,28 +41,28 @@ def query_courses(course):
     criteria.
     '''
 
-    #print("ENTERING QUERY COURSES FUNCTION")
-    print("QUERYING COURSES: ")
+    #call_debug_print("ENTERING QUERY COURSES FUNCTION")
+    call_debug_print("QUERYING COURSES: ")
 
     course_query = "SELECT * FROM COURSE WHERE ((sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND "
 
     if course.department != "":
         course_query = course_query + "sec_subject = '" + course.department.upper()
         course_query = course_query + "' AND "
-        print(course.department)
+        call_debug_print(course.department)
 
     if course.course_num != "":
         course_query = course_query + "sec_course_no = '" \
         + str(course.course_num)
         course_query = course_query + "' AND "
-        print(course.course_num)
+        call_debug_print(course.course_num)
 
     if course.name != "":
         course_name = smart_description_expansion(str(course.name))
         course_query = course_query + "lower(sec_short_title) = '" \
         + course_name
         course_query = course_query + "' AND "
-        print(course.name)
+        call_debug_print(course.name)
 
     course_query = course_query + "sec_name NOT LIKE '%WL%' AND sec_avail_status = 'Open'"
 
@@ -66,7 +72,7 @@ def query_courses(course):
     cur.execute(course_query)
     course_results = cur.fetchall()
 
-    #print(course_query)
+    #call_debug_print(course_query)
 
     results = fill_out_courses(course_results)
     return list(set(results))
@@ -81,9 +87,9 @@ def query_by_title(title_string, department = None):
     if type(title_string) != type("this is a string"):
         return []
 
-    print("QUERYING BY COURSES: " + title_string)
+    call_debug_print("QUERYING BY COURSES: " + title_string)
     if department != None:
-        print(department)
+        call_debug_print(department)
 
     global conn
     word_array = title_string.split()
@@ -169,7 +175,7 @@ def fill_out_courses(results, new_keywords=None, student_major=None, student_int
         result_course.description = result[29]
         if result[30] != None:
             result_course.prereqs = result[30]
-        print(result_course.prereqs)
+        call_debug_print(result_course.prereqs)
         # adding professor information based on id found in courses
         if result[21] != None:
             result_course.faculty_id = result[21]
@@ -228,7 +234,7 @@ def makeCooccurenceMatrix():
     dept_dictionaries = []
 
     for dept in dept_results:
-        print("dept: {}".format(dept[0]))
+        call_debug_print("dept: {}".format(dept[0]))
         if dept[0] != None:
             courses_query = "select title, long_description from reason where org_id = "
             courses_query = courses_query + "'" + str(dept[0]) + "'"
@@ -262,11 +268,11 @@ def makeCooccurenceMatrix():
 
 
             dept_dictionaries.append((str(dept), dept_dictionary))
-    print("Done with that")
+    call_debug_print("Done with that")
     distinct_word_list = list(distinct_word)
     matrix = []
     for (dept_name, d) in dept_dictionaries:
-        print("Dept_name {}".format(dept_name))
+        call_debug_print("Dept_name {}".format(dept_name))
         l = [None] * (len(distinct_word_list) + 1)
         l[0] = make_tuple(dept_name)[0]
         for i, word in enumerate(distinct_word_list):
@@ -290,7 +296,7 @@ def makeCooccurenceMatrix():
             result_file.write(','.join(row))
             result_file.write('\n')
             continue
-        print(row)
+        call_debug_print(row)
         if sum(row) < 5:
             continue
         numrows += 1
@@ -300,13 +306,13 @@ def makeCooccurenceMatrix():
         result_file.write(','.join(row_str))
         result_file.write('\n')
     result_file.close()
-    print("Rows: {}".format(numrows))
+    call_debug_print("Rows: {}".format(numrows))
 
 # checks if a description can be expanded from shorthand used
 # @params String object 'description' which contains some keywords for query
 # @return String object which has all shorthand keywords expanded
 def smart_description_expansion(description):
-    print("EXPANDING DESCRIPTION: " + description)
+    call_debug_print("EXPANDING DESCRIPTION: " + description)
     global conn
     new_description = ""
     cur = conn.cursor()
@@ -324,7 +330,7 @@ def smart_description_expansion(description):
             new_description += " {}".format(word)
     if len(new_description) > 0 and new_description[0] == ' ':
         new_description = new_description[1:]
-        print("RETURNING EXPANDED: " + new_description)
+        call_debug_print("RETURNING EXPANDED: " + new_description)
         return new_description
     else:
         return description
@@ -353,7 +359,7 @@ def create_distro_list():
 # @return List of length >= 0 containing Course objects which matched keywords
 def query_by_keywords(keywords, exclude=None, threshold = 3, student_department=None, student_interests=None):
     if type(keywords) != type([]):
-        print("QUERY BY KEYWORDS NOT PASSED LIST TYPE")
+        call_debug_print("QUERY BY KEYWORDS NOT PASSED LIST TYPE")
         return []
 
     global stop_words
@@ -389,7 +395,7 @@ def query_by_keywords(keywords, exclude=None, threshold = 3, student_department=
     # If we don't find any departments to query on, we just return nothing. DM's problem now
     if department_names == []:
         return []
-    #print(department_names)
+    #call_debug_print(department_names)
     query = "SELECT DISTINCT * FROM COURSE c where UPPER(sec_subject) in {} \
              AND (( sec_term LIKE '17%') \
              AND sec_term NOT LIKE '%SU')".format(str(tuple(department_names)))
@@ -428,14 +434,14 @@ def query_by_distribution(distribution, department = None):
     global dept_dict
     global conn
 
-    print("QUERYING BY DISTRO: " + distribution)
+    call_debug_print("QUERYING BY DISTRO: " + distribution)
     # resetting the department to be the four letter code
     if department != None:
         dept_items = dept_dict.items()
         for key, value in dept_items:
             if department == key or department == value:
                 department = key
-                print(department)
+                call_debug_print(department)
     # Building the query string
     query_string = "SELECT DISTINCT course_name FROM distribution WHERE {} > 0".format(distribution)
     if department != None:
@@ -529,7 +535,7 @@ def edit_distance(s1, s2):
 # @params String object 'str_in' which is a department code or description
 # @return String object that is the best guess for a valid, capitalized dept code
 def department_match(str_in):
-    print("MATCHING DEPT: " + str_in)
+    call_debug_print("MATCHING DEPT: " + str_in)
     if str_in.isspace():
         return None
     global dept_dict
@@ -561,7 +567,7 @@ def department_match(str_in):
         if dist < cur_best:
             cur_match = dept_dict[key]
             cur_best = dist
-    print("MATCHED: " + cur_match)
+    call_debug_print("MATCHED: " + cur_match)
     return cur_match
 
 def distro_match(str_in):
@@ -612,12 +618,16 @@ def get_n_best_indices(row, n):
         arr[i] = 0
     return res
 
+def call_debug_print(ob):
+    global debug_value
+    debug.debug_print(ob, debug_value)
+
 
 if __name__ == "__main__":
     init()
     '''
     results = query_by_distribution("literary_analysis", "ENGL")
     for course in results:
-        print(course.name)
+        call_debug_print(course.name)
         print(course.description)
         '''

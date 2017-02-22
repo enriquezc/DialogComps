@@ -11,6 +11,8 @@ import datetime
 from nltk.corpus import stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from copy import deepcopy
+import src.utils.debug as debug
+
 
 class Conversation:
     nltk_PoS_codes = {"CC": "Coordinating conjunction",
@@ -28,7 +30,7 @@ class Conversation:
                       "WDT": "Wh-determiner", "WP": "Wh-pronoun", "WP$": "Possessive wh-pronoun",
                       "WRB": "Wh-adverb"}
 
-    def __init__(self, luis_url):
+    def __init__(self, luis_url, debug = False):
         self.student_profile = Student.Student()
         self.student_profile.current_class = Course.Course()
         self.last_query = 0
@@ -36,18 +38,21 @@ class Conversation:
         self.head_node = DecisionTree.NodeObject(User_Query.UserQuery(None, User_Query.QueryType.welcome), [], [])
         self.current_node = self.head_node
         self.current_class = Course.Course()
-        self.decision_tree = DecisionTree.DecisionTree(self.student_profile)
+        self.decision_tree = DecisionTree.DecisionTree(self.student_profile, debug)
         self.queries = []
         self.conversing = False
         self.nluu = nluu.nLUU(luis_url)
         self.utterancesStack = []
         self.mapOfIntents = {}
         self.sentimentAnalyzer = SentimentIntensityAnalyzer()
+        self.debug = debug
 
-        TaskManager.init()
+        TaskManager.init(debug)
 
-    def start_conversation(self):
+    def start_conversation(self, debug = False):
         self.conversing = True
+        self.debug = debug
+
         our_response = [self.get_current_node()[0], User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name)]
         our_str_response = self.nluu.create_response(our_response[0].type) + "\n" + self.nluu.create_response(our_response[1])
         self.utterancesStack.append(our_response)
@@ -62,14 +67,14 @@ class Conversation:
                 luis_analysis = self.nluu.get_luis(client_response)
                 self.utterancesStack.append(luis_analysis)
                 userQueries = self.get_next_response(client_response, luis_analysis) or User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify) # tuple containing response type as first argument, and data to format for other arguments
-                print("luis: {}".format(luis_analysis))
+                self.call_debug_print("luis: {}".format(luis_analysis))
                 our_str_response = ""
                 if type(userQueries) is list:
                     for userQuery in userQueries:
 
                         ###
                         if User_Query.QueryType.full_schedule_check == userQuery.type:
-                            print (self.nluu.create_response(userQuery) + '\n')
+                            print(self.nluu.create_response(userQuery) + '\n')
                             responseToCredits = input()
 
                             responseSentiment = self.sentimentAnalyzer.polarity_scores(responseToCredits)
@@ -92,7 +97,7 @@ class Conversation:
                 else:
                     self.utterancesStack.append(userQueries)
                     self.last_user_query.append(userQueries)
-                    print("userQuery: {}".format(userQueries.type))
+                    self.call_debug_print("userQuery: {}".format(userQueries.type))
                     if userQueries.type == User_Query.QueryType.goodbye:
                         print("Goodbye")
                         self.conversing = False
@@ -149,12 +154,12 @@ class Conversation:
                     tm_major = self.task_manager_department_match(entity.entity)
                     if tm_major is None:
                         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
-                    print("tm major: ", format(tm_major))
+                    self.call_debug_print("tm major: ", format(tm_major))
                     updated = True
                     self.student_profile.major.add(tm_major)
         if not updated:
             major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
-            print("major: ", major_list)
+            self.call_debug_print("major: " + str(major_list))
             for major in major_list:
                 self.student_profile.major.add(major)
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
@@ -165,7 +170,7 @@ class Conversation:
         # removes a major
         relevant_major = deepcopy(self.student_profile.major)
         major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
-        print(major_list)
+        self.call_debug_print(major_list)
         if luis_entities:
             if format(luis_intent) != "student_info_concentration":
                 for entity in luis_entities:
@@ -224,12 +229,12 @@ class Conversation:
             double = False
         if double:
             majors = luisAI.query.split("and")
-            print("major split: ", majors)
+            self.call_debug_print("major split: ", majors)
             for maj in majors:
                 dept.append(self.nluu.find_departments(maj))
         else:
             major = self.nluu.find_departments(pot_query)
-            print("single major: " + str(major))
+            self.call_debug_print("single major: " + str(major))
             for word in major:
                 if word != "major" and word != "concentration" and word != "studies":
                     dept.append(self.task_manager_department_match(word))
@@ -387,7 +392,7 @@ class Conversation:
 
     # done
     def handleStudentInterests(self, input, luisAI, luis_intent, luis_entities):
-        print("in interests")
+        self.call_debug_print("in interests")
         #if len(luis_entities) < 10:
         i = 0
         interests = self.nluu.find_interests(luisAI.query)
@@ -396,17 +401,17 @@ class Conversation:
             if "interest" in interest or "class" in interest:
                 pass
             else:
-                print(interest)
+                self.call_debug_print(interest)
                 new_interests.append(interest)
                 self.student_profile.interests.add(interest)
         interests = new_interests
         try:
-            print(interests)
+            self.call_debug_print(interests)
             tm_courses = self.task_manager_keyword(interests)
             if tm_courses is None or len(tm_courses) < 1:
                 raise
             if set(self.student_profile.interests).issuperset(set(interests)): #need to implement no repeated courses
-                print("in same length")
+                self.call_debug_print("in same length")
                 self.student_profile.potential_courses = tm_courses
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),self.decision_tree.get_next_node()]
             else:
@@ -438,17 +443,17 @@ class Conversation:
         #occurs when the user wants to get courses that satisfy a given distribution
         #returns a list of courses that all satisfy the distribution
         distro_list = []
-        
-        print(distro_list)
+
+        self.call_debug_print(distro_list)
         max_occ = 0
         for course in self.student_profile.distributions_needed:
-            print(course.name)
+            self.call_debug_print(course.name)
             #print(course.gen_distributions)
             distros = self.task_manager_distribution_match(course.name)
             distro_list.extend(distros)
         for distro in distro_list: #somehow get max occurance (a course name will show up more than once if it fills more than one distro
-            print(distro)
-            print(distro.name)
+            self.call_debug_print(distro)
+            self.call_debug_print(distro.name)
             self.student_profile.potential_courses = []
             if distro_list.count(distro) > 1: #using max occurance / replacement concept, but shouldn't
                 self.student_profile.potential_courses.append(distro)
@@ -457,18 +462,18 @@ class Conversation:
             self.student_profile.potential_courses = list(set(distro_list))[1:3]
         else:
             self.student_profile.potential_courses = list(set(self.student_profile.potential_courses))
-            
-                
-            
+
+
+
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.class_info_distributions_res), self.decision_tree.get_next_node()]
 
     def handle_class_info_distributions(self, input, luisAI, luis_intent, luis_entities):
-        print("hey there! Did you say yes or no? I hope you did. OOooooohWeeEEE")
+        self.call_debug_print("hey there! Did you say yes or no? I hope you did. OOooooohWeeEEE")
         responseSentiment = self.sentimentAnalyzer.polarity_scores(input)
         if responseSentiment["neg"] > responseSentiment["pos"]:
-            print("We don't need no distrobutions")
+            self.call_debug_print("We don't need no distrobutions")
             return [self.decision_tree.get_next_node]
-        print("we need some distros")
+        self.call_debug_print("we need some distros")
         return self.handleClassDistribution(input, luisAI, luis_intent, luis_entities)
 
     def handle_student_info_requirements_res(self, input, luisAI, luis_intent, luis_entities):
@@ -488,29 +493,29 @@ class Conversation:
 
         return self.handleStudentInfoYear(input, luisAI, luis_intent, luis_entities)
         #return self.decision_tree.get_next_node()
-    
+
     def handleStudentRequirementRequest(self, input, luisAI, luis_intent, luis_entities):
-        print("ayyyyy")
+        self.call_debug_print("ayyyyy")
         return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities)
-    
-    #def handle_class_info_distributions(self, input, luisAI, luis_intent, luis_entities): 
+
+    #def handle_class_info_distributions(self, input, luisAI, luis_intent, luis_entities):
        # return self.handle_new_class_requirements(input, luisAI, luis_intent, luis_entities)
-    
+
     def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities): #16
         if "nothing" in self.last_query or "none" in self.last_query:
-            print("we bout to graduate boyz")
+            self.call_debug_print("we bout to graduate boyz")
             self.decision_tree.current_node.answered = True
             return self.decision_tree.get_next_node()
         if luis_entities:
             for entity in luis_entities:
-                print("i still gotta finish up that yung" + entity.entity)
+                self.call_debug_print("i still gotta finish up that yung" + entity.entity)
                 if entity.type == "distribution":
                     self.student_profile.distributions_needed.append(Course.Course(entity.entity))
             if len(self.student_profile.distributions_needed) != 0:
-                
+
                 #return [self.decision_tree.get_next_node()]
                 next_node = self.decision_tree.get_next_node()
-                print(next_node.type)
+                self.call_debug_print(next_node.type)
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res), next_node]
         if ',' in self.last_query:
             listOfWords = self.last_query.split(",")
@@ -603,8 +608,8 @@ class Conversation:
 
     def handle_new_class_request(self, input, luisAI, luis_intent, luis_entities):  # 37
         if " ok" in self.last_query or "sure" == self.last_query or "recommend" in self.last_query:
-            print("they have gotten to the point where they want a course from us")
-            print("Lets fix this later")
+            self.call_debug_print("they have gotten to the point where they want a course from us")
+            self.call_debug_print("Lets fix this later")
         if "no " in self.last_query or "I don" in self.last_query or "I've" in self.last_query or "know" in self.last_query or "I'm" in self.last_query:
             return [self.decision_tree.get_next_node()]
         return [self.decision_tree.get_next_node()]
@@ -627,7 +632,7 @@ class Conversation:
         # else statement will ask for more information
         else:
             new_intent = format(self.decision_tree.current_node.userQuery).split(".")[1]
-            print(new_intent)
+            self.call_debug_print(new_intent)
             eval_fn = None
             try:
                 eval_fn = eval("self.handle_{}".format(new_intent))
@@ -718,9 +723,9 @@ class Conversation:
 
     def task_manager_information(self, course):
         #returns a list
-        print("We here")
+        self.call_debug_print("We here")
         tm_courses = TaskManager.query_courses(course)
-        print("We done")
+        self.call_debug_print("We done")
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
                 return tm_courses
@@ -775,3 +780,6 @@ class Conversation:
             return class_match
         else:
             return [None]
+
+    def call_debug_print(self, ob):
+        debug.debug_print(ob, self.debug)
