@@ -398,7 +398,7 @@ class nLUU:
                 return ordinal_dict[s]
         return None
 
-        def call_debug_print(ob):
+        def call_debug_print(self, ob):
             debug.debug_print(ob, self.debug_value)
 
 
