@@ -358,7 +358,9 @@ class nLUU:
     def find_name(self, utterance):
         tokens = nltk.word_tokenize(utterance)
         pos = nltk.pos_tag(tokens)
-        return [word for word,p in pos if p == 'NNP']
+        name_list = [word for word,p in pos if p == 'NNP']
+        name = " ".join(name_list)
+        return name
 
     def find_interests(self, utterance):
         tokens = self.tokenize(utterance)
@@ -397,8 +399,6 @@ class nLUU:
         return None
 
         def call_debug_print(ob):
-            print("Debug value is: ")
-            print(self.debug_value)
             debug.debug_print(ob, self.debug_value)
 
 
