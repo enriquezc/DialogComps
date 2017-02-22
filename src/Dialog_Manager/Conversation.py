@@ -650,7 +650,7 @@ class Conversation:
             if not specific: #return to potential courses not relavent class (for class description)
                 interests = set()
                 for w in self.nluu.find_interests(" ".join(self.student_profile.interests)):
-                    interests.append(w)
+                    interests.add(w)
                 tm_courses = self.task_manager_keyword(possibilities)
                 if tm_courses is None:
                     return None
@@ -767,4 +767,4 @@ class Conversation:
             return [None]
 
     def call_debug_print(self, ob):
-        debug.debug_print(ob, self.debug)
+        debug.debug_print(ob, True)

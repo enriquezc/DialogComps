@@ -418,10 +418,8 @@ class nLUU:
                 return ordinal_dict[s]
         return None
 
-    def call_debug_print(ob):
-        print("Debug value is: ")
-        print(self.debug_value)
-        debug.debug_print(ob, self.debug_value)
+    def call_debug_print(self, ob):
+        debug.debug_print(ob, self.debug)
 
 
 #if __name__ == '__main__':
