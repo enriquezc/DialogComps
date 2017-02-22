@@ -232,7 +232,7 @@ class nLUU:
             print(course.faculty_name)
             if course.faculty_name != "":
                 prof = course.faculty_name
-            if course.prereqs == []:
+            if course.prereqs == "":
                 prereqs = "This class has no prereqs"
             else:
                 prereqs = "The prereqs for this class are " + str(course.prereqs)
