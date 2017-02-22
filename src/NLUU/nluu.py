@@ -6,13 +6,15 @@ from src.Dialog_Manager import Student, Course, User_Query
 from src.Dialog_Manager.User_Query import QueryType
 from src.utils import constants
 from nltk.stem.snowball import SnowballStemmer
+import src.utils.debug as debug
 
 class nLUU:
-    def __init__(self, luisurl):
+    def __init__(self, luisurl, debug = False):
         self.luis = luis.Luis(luisurl)
         self.response_dict = {}
         self.stem_dict = pickle.load(open('src/utils/stem_dict.dat', 'rb'))
         self.stemmer = SnowballStemmer("english")
+        self.debug = debug
         #Requires a local copy of atis.cfg
         #atis_grammar = nltk.data.load("atis.cfg")
         #self.parser = nltk.ChartParser(atis_grammar)
@@ -65,7 +67,7 @@ class nLUU:
         if type(userQuery.object) == Course.Course:
             s = 'Here\'s some data about your course:\n'
             d = userQuery.object.__dict__
-            print(d)
+            self.call_debug_print(d)
             for k, v in d.items():
                 if v != None and v != 0 and not (type(v) == list and len(v) == 0):
                     s += k + ':' + v + '\n'
@@ -180,7 +182,7 @@ class nLUU:
     def create_student_info_requirements_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_REQUIREMENTS[0]
         return s
-    
+
     def create_student_info_requirements_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[0]
         return s
@@ -207,21 +209,21 @@ class nLUU:
 
     def create_new_class_time_res(self, userQuery):
         return constants.Responses.NEW_CLASS_TIME[0]
-        
+
     def create_class_info_distributions_res(self, userQuery):
         return constants.Responses.CLASS_INFO_DISTRIBUTIONS[0]
-        
+
     def create_class_info_distributions_res_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_DISTRIBUTIONS_RES[0]
         pot_course = [str(c) for c in userQuery.object.potential_courses]
         return s.format("\n".join(pot_course))
-        
+
     def create_new_class_description_res(self, userQuery):
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
         a = ""
         pot_course = userQuery.object.potential_courses
-        print(len(pot_course))
+        self.call_debug_print(len(pot_course))
         for course in pot_course:
             if course is None:
                 continue
@@ -229,13 +231,13 @@ class nLUU:
                 time = "an unknown time"
             else:
                 time = str(course.time)
-            print(course.faculty_name)
+            self.call_debug_print(course.faculty_name)
             if course.faculty_name != "":
                 prof = course.faculty_name
-            if course.prereqs == []:
+            if course.prereqs == "":
                 prereqs = "This class has no prereqs"
             else:
-                prereqs = "The prereqs for this class are" + str(course.prereqs)
+                prereqs = "The prereqs for this class are " + str(course.prereqs)
             if course.faculty_name != "":
                 s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]) + "\n"
                 a = a + s.format(course.id, course.name, time, prof, prereqs, course.description)
@@ -245,8 +247,8 @@ class nLUU:
         return a
     def create_student_info_major_requirements_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS[0]
-        return s       
-        
+        return s
+
     def create_schedule_class_res_res(self, userQuery):
         if len(userQuery.object.current_classes) == 0:
             s = constants.Responses.EMPTY_SCHEDULE_RES[0]
@@ -266,19 +268,24 @@ class nLUU:
         return s.format(course_list, userQuery.object.current_credits)
 
     def create_student_info_name_res_res(self, userQuery):
-        s = constants.Responses.STUDENT_INFO_NAME_RES[0]
-        return s.format(userQuery.object.name)
+        if userQuery.object.name:
+            s = constants.Responses.STUDENT_INFO_NAME_RES[0]
+            return s.format(userQuery.object.name)
+        else:
+            s = constants.Responses.STUDENT_INFO_NAME_RES[1]
+            return s
 
     def create_student_info_major_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_RES[0]
         major = list(userQuery.object.major)
-        if len(major) == 1:
+        if major is None or major[0] is None or len(major) == 0:
+            s = constants.Responses.STUDENT_INFO_MAJOR_RES[2]
+            self.call_debug_print("There are no majors")
+            return s
+        elif len(major) == 1:
             if "cs" in major[0] or "computer" in major[0]:
                 s = constants.Responses.STUDENT_INFO_MAJOR_RES[1]
             return s.format(major[0])
-        elif len(major) == 0:
-            print("There are no majors")
-            return s
         else:
             majors = major[0] + " and " + major[1]
             return s.format(majors)
@@ -388,6 +395,11 @@ class nLUU:
             if s in ordinal_dict:
                 return ordinal_dict[s]
         return None
+
+        def call_debug_print(ob):
+            print("Debug value is: ")
+            print(self.debug_value)
+            debug.debug_print(ob, self.debug_value)
 
 
 
