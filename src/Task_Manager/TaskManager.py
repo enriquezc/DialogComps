@@ -36,7 +36,7 @@ def query_courses(course):
     '''
 
     #print("ENTERING QUERY COURSES FUNCTION")
-    print("QUERYING COURSES: ")
+    #print("QUERYING COURSES: ")
 
     course_query = "SELECT * FROM COURSE WHERE ((sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND "
 
