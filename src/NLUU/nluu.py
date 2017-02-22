@@ -6,13 +6,15 @@ from src.Dialog_Manager import Student, Course, User_Query
 from src.Dialog_Manager.User_Query import QueryType
 from src.utils import constants
 from nltk.stem.snowball import SnowballStemmer
+import src.utils.debug as debug
 
 class nLUU:
-    def __init__(self, luisurl):
+    def __init__(self, luisurl, debug = False):
         self.luis = luis.Luis(luisurl)
         self.response_dict = {}
         self.stem_dict = pickle.load(open('src/utils/stem_dict.dat', 'rb'))
         self.stemmer = SnowballStemmer("english")
+        self.debug = debug
         #Requires a local copy of atis.cfg
         #atis_grammar = nltk.data.load("atis.cfg")
         #self.parser = nltk.ChartParser(atis_grammar)
@@ -65,7 +67,7 @@ class nLUU:
         if type(userQuery.object) == Course.Course:
             s = 'Here\'s some data about your course:\n'
             d = userQuery.object.__dict__
-            print(d)
+            self.call_debug_print(d)
             for k, v in d.items():
                 if v != None and v != 0 and not (type(v) == list and len(v) == 0):
                     s += k + ':' + v + '\n'
@@ -221,7 +223,7 @@ class nLUU:
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
         a = ""
         pot_course = userQuery.object.potential_courses
-        print(len(pot_course))
+        self.call_debug_print(len(pot_course))
         for course in pot_course:
             if course is None:
                 continue
@@ -229,7 +231,7 @@ class nLUU:
                 time = "an unknown time"
             else:
                 time = str(course.time)
-            print(course.faculty_name)
+            self.call_debug_print(course.faculty_name)
             if course.faculty_name != "":
                 prof = course.faculty_name
             if course.prereqs == "":
@@ -244,7 +246,7 @@ class nLUU:
                 a = a + s.format(course.id, course.name, time, prereqs, course.description)
         return a
     def create_student_info_major_requirements_res_res(self, userQuery):
-        a = ""
+        a = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[0]
         pot_course = userQuery.object.major_classes_needed
         print(len(pot_course))
         for course in pot_course:
@@ -302,7 +304,7 @@ class nLUU:
         major = list(userQuery.object.major)
         if major is None or major[0] is None or len(major) == 0:
             s = constants.Responses.STUDENT_INFO_MAJOR_RES[2]
-            print("There are no majors")
+            self.call_debug_print("There are no majors")
             return s
         elif len(major) == 1:
             if "cs" in major[0] or "computer" in major[0]:
@@ -413,6 +415,11 @@ class nLUU:
             if s in ordinal_dict:
                 return ordinal_dict[s]
         return None
+
+    def call_debug_print(ob):
+        print("Debug value is: ")
+        print(self.debug_value)
+        debug.debug_print(ob, self.debug_value)
 
 
 

@@ -7,6 +7,7 @@ from src.NLUU import nluu
 import nltk
 import luis
 from src.Task_Manager import TaskManager
+import src.utils.debug as debug
 
 
 class NodeObject:
@@ -25,15 +26,16 @@ class NodeObject:
         self.potential_next_questions = []
         self.potential_next_questions.extend(potentialQ)
         self.node_function = None
+
 class DecisionTree:
-    def __init__(self, student):
+    def __init__(self, student, debug = False):
         self.mapOfNodes = {}
         self.head_node = NodeObject(User_Query.UserQuery(None, User_Query.QueryType.welcome), [], [])
         self.build_Tree()
         self.current_node = self.head_node
         self.current_courses = [Course.Course()]
         self.student = student
-
+        self.debug = debug
 
     def get_current_node(self):
         return self.current_node
@@ -99,7 +101,7 @@ class DecisionTree:
         elif node.userQuery.value == 16: #student_info_requirements
             if self.student.distributions_needed:
                 node.answered = True
-                return True    
+                return True
             return node.answered
         elif node.userQuery.value == 17: #student_info_major_requirements
             if self.student.major_classes_needed:
@@ -156,7 +158,7 @@ class DecisionTree:
             return False
         else:
             return False
-            
+
 
     def build_Tree(self):
         for query_type in User_Query.QueryType:
@@ -168,7 +170,7 @@ class DecisionTree:
         self.mapOfNodes[User_Query.QueryType.schedule_class_res].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
         self.mapOfNodes[User_Query.QueryType.full_schedule_check].required_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
         self.mapOfNodes[User_Query.QueryType.full_schedule_check].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
-        self.mapOfNodes[User_Query.QueryType.student_info_time_left].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  
+        self.mapOfNodes[User_Query.QueryType.student_info_time_left].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])
         self.mapOfNodes[User_Query.QueryType.student_info_name].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_time_left], self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # time left / year
         self.mapOfNodes[User_Query.QueryType.student_info_name].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_time_left], self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])    # time left / year
         self.mapOfNodes[User_Query.QueryType.student_info_major].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_concentration],self.mapOfNodes[User_Query.QueryType.student_info_major_requirements],])
@@ -203,9 +205,9 @@ class DecisionTree:
     # @params: the current node of the tree
     # @return: the next node of the tree
     def get_next_node(self):
-        
+
         past_node = self.current_node
-        print(past_node.userQuery)
+        self.call_debug_print(past_node.userQuery)
         '''if query_number != self.current_node:
             past_node = self.mapOfNodes[query_number]'''
 
@@ -215,18 +217,18 @@ class DecisionTree:
             self.current_node.asked = False
         if self.is_answered(past_node):
             for node in past_node.required_questions:
-                print("asked: ", past_node.asked)
-                print("answered: ", self.is_answered(past_node))
+                self.call_debug_print("asked: " + str(past_node.asked))
+                self.call_debug_print("answered: " +  str(self.is_answered(past_node)))
                 if not self.is_answered(node):
                     if not node.asked:
                         self.current_node = node
-                        print("has answered")
+                        self.call_debug_print("has answered")
                         return User_Query.UserQuery(self.student, node.userQuery)
         for node in past_node.potential_next_questions:
             if not self.is_answered(node):
                 if not node.asked:
                     self.current_node = node
-                    print("current node: 1 ", past_node.userQuery)
+                    self.call_debug_print("current node: 1 " + str(past_node.userQuery))
 
                     return User_Query.UserQuery(self.student, node.userQuery)
         if self.is_answered(past_node):
@@ -234,17 +236,17 @@ class DecisionTree:
                 if not self.is_answered(node):
                     #if not node.asked:
                     self.current_node = node
-                    print("current node: 2 ", past_node.userQuery)
+                    self.call_debug_print("current node: 2 " + str(past_node.userQuery))
                     return User_Query.UserQuery(self.student, node.userQuery)
 
         for node in past_node.potential_next_questions:
             if not self.is_answered(node):
                 #   if not node.asked:
                 self.current_node = node
-                print("next node: 1 ", past_node.userQuery)
+                self.call_debug_print("next node: 1 " + str(past_node.userQuery))
                 return User_Query.UserQuery(self.student, node.userQuery)
         if not self.is_answered(past_node):
-            print("next node: 2 ", past_node.userQuery)
+            self.call_debug_print("next node: 2 " + str(past_node.userQuery))
             return User_Query.UserQuery(self.student, past_node.userQuery)
 
         if len(past_node.required_questions) > 0:
@@ -256,7 +258,5 @@ class DecisionTree:
         self.current_node = self.mapOfNodes[User_Query.QueryType.welcome]
         return self.get_next_node()
 
-if __name__ == "__main__":
-    init()
-
-
+    def call_debug_print(self, ob):
+        debug.debug_print(ob, self.debug)
