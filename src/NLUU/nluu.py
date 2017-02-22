@@ -399,7 +399,7 @@ class nLUU:
         return None
 
     def call_debug_print(self, ob):
-        debug.debug_print(ob, self.debug_value)
+        debug.debug_print(ob, self.debug)
 
 
 
