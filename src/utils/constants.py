@@ -13,7 +13,8 @@ class Responses:
     SPECIFY = ("Can you be more specific on that regard?",)
     PLEASANTRY = ("Suh",)
     STUDENT_INFO_NAME = ("What's your name?",)
-    STUDENT_INFO_NAME_RES = ("Nice to meet you, {}.",)
+    STUDENT_INFO_NAME_RES = ("Nice to meet you, {}.",
+                             "Nice to meet you.",)
     STUDENT_INFO_MAJOR = ("What's your major?",)
     STUDENT_INFO_MAJOR_RES = ("So you're a {} major?",
                               "{} major, huh? I've heard they're the best students.",

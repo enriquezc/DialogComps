@@ -266,8 +266,12 @@ class nLUU:
         return s.format(course_list, userQuery.object.current_credits)
 
     def create_student_info_name_res_res(self, userQuery):
-        s = constants.Responses.STUDENT_INFO_NAME_RES[0]
-        return s.format(userQuery.object.name)
+        if userQuery.object.name:
+            s = constants.Responses.STUDENT_INFO_NAME_RES[0]
+            return s.format(userQuery.object.name)
+        else:
+            s = constants.Responses.STUDENT_INFO_NAME_RES[1]
+            return s
 
     def create_student_info_major_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_RES[0]
