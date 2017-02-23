@@ -542,6 +542,9 @@ class Conversation:
         #return self.decision_tree.get_next_node()
 
     def handleStudentRequirementRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
+        #concerning student general distribution /major requirements
+        #passes the torch to either the general distribution, major distribution, or if neither is the prev statement
+        #passes to student interests (which handles distribution input)
         self.call_debug_print("ayyyyy")
         if len(self.last_user_query) > 0:
             if self.last_user_query[-1].type.name == "student_info_major_requirements":
@@ -554,6 +557,8 @@ class Conversation:
             return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
 
     def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False): #16
+        #concerning student general distribution requirements
+        #returns either the next node, or a list of courses that fulfill the given distribution
         if unsure:
             return self.decision_tree.get_next_node()
         self.call_debug_print(luisAI.query)
@@ -574,6 +579,8 @@ class Conversation:
         return self.student_profile.distributions_needed.extend(courses[0:2])
 
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 17
+        #concerning student major distributions
+        #returns a list of courses either related generally to their major, or specifically to the student's statement
         if unsure:
             course = Course.Course()
             if self.student_profile.major and self.student_profile.major != "Undecided":
@@ -612,18 +619,23 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_requirements_res), self.decision_tree.get_next_node()]
 
     def handle_student_info_concentration(self, input, luisAI, luis_intent, luis_entities, unsure=False): #18
+        #helper function, passes to the intent version
         return self.handleStudentConcentration(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_class_info_name(self, input, luisAI, luis_intent, luis_entities, unsure=False): #20
+        #not sure we use this
         return self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_class_info_prof(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 21
+        #not sure we use this
         return self.handleClassProfessorRequest(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_new_class_name(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 30
-        return self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities, unsure)
+        #most important function, hopefully we schedule classes
+        return self.handleScheduleClass(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_new_class_prof(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 31
+        #not sure we use this
         if luis_entities:
             for entity in luis_entities:
                 if entity.type == 'personname':
@@ -659,7 +671,7 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
 
     def handle_new_class_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False): #34
-        self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities, unsure)
+        self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_new_class_time(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 35
         self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities, unsure)
@@ -678,6 +690,10 @@ class Conversation:
         # @params
     # @return
     def get_next_response(self, input, luisAI):
+        '''tries to find the intent of the given text
+        #passes information to an evaluate function given LUIS intent or state in decision tree.
+        #returns a list of user queries to output
+        '''
         self.last_query = input
         luis_entities = luisAI.entities
         luis_intent = self.classify_intent(luisAI)
@@ -827,6 +843,7 @@ class Conversation:
 
 
     def task_manager_department_match(self, dept):
+        #helper function for department search
         tm_department = TaskManager.department_match(dept)
         if type(tm_department) is list:
             if len(tm_department) > 0:
@@ -869,7 +886,7 @@ class Conversation:
             return [None]
 
     def task_manager_query_courses_by_level(self, course):
-        #given a course object with 100, 200, 300, returns courses in that department with that level
+        #given a course object with 100, 200, 300, and hopefully department returns courses in that department with that level
         tm_level = TaskManager.query_courses_by_level(course)
         if len(tm_level) > 0:
             return tm_level

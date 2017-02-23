@@ -166,8 +166,8 @@ class DecisionTree:
 
         # here we go...
         self.mapOfNodes[User_Query.QueryType.welcome].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_name]])  # name
-        #self.mapOfNodes[User_Query.QueryType.schedule_class_res].required_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
-        #self.mapOfNodes[User_Query.QueryType.schedule_class_res].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
+        self.mapOfNodes[User_Query.QueryType.schedule_class_res].required_questions.extend([self.mapOfNodes[User_Query.QueryType.welcome]])
+        self.mapOfNodes[User_Query.QueryType.schedule_class_res].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.welcome]])
         self.mapOfNodes[User_Query.QueryType.full_schedule_check].required_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
         self.mapOfNodes[User_Query.QueryType.full_schedule_check].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name]])
         self.mapOfNodes[User_Query.QueryType.student_info_time_left].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])
@@ -181,11 +181,11 @@ class DecisionTree:
         self.mapOfNodes[User_Query.QueryType.student_info_interests].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_requirements], self.mapOfNodes[User_Query.QueryType.new_class_name]])
         self.mapOfNodes[User_Query.QueryType.student_info_abroad].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_concentration]])  # concentration, major requirements
         self.mapOfNodes[User_Query.QueryType.student_info_time_left].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_requirements], self.mapOfNodes[User_Query.QueryType.student_info_concentration], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # major, concentration, distros, interests
-        self.mapOfNodes[User_Query.QueryType.student_info_requirements].potential_next_questions.append(self.mapOfNodes[User_Query.QueryType.student_info_interests])  # interests
+        self.mapOfNodes[User_Query.QueryType.student_info_requirements].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_interests], self.mapOfNodes[User_Query.QueryType.new_class_name]])  # interests
         self.mapOfNodes[User_Query.QueryType.student_info_requirements].required_questions.append(self.mapOfNodes[User_Query.QueryType.class_info_distributions])  # ask if they want to take a course that fills these reqs
         self.mapOfNodes[User_Query.QueryType.student_info_concentration].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major_requirements], self.mapOfNodes[User_Query.QueryType.student_info_requirements], self.mapOfNodes[User_Query.QueryType.new_class_name], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # major reqs, distros, interests
         self.mapOfNodes[User_Query.QueryType.class_info_name].potential_next_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_request])  # recommend
-        self.mapOfNodes[User_Query.QueryType.new_class_name].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.schedule_class_res], self.mapOfNodes[User_Query.QueryType.new_class_request]])  # prof, recommend
+        self.mapOfNodes[User_Query.QueryType.new_class_name].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_interests], self.mapOfNodes[User_Query.QueryType.student_info_requirements],self.mapOfNodes[User_Query.QueryType.schedule_class_res]])  # prof, recommend
         self.mapOfNodes[User_Query.QueryType.new_class_dept].potential_next_questions.extend(
             [self.mapOfNodes[User_Query.QueryType.student_info_interests], self.mapOfNodes[User_Query.QueryType.new_class_description]])  # interests, should we recommend something?
         self.mapOfNodes[User_Query.QueryType.new_class_description].potential_next_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_name])  # what class would they want to take?
