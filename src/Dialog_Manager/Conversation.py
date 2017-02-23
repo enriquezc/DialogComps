@@ -213,7 +213,7 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
 
 
-    def getDepartmentStringFromLuis(self, input, luisAI, luis_intent, luis_entities, unsure=False):
+    def getDepartmentStringFromLuis(self, input, luisAI, luis_intent, luis_entities, unsure=False, is_major=True):
         # takes the Luis query, and lowers any word in the sequence so long as
         # the word isn't I. NLTK will be able to recognize the majors as nouns if
         # they are lowercase, but will also think i is a noun. Therefore, to
