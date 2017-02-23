@@ -302,7 +302,7 @@ class nLUU:
     def create_student_info_major_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_RES[0]
         major = list(userQuery.object.major)
-        if major is None or major[0] is None or len(major) == 0:
+        if major is None or len(major) == 0 or major[0] is None:
             s = constants.Responses.STUDENT_INFO_MAJOR_RES[2]
             self.call_debug_print("There are no majors")
             return s
@@ -334,7 +334,7 @@ class nLUU:
 
     def create_student_info_time_left_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_TIME_LEFT_RES[0]
-        return s
+        return s.format(str(userQuery.object.terms_left))
 
     def create_student_info_abroad_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_ABROAD_RES[0]

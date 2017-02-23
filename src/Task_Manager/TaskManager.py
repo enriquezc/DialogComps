@@ -491,7 +491,10 @@ def query_by_distribution(distribution, department = None):
         except:
             continue
 
-    return course_results
+    if len(course_results) > 10:
+        return course_results[:10]
+    else:
+        return course_results
 
 
 def calculate_course_relevance(course_obj, new_keywords, student_major_dept, student_interests):
