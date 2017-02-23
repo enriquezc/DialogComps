@@ -392,7 +392,8 @@ class nLUU:
             if pos in ['NNP', 'NNS', 'JJ', 'VBG', 'NN']:
                 stem = self.stem(word)
                 interests.extend(self.expand_keyword(stem))
-                interests.append(word)
+                if word not in interests:
+                    interests.append(word)
         return interests
 
     def find_departments(self, utterance):
