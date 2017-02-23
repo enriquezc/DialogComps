@@ -213,7 +213,7 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
 
 
-    def getDepartmentStringFromLuis(self, input, luisAI, luis_intent, luis_entities, unsure=False):
+    def getDepartmentStringFromLuis(self, input, luisAI, luis_intent, luis_entities, major=False, unsure=False):
         # takes the Luis query, and lowers any word in the sequence so long as
         # the word isn't I. NLTK will be able to recognize the majors as nouns if
         # they are lowercase, but will also think i is a noun. Therefore, to
@@ -226,10 +226,10 @@ class Conversation:
         double = False
         if "and" in luisAI.query:
             if "women and gender" in pot_query:
-                self.student_profile.major.add(self.task_manager_department_match("wgst"))
+                dept.append(self.task_manager_department_match("wgst"))
                 pot_query = pot_query.replace("women and gender", "")
-            elif "cinema and media" in pot_query:
-                self.student_profile.major.add(self.task_manager_department_match("cams"))
+            elif "cinema and media" in pot_query and is_major:
+                dept.append(self.task_manager_department_match("cams"))
                 pot_query = pot_query.replace("cinema and media", "")
             else:
                 double = True
