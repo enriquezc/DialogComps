@@ -12,12 +12,16 @@ import src.utils.debug as debug
 conn = None
 dept_dict = {}
 distro_dict = []
+major_dict = {}
+concentration_dict = {}
 stop_words = None
 debug_value = None
 
 def init(init_debug = False):
     connect_to_db()
     create_dept_dict()
+    create_major_dict()
+    create_concentration_dict()
     create_distro_dictionary()
     create_stop_words_set()
 
@@ -541,6 +545,26 @@ def create_dept_dict():
 
         dept_dict[pair[0]] = pair[1]
 
+def create_major_dict():
+    global major_dict
+    file = open('./src/Task_Manager/majors.txt', 'r')
+    # file = open('course_subjects.txt', 'r')
+    for line in file:
+        line = line.strip()
+        pair = line.split(';')
+
+        dept_dict[pair[1]] = pair[0]
+
+def create_concentration_dict():
+    global concentration_dict
+    file = open('./src/Task_Manager/concentrations.txt', 'r')
+    # file = open('course_subjects.txt', 'r')
+    for line in file:
+        line = line.strip()
+        pair = line.split(';')
+
+        dept_dict[pair[1]] = pair[0]
+
 ## Taken from wiki/Algorithm_Implementation ##
 def edit_distance(s1, s2):
     if len(s1) < len(s2):
@@ -601,6 +625,80 @@ def department_match(str_in):
     return cur_match
 
 def distro_match(str_in):
+    if str_in.isspace():
+        return None
+    elif str_in == "":
+        return None
+    elif str_in == None:
+        return None
+
+    global distro_dict
+    global stop_words
+
+    # if the string is in our set of stop words, we return nothing
+    if str_in in stop_words:
+        return None
+
+    cur_match = None
+    cur_best = 100
+    distro_items = distro_dict.items()
+    # check to see if the input already matches a department
+    for key, value in distro_items:
+        if str_in.lower() == key.lower():
+            return value
+        if str_in.lower() == value.lower():
+            return value
+    # otherwise, use edit distance to find the nearest major
+    for key in distro_dict:
+        dist = edit_distance(key.lower(),str_in.lower())
+        if dist < cur_best:
+            cur_match = distro_dict[key]
+            cur_best = dist
+        dist = edit_distance(distro_dict[key].lower(),str_in.lower())
+        if dist < cur_best:
+            cur_match = distro_dict[key]
+            cur_best = dist
+    call_debug_print("MATCHED: " + cur_match)
+    return cur_match
+
+def major_match(str_in):
+    if str_in.isspace():
+        return None
+    elif str_in == "":
+        return None
+    elif str_in == None:
+        return None
+
+    global distro_dict
+    global stop_words
+
+    # if the string is in our set of stop words, we return nothing
+    if str_in in stop_words:
+        return None
+
+    cur_match = None
+    cur_best = 100
+    distro_items = distro_dict.items()
+    # check to see if the input already matches a department
+    for key, value in distro_items:
+        if str_in.lower() == key.lower():
+            return value
+        if str_in.lower() == value.lower():
+            return value
+    # otherwise, use edit distance to find the nearest major
+    for key in distro_dict:
+        dist = edit_distance(key.lower(),str_in.lower())
+        if dist < cur_best:
+            cur_match = distro_dict[key]
+            cur_best = dist
+        dist = edit_distance(distro_dict[key].lower(),str_in.lower())
+        if dist < cur_best:
+            cur_match = distro_dict[key]
+            cur_best = dist
+    call_debug_print("MATCHED: " + cur_match)
+    return cur_match
+
+def concentration_match(str_in):
     if str_in.isspace():
         return None
     elif str_in == "":
