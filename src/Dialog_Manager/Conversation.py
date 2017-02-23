@@ -254,7 +254,8 @@ class Conversation:
     def handleScheduleClass(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         index = self.nluu.get_number_from_ordinal_str(input)
         tm_courses = None
-        if len(self.student_profile.potential_courses) != 0 and index is not None:
+        if self.student_profile.potential_courses is not None and len(self.student_profile.potential_courses) != 0 \
+                and index is not None:
             index = index - 1 if index != float('inf') else len(self.student_profile.potential_courses) - 1
             tm_courses = [self.student_profile.potential_courses[index]]
         tm_courses = tm_courses or self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities,specific=True)
