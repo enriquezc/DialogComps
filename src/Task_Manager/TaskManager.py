@@ -34,7 +34,7 @@ def connect_to_db():
 # @params Course object 'course' containing some initialized member variables,
 # and searches for courses which share those values
 # @return List of length >= 0 containing Course objects which match the input
-def query_courses(course):
+def query_courses(course, approximate = False):
     '''
     Returns a list of course objects which share the attributes defined for the
     course object passed as argument. Used to query courses based on multiple
@@ -45,24 +45,38 @@ def query_courses(course):
     call_debug_print("QUERYING COURSES: ")
 
     course_query = "SELECT * FROM COURSE WHERE ((sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND "
+    if not approximate:
+        if course.department != "":
+            course_query = course_query + "sec_subject = '" + course.department.upper()
+            course_query = course_query + "' AND "
+            call_debug_print(course.department)
 
-    if course.department != "":
-        course_query = course_query + "sec_subject = '" + course.department.upper()
-        course_query = course_query + "' AND "
-        call_debug_print(course.department)
+        if course.course_num != "":
+            course_query = course_query + "sec_course_no = '" \
+            + str(course.course_num)
+            course_query = course_query + "' AND "
+            call_debug_print(course.course_num)
 
-    if course.course_num != "":
-        course_query = course_query + "sec_course_no = '" \
-        + str(course.course_num)
-        course_query = course_query + "' AND "
-        call_debug_print(course.course_num)
+        if course.name != "":
+            course_name = smart_description_expansion(str(course.name))
+            course_query = course_query + "lower(sec_short_title) = '" \
+            + course_name
+            course_query = course_query + "' AND "
+            call_debug_print(course.name)
 
-    if course.name != "":
-        course_name = smart_description_expansion(str(course.name))
-        course_query = course_query + "lower(sec_short_title) = '" \
-        + course_name
-        course_query = course_query + "' AND "
-        call_debug_print(course.name)
+    else:
+        if course.department != "":
+            course_query = course_query + "sec_subject = '" + course.department.upper()
+            course_query = course_query + "' AND "
+            call_debug_print(course.department)
+
+        if course.course_num != "":
+            if course.course_num == "100":
+                course_query = course_query + "sec_course_no LIKE '1%%' AND "
+            elif course.course_num == "200":
+                course_query = course_query + "sec_course_no LIKE '2%%' AND "
+            elif course.course_num == "200":
+                course_query = course_query + "sec_course_no LIKE '3%%' AND "
 
     course_query = course_query + "sec_name NOT LIKE '%WL%' AND sec_avail_status = 'Open'"
 
@@ -606,6 +620,8 @@ def distro_match(str_in):
         return cur_match
 
 
+def query_courses_by_level(course):
+    return query_courses(course, True)
 
 def get_n_best_indices(row, n):
     res = []
