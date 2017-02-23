@@ -71,12 +71,20 @@ def query_courses(course, approximate = False):
             call_debug_print(course.department)
 
         if course.course_num != "":
-            if course.course_num == "100":
-                course_query = course_query + "sec_course_no LIKE '1%%' AND "
-            elif course.course_num == "200":
-                course_query = course_query + "sec_course_no LIKE '2%%' AND "
-            elif course.course_num == "200":
-                course_query = course_query + "sec_course_no LIKE '3%%' AND "
+            if type(course.course_num) is list:
+                course_query += "("
+                 for course_num_level in course.course_num:
+                     course_query += "sec_course_no LIKE '" + course_num_level[:-2]
+                     course_query += "%%' OR "
+                 course_query = course_query[:-3]
+                 course_query += ") AND "
+            elif type(course.course_num) is str:
+                if course.course_num == "100":
+                    course_query = course_query + "sec_course_no LIKE '1%%' AND "
+                elif course.course_num == "200":
+                    course_query = course_query + "sec_course_no LIKE '2%%' AND "
+                elif course.course_num == "200":
+                    course_query = course_query + "sec_course_no LIKE '3%%' AND "
 
     course_query = course_query + "sec_name NOT LIKE '%WL%' AND sec_avail_status = 'Open'"
 
@@ -619,7 +627,7 @@ def distro_match(str_in):
                 cur_match = distro
         return cur_match
 
-
+# Helper function that triggers general type class queries
 def query_courses_by_level(course):
     return query_courses(course, True)
 
