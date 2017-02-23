@@ -158,7 +158,6 @@ class Conversation:
                     if tm_major is None:
                         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
                     self.call_debug_print(tm_major)
-                    updated = True
                     if len(self.student_profile.major) < 2 and not tm_major is None:
                         self.student_profile.major.add(tm_major)
         if not updated:
@@ -168,10 +167,10 @@ class Conversation:
                 if type(major) == type([]):
                     for m in major:
                         if len(self.student_profile.major) < 2 and not m is None:
-                            self.student_profile.major.add(m)
+                            self.student_profile.major.add(m.title())
                 else:
                     if len(self.student_profile.major) < 2 and not major is None:
-                        self.student_profile.major.add(major)
+                        self.student_profile.major.add(major.title())
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                 self.decision_tree.get_next_node()]
 
@@ -234,14 +233,14 @@ class Conversation:
                 pot_query = pot_query.replace("cinema and media", "")
             else:
                 double = True
-
         else:
             double = False
         if double:
             majors = luisAI.query.split("and")
             self.call_debug_print("major split: " + str(majors))
             for maj in majors:
-                dept.append(self.nluu.find_departments(maj))
+                maj_string = " ".join(self.nluu.find_departments(maj))
+                dept.append(maj_string)
         else:
             major = self.nluu.find_departments(pot_query)
             self.call_debug_print("single major: " + str(major))
