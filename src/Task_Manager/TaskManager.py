@@ -669,7 +669,7 @@ def major_match(str_in):
     elif str_in == None:
         return None
 
-    global distro_dict
+    global major_dict
     global stop_words
 
     # if the string is in our set of stop words, we return nothing
@@ -678,22 +678,22 @@ def major_match(str_in):
 
     cur_match = None
     cur_best = 100
-    distro_items = distro_dict.items()
+    major_items = major_dict.items()
     # check to see if the input already matches a department
-    for key, value in distro_items:
+    for key, value in major_items:
         if str_in.lower() == key.lower():
             return value
         if str_in.lower() == value.lower():
             return value
     # otherwise, use edit distance to find the nearest major
-    for key in distro_dict:
+    for key in major_dict:
         dist = edit_distance(key.lower(),str_in.lower())
         if dist < cur_best:
-            cur_match = distro_dict[key]
+            cur_match = major_dict[key]
             cur_best = dist
-        dist = edit_distance(distro_dict[key].lower(),str_in.lower())
+        dist = edit_distance(major_dict[key].lower(),str_in.lower())
         if dist < cur_best:
-            cur_match = distro_dict[key]
+            cur_match = major_dict[key]
             cur_best = dist
     call_debug_print("MATCHED: " + cur_match)
     return cur_match
@@ -706,7 +706,7 @@ def concentration_match(str_in):
     elif str_in == None:
         return None
 
-    global distro_dict
+    global concentration_dict
     global stop_words
 
     # if the string is in our set of stop words, we return nothing
@@ -715,22 +715,22 @@ def concentration_match(str_in):
 
     cur_match = None
     cur_best = 100
-    distro_items = distro_dict.items()
+    concentration_items = concentration_dict.items()
     # check to see if the input already matches a department
-    for key, value in distro_items:
+    for key, value in concentration_items:
         if str_in.lower() == key.lower():
             return value
         if str_in.lower() == value.lower():
             return value
     # otherwise, use edit distance to find the nearest major
-    for key in distro_dict:
+    for key in concentration_dict:
         dist = edit_distance(key.lower(),str_in.lower())
         if dist < cur_best:
-            cur_match = distro_dict[key]
+            cur_match = concentration_dict[key]
             cur_best = dist
-        dist = edit_distance(distro_dict[key].lower(),str_in.lower())
+        dist = edit_distance(concentration_dict[key].lower(),str_in.lower())
         if dist < cur_best:
-            cur_match = distro_dict[key]
+            cur_match = concentration_dict[key]
             cur_best = dist
     call_debug_print("MATCHED: " + cur_match)
     return cur_match
