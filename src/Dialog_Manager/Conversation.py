@@ -158,7 +158,6 @@ class Conversation:
                     if tm_major is None:
                         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
                     self.call_debug_print(tm_major)
-                    updated = True
                     self.student_profile.major.add(tm_major)
         if not updated:
             major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
@@ -231,14 +230,14 @@ class Conversation:
                 pot_query = pot_query.replace("cinema and media", "")
             else:
                 double = True
-
         else:
             double = False
         if double:
             majors = luisAI.query.split("and")
             self.call_debug_print("major split: " + str(majors))
             for maj in majors:
-                dept.append(self.nluu.find_departments(maj))
+                maj_string = " ".join(self.nluu.find_departments(maj))
+                dept.append(maj_string)
         else:
             major = self.nluu.find_departments(pot_query)
             self.call_debug_print("single major: " + str(major))
