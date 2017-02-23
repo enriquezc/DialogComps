@@ -231,7 +231,7 @@ class Conversation:
             double = False
         if double:
             majors = luisAI.query.split("and")
-            self.call_debug_print("major split: ", majors)
+            self.call_debug_print("major split: " + str(majors))
             for maj in majors:
                 dept.append(self.nluu.find_departments(maj))
         else:
@@ -513,7 +513,7 @@ class Conversation:
                 #return [self.decision_tree.get_next_node()]
                 next_node = self.decision_tree.get_next_node()
                 self.call_debug_print(next_node.type)
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res), next_node]
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res), self.decision_tree.get_next_node()]
         if ',' in self.last_query:
             listOfWords = self.last_query.split(",")
             for word in listOfWords:
