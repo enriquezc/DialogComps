@@ -13,10 +13,12 @@ class Responses:
     SPECIFY = ("Can you be more specific on that regard?",)
     PLEASANTRY = ("Suh",)
     STUDENT_INFO_NAME = ("What's your name?",)
-    STUDENT_INFO_NAME_RES = ("Nice to meet you, {}.",)
+    STUDENT_INFO_NAME_RES = ("Nice to meet you, {}.",
+                             "Nice to meet you.",)
     STUDENT_INFO_MAJOR = ("What's your major?",)
     STUDENT_INFO_MAJOR_RES = ("So you're a {} major?",
-                              "{} major, huh? I've heard they're the best students.",)
+                              "{} major, huh? I've heard they're the best students.",
+                              "So you haven't chosen your major yet?",)
     STUDENT_INFO_CONCENTRATION = ("Do you have a concentration? If so, what is it?",)
     STUDENT_INFO_CONCENTRATION_RES = ("Ok, so you concentrations include:\n {}", 
                                       "So you don't have any concentrations?")
@@ -25,7 +27,7 @@ class Responses:
     STUDENT_INFO_INTERESTS = ("What are some of your interests?",)
     STUDENT_INFO_INTERESTS_RESA = ("I'll try to find some classes for you to look at that relate to your interests:\n ")
     STUDENT_INFO_INTERESTS_RESB = ('{}',)
-    STUDENT_INFO_TIME_LEFT = ("What year are you?",)
+    STUDENT_INFO_TIME_LEFT = ("What class year are you?",)
     STUDENT_INFO_TIME_LEFT_RES = ("I'll keep the number of terms you have left in mind.",)
     STUDENT_INFO_ABROAD = ("Do you have any plans to study abroad?",)
     STUDENT_INFO_ABROAD_RES = ("That sounds like an awesome experience.",)
@@ -45,7 +47,7 @@ class Responses:
     CLASS_INFO_SCRUNCH = ("Did you scrunch {}?",)
     CLASS_INFO_TIME = ("What time was {}?",)
     CLASS_INFO_TIME_RES = ("{} is during {}.",)
-    CLASS_INFO_DISTRIBUTIONS = ("Which, if any, of those requirements would you like to fulfill this term?",)
+    CLASS_INFO_DISTRIBUTIONS = ("Would you like to fulfill some of those requirements this term?",)
     CLASS_INFO_DISTRIBUTIONS_RES = ("{}",)
     NEW_CLASS_NAME = ("Are there any classes that you'd like to take?",)
     NEW_CLASS_PROF = ("Is there a professor that you'd like to take a class with?",)

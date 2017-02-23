@@ -18,7 +18,7 @@ class Course:
         self.requirements_fulfilled = []
         #Some way of storing start time, end time, and days of the week. Format undecided as of yet.
         self.time = ""
-        self.prereqs = []
+        self.prereqs = ""
         #description from enroll
         self.description = ""
         #context the user gave about the class, just in case we still need it
