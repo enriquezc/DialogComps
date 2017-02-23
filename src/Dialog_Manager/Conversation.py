@@ -146,6 +146,7 @@ class Conversation:
         if unsure:
             self.student_profile.major = ["undeclared"]
             self.student_profile.concentration = set(["undeclared"])
+            self.student_profile.major_classes_needed = ["N/A"]
             return [self.decision_tree.get_next_node()]
         updated = False
         if "not" in luisAI.query:
@@ -281,6 +282,27 @@ class Conversation:
                 , self.decision_tree.get_next_node()]
 
     def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
+        if unsure:
+            course = Course.Course()
+            if self.student_profile.major != ["undeclared"]:
+                course.department = list(self.student_profile.major)[0]
+                if self.student_profile.terms_left >= 9: #frosh
+                    course.course_num = ["100", "200"]
+                else:
+                    course.course_num = ["200","300"]
+                courses = self.task_manager_query_courses_by_level(course)
+                if courses is not None and len(courses) > 0:
+                    self.student_profile.potential_courses = courses
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
+                            , self.decision_tree.get_next_node()]
+            if self.student_profile.interests != set():
+                tm_courses = self.task_manager_keyword(list(self.student_profile.interests))
+                if tm_courses is not None and len(tm_courses) > 0:
+                    self.student_profile.potential_courses = tm_courses
+                    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
+                        , self.decision_tree.get_next_node()]
+            else:
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.already_talked_about)]
         if "interest" in input:
             return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
         tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
@@ -396,7 +418,8 @@ class Conversation:
 
     # done
     def handleStudentInterests(self, input, luisAI, luis_intent, luis_entities, unsure=False):
-        self.call_debug_print("in interests")
+        if unsure:
+            return [self.decision_tree.get_next_node()] 
         #if len(luis_entities) < 10:
         i = 0
         interests = self.nluu.find_interests(luisAI.query)
@@ -512,7 +535,7 @@ class Conversation:
         else:
             return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
 
-    def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities): #16
+    def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False): #16
         self.call_debug_print(luisAI.query)
         if "nothing" in luisAI.query or "none" in luisAI.query:
             self.call_debug_print("we bout to graduate boyz")
@@ -808,7 +831,7 @@ class Conversation:
         else:
             return tm_class_match
 
-    def task_manager_distribution_match(self, distribution, dept = None):
+    def task_manager_distribution_match(self, distribution, dept=None):
         tm_distro = TaskManager.distro_match(distribution)
         if dept != None:
             tm_department = TaskManager.department_match(dept)
@@ -826,7 +849,7 @@ class Conversation:
         if len(tm_level) > 0:
             return tm_level
         else:
-            return [None]
+            return None
 
     def call_debug_print(self, ob):
         debug.debug_print(ob, self.debug)
