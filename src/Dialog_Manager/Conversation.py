@@ -499,7 +499,7 @@ class Conversation:
                 #return [self.decision_tree.get_next_node()]
                 next_node = self.decision_tree.get_next_node()
                 self.call_debug_print(next_node.type)
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res), next_node]
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res), self.decision_tree.get_next_node()]
         if ',' in self.last_query:
             listOfWords = self.last_query.split(",")
             for word in listOfWords:
