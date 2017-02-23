@@ -73,7 +73,7 @@ def query_courses(course, approximate = False):
         if course.course_num != "":
             if type(course.course_num) is list:
                 course_query += "("
-                 for course_num_level in course.course_num:
+                for course_num_level in course.course_num:
                      course_query += "sec_course_no LIKE '" + course_num_level[:-2]
                      course_query += "%%' OR "
                  course_query = course_query[:-3]
