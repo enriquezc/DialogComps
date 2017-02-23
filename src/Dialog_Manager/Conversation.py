@@ -163,7 +163,12 @@ class Conversation:
             major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
             self.call_debug_print("major: " + str(major_list))
             for major in major_list:
-                self.student_profile.major.add(major)
+
+                if type(major) == type([]):
+                    for m in major:
+                        self.student_profile.major.add(m)
+                else:
+                    self.student_profile.major.add(major)
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                 self.decision_tree.get_next_node()]
 
