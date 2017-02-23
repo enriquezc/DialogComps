@@ -593,7 +593,7 @@ def department_match(str_in):
         if dist < cur_best:
             cur_match = dept_dict[key]
             cur_best = dist
-        dist = edit_distance(dept_dict[key],str_in)
+        dist = edit_distance(dept_dict[key].lower(),str_in.lower())
         if dist < cur_best:
             cur_match = dept_dict[key]
             cur_best = dist
@@ -616,7 +616,7 @@ def distro_match(str_in):
         return None
 
     cur_match = None
-    cur_best = 100
+    cur_best = 20
     distro_items = distro_dict.items()
     # check to see if the input already matches a department
     for key, value in distro_items:
@@ -664,10 +664,6 @@ def call_debug_print(ob):
 
 
 if __name__ == "__main__":
-    init()
-    '''
-    results = query_by_distribution("literary_analysis", "ENGL")
-    for course in results:
-        call_debug_print(course.name)
-        print(course.description)
-        '''
+    #init()
+    print(edit_distance("political science", "poli sci"))
+    print(edit_distance("political economics", "poli sci"))
