@@ -374,7 +374,7 @@ def create_distro_dictionary():
     distro_dict = {"A&I":"a_and_i",
     "Arts practice":"arts_practice",
     "Statistical Reasoning":"statistical_reasoning",
-    "Lab":"lab";"literary analysis":"literary_analysis",
+    "Lab":"lab","literary analysis":"literary_analysis",
     "Humanistic Inquiry":"humanistic_inquiry",
     "social inquiry":"social_inquiry",
     "WR1":"writing_rich_1","WR2":"writing_rich_2","QRE":"quantitative_reasoning",
