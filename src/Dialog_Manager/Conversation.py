@@ -481,10 +481,16 @@ class Conversation:
 
     def handleStudentRequirementRequest(self, input, luisAI, luis_intent, luis_entities):
         self.call_debug_print("ayyyyy")
-        return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities)
+        if self.last_user_query[-1].type.name == "student_info_major_requirements":
+            return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities)
+        elif self.last_user_query[-1].type.name == "student_info_requirements":
+            return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities)
+        else:
+            return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
 
     def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities): #16
-        if "nothing" in self.last_query or "none" in self.last_query:
+        self.call_debug_print(luisAI.query)
+        if "nothing" in luisAI.query or "none" in luisAI.query:
             self.call_debug_print("we bout to graduate boyz")
             self.decision_tree.current_node.answered = True
             return self.decision_tree.get_next_node()
@@ -499,26 +505,26 @@ class Conversation:
                 next_node = self.decision_tree.get_next_node()
                 self.call_debug_print(next_node.type)
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res), next_node]
-        if ',' in self.last_query:
+        '''if ',' in self.last_query:
             listOfWords = self.last_query.split(",")
             for word in listOfWords:
                 if len(word.split()) < 4:
                     self.student_profile.distributions_needed.append(Course.Course(word))
             if len(self.student_profile.distributions_needed) != 0:
-                return [self.decision_tree.get_next_node()]
-        courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False)
+                return [self.decision_tree.get_next_node()]'''
+        courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False, major=True)
         if courses is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
         self.student_profile.distributions_needed.extend(courses[0:2])
 
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities):  # 17
         if len(luisAI.query.split(" ")) < 2:
-            responseSentiment = self.sentimentAnalyzer.polarity_scores(self.last_query)
+            responseSentiment = self.sentimentAnalyzer.polarity_scores(luisAI.query)
             if responseSentiment["neg"] > responseSentiment["pos"] or "nothing" in luisAI.query:
                 return [self.decision_tree.get_next_node()]
-        courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False)
+        courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False, major=True)
         if courses is None:
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
+            return [self.decision_tree.get_next_node()] #bc if we don't get a course, lets assume there isn't one, greiss maximum and shit
         self.student_profile.major_classes_needed.extend(courses[0:4])
         self.student_profile.potential_courses = courses[0:4]
         '''if luis_entities:
@@ -631,7 +637,7 @@ class Conversation:
 
 
 
-    def getCoursesFromLuis(self, input, luisAI, luis_intent, luis_entities, specific=False):
+    def getCoursesFromLuis(self, input, luisAI, luis_intent, luis_entities, specific=False, major=False):
         """
         Helper function that is used for handleClassDescriptionRequest, handleRegisterClass(Course?), etc.
         that takes luis input and returns a list of courses using the TM in a centralized way.
@@ -647,7 +653,18 @@ class Conversation:
             possibilities = self.nluu.find_course(luisAI.query)
             if len(possibilities) == 0:
                 return None
-            if not specific: #return to potential courses not relavent class (for class description)
+            if major: #so we can query on major requirements differently than other class requests
+                major_interests = set()
+                for w in self.nluu.find_interests(" ".join(self.student_profile.interests)):
+                    major_interests.add(w)
+                tm_courses = self.task_manager_keyword(possibilities)
+                if tm_courses is None:
+                    return None
+                elif not type(tm_courses) is list:
+                    toReturn = [tm_courses]
+                else:
+                    toReturn = tm_courses
+            elif not specific: #return to potential courses not relavent class (for class description)
                 interests = set()
                 for w in self.nluu.find_interests(" ".join(self.student_profile.interests)):
                     interests.add(w)
@@ -658,7 +675,7 @@ class Conversation:
                     toReturn = [tm_courses]
                 else:
                     toReturn = tm_courses
-            if specific: #for schedule class
+            elif specific: #for schedule class
                 tm_courses = self.task_manager_class_title_match(possibilities)  # type checked in tm keyword
                 if tm_courses is None:
                     return None
@@ -691,9 +708,15 @@ class Conversation:
                         toReturn = [tm_course]
                     else:
                         toReturn = tm_course
-
             if entity.type == "department":
                 course.department = entity.entity
+                tm_course = self.task_manager_information(course)  # type checking is done in tm informaiton
+                if not type(tm_course) is list:
+                    toReturn = [tm_course]
+                else:
+                    toReturn = tm_course
+            if entity.type == "distribution":
+                course.gen_distributions.append(entity.entity)
                 tm_course = self.task_manager_information(course)  # type checking is done in tm informaiton
                 if not type(tm_course) is list:
                     toReturn = [tm_course]
@@ -765,6 +788,9 @@ class Conversation:
             return class_match
         else:
             return [None]
+
+    def task_manager_query_courses_by_level(self, course):
+        
 
     def call_debug_print(self, ob):
         debug.debug_print(ob, True)
