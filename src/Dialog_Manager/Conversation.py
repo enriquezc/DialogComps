@@ -158,16 +158,19 @@ class Conversation:
                     if tm_major is None:
                         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
                     self.call_debug_print(tm_major)
-                    self.student_profile.major.add(tm_major)
+                    if len(self.student_profile.major) < 2 and not tm_major is None:
+                        self.student_profile.major.add(tm_major)
         if not updated:
             major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
             self.call_debug_print("major: " + str(major_list))
             for major in major_list:
                 if type(major) == type([]):
                     for m in major:
-                        self.student_profile.major.add(m)
+                        if len(self.student_profile.major) < 2 and not m is None:
+                            self.student_profile.major.add(m.title())
                 else:
-                    self.student_profile.major.add(major)
+                    if len(self.student_profile.major) < 2 and not major is None:
+                        self.student_profile.major.add(major.title())
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                 self.decision_tree.get_next_node()]
 
