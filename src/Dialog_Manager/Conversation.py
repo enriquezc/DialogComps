@@ -534,6 +534,14 @@ class Conversation:
         return self.student_profile.distributions_needed.extend(courses[0:2])
 
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 17
+        if unsure:
+            course = Course.Course()
+            course.department.extend(self.student_profile.major)
+            if self.student_profile.terms_left > 6:
+                course.course_num = 100
+            else:
+                course.course_num = 200
+            self.task_manager_query_courses_by_level()
         if len(luisAI.query.split(" ")) < 2:
             responseSentiment = self.sentimentAnalyzer.polarity_scores(luisAI.query)
             if responseSentiment["neg"] > responseSentiment["pos"] or "nothing" in luisAI.query:
