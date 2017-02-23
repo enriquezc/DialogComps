@@ -371,12 +371,12 @@ def create_stop_words_set():
 
 def create_distro_dictionary():
     global distro_dict
-    distro_dict = {"A&I":"a_and_i",
-    "Arts practice":"arts_practice",
-    "Statistical Reasoning":"statistical_reasoning",
-    "Lab":"lab","literary analysis":"literary_analysis",
-    "Humanistic Inquiry":"humanistic_inquiry",
-    "social inquiry":"social_inquiry",
+    distro_dict = {"AI":"a_and_i",
+    "ARP":"arts_practice",
+    "FSR":"statistical_reasoning",
+    "LS":"lab","LA":"literary_analysis",
+    "HI":"humanistic_inquiry",
+    "SI":"social_inquiry",
     "WR1":"writing_rich_1","WR2":"writing_rich_2","QRE":"quantitative_reasoning",
     "IDS":"intercultural_domestic_studies","IS":"international_studies"}
 
