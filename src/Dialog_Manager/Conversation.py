@@ -537,12 +537,30 @@ class Conversation:
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 17
         if unsure:
             course = Course.Course()
-            course.department.extend(self.student_profile.major)
-            if self.student_profile.terms_left > 6:
-                course.course_num = 100
+            if self.student_profile.major and self.student_profile.major != "Undecided":
+                course.department = list(self.student_profile.major)[0]
+                if self.student_profile.terms_left > 6:
+                    course.course_num = "100"
+                    some_courses = self.task_manager_query_courses_by_level(course)
+                else:
+                    course.course_num = ["200","300"]
+                    some_courses = self.task_manager_query_courses_by_level(course)
+
             else:
-                course.course_num = 200
-                some_courses = self.task_manager_query_courses_by_level(course)
+                course.department = list(self.student_profile.major)[0]
+                if self.student_profile.terms_left > 6:
+                    course.course_num = "100"
+                    some_courses = self.task_manager_query_courses_by_level(course)
+
+                else:
+                    course.course_num = ["200", "300"]
+                    some_courses = self.task_manager_query_courses_by_level(course)
+            self.student_profile.major_classes_needed.extend(some_courses[0:4])
+            self.student_profile.potential_courses = some_courses[0:4]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_requirements_res),
+                self.decision_tree.get_next_node()]
+
+
         if len(luisAI.query.split(" ")) < 2:
             responseSentiment = self.sentimentAnalyzer.polarity_scores(luisAI.query)
             if responseSentiment["neg"] > responseSentiment["pos"] or "nothing" in luisAI.query:
