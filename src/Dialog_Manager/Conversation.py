@@ -418,7 +418,8 @@ class Conversation:
 
     # done
     def handleStudentInterests(self, input, luisAI, luis_intent, luis_entities, unsure=False):
-        self.call_debug_print("in interests")
+        if unsure:
+            return [self.decision_tree.get_next_node()] 
         #if len(luis_entities) < 10:
         i = 0
         interests = self.nluu.find_interests(luisAI.query)
@@ -534,7 +535,7 @@ class Conversation:
         else:
             return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
 
-    def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities): #16
+    def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False): #16
         self.call_debug_print(luisAI.query)
         if "nothing" in luisAI.query or "none" in luisAI.query:
             self.call_debug_print("we bout to graduate boyz")
