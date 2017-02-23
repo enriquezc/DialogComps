@@ -49,10 +49,9 @@ class Conversation:
 
         TaskManager.init(debug)
 
-    def start_conversation(self, debug = False):
+    def start_conversation(self, debug=False):
         self.conversing = True
         self.debug = debug
-
         our_response = [self.get_current_node()[0], User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_name)]
         our_str_response = self.nluu.create_response(our_response[0].type) + "\n" + self.nluu.create_response(our_response[1])
         self.utterancesStack.append(our_response)
@@ -144,6 +143,10 @@ class Conversation:
         # they are lowercase, but will also think i is a noun. Therefore, to
         # prevent problems in the common case, we check for the presence of I.
         # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
+        if unsure:
+            self.student_profile.major = ["undeclared"]
+            self.student_profile.concentration = set(["undeclared"])
+            return [self.decision_tree.get_next_node()]
         updated = False
         if "not" in luisAI.query:
             return self.handleRemoveMajor(input, luisAI, luis_intent, luis_entities)
@@ -458,7 +461,18 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.class_info_distributions_res), self.decision_tree.get_next_node()]
 
     def handleUncertainResponse(self, input, luisAI, luis_intent, luis_entities):
-        pass
+        new_intent = format(self.decision_tree.current_node.userQuery).split(".")[1]
+        self.call_debug_print(new_intent)
+        eval_fn = None
+        try:
+            eval_fn = eval("self.handle_{}".format(new_intent))
+        except:
+            eval_fn = None
+        if eval_fn:
+            self.call_debug_print("We out here in unsure shit")
+            return eval_fn(input, luisAI, format(new_intent), luis_entities, unsure=True)
+        else:
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
 
     def handle_class_info_distributions(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         self.call_debug_print("hey there! Did you say yes or no? I hope you did. OOooooohWeeEEE")
@@ -473,21 +487,21 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)]
 
     def handle_student_info_name(self, input, luisAI, luis_intent, luis_entities, unsure=False): #10
-        return self.handleStudentNameInfo(input, luisAI, luis_intent, luis_entities)
+        return self.handleStudentNameInfo(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_student_info_major(self, input, luisAI, luis_intent, luis_entities, unsure=False): #11
-        return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
+        return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_student_info_interests(self, input, luisAI, luis_intent, luis_entities, unsure=False): #13
-        return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
+        return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_student_info_time_left(self, input, luisAI, luis_intent, luis_entities, unsure=False): #14
-        return self.handleStudentInfoYear(input, luisAI, luis_intent, luis_entities)
+        return self.handleStudentInfoYear(input, luisAI, luis_intent, luis_entities, unsure)
         #return self.decision_tree.get_next_node()
 
     def handleStudentRequirementRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         self.call_debug_print("ayyyyy")
-        return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities)
+        return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False): #16
         if "nothing" in self.last_query or "none" in self.last_query:
@@ -504,7 +518,7 @@ class Conversation:
                 #return [self.decision_tree.get_next_node()]
                 next_node = self.decision_tree.get_next_node()
                 self.call_debug_print(next_node.type)
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res), next_node]
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res), self.decision_tree.get_next_node()]
         if ',' in self.last_query:
             listOfWords = self.last_query.split(",")
             for word in listOfWords:
@@ -515,7 +529,7 @@ class Conversation:
         courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False)
         if courses is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
-        self.student_profile.distributions_needed.extend(courses[0:2])
+        return self.student_profile.distributions_needed.extend(courses[0:2])
 
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 17
         if len(luisAI.query.split(" ")) < 2:
@@ -530,16 +544,16 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_requirements_res), self.decision_tree.get_next_node()]
 
     def handle_student_info_concentration(self, input, luisAI, luis_intent, luis_entities, unsure=False): #18
-        return self.handleStudentConcentration(input, luisAI, luis_intent, luis_entities)
+        return self.handleStudentConcentration(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_class_info_name(self, input, luisAI, luis_intent, luis_entities, unsure=False): #20
-        self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)
+        return self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_class_info_prof(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 21
-        self.handleClassProfessorRequest(input, luisAI, luis_intent, luis_entities)
+        return self.handleClassProfessorRequest(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_new_class_name(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 30
-        return self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)
+        return self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_new_class_prof(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 31
         if luis_entities:
@@ -577,13 +591,13 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
 
     def handle_new_class_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False): #34
-        self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)
+        self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_new_class_time(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 35
-        self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)
+        self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_new_class_description(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 36
-        self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities)
+        self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities, unsure)
 
     def handle_new_class_request(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 37
         if " ok" in self.last_query or "sure" == self.last_query or "recommend" in self.last_query:
