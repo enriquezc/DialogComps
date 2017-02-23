@@ -146,6 +146,7 @@ class Conversation:
         if unsure:
             self.student_profile.major = ["undeclared"]
             self.student_profile.concentration = set(["undeclared"])
+            self.student_profile.major_classes_needed = ["N/A"]
             return [self.decision_tree.get_next_node()]
         updated = False
         if "not" in luisAI.query:
@@ -275,6 +276,9 @@ class Conversation:
                 , self.decision_tree.get_next_node()]
 
     def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
+        if unsure:
+            if self.student_profile.major != ["undeclared"]:
+                
         if "interest" in input:
             return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
         tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
