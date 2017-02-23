@@ -1,8 +1,5 @@
 AFAM;African/African American Studies
-AFDEV;African Developmental Studies
-AMMU;American Music Concentration
 AMST;American Studies
-ANBEH;Animal Behavior
 ANTLN;Anthropological Linguistics
 APLOG;Applied Logic
 ARBC;Arabic
