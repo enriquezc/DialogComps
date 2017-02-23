@@ -228,7 +228,7 @@ class Conversation:
             double = False
         if double:
             majors = luisAI.query.split("and")
-            self.call_debug_print("major split: ", majors)
+            self.call_debug_print("major split: " + str(majors))
             for maj in majors:
                 dept.append(self.nluu.find_departments(maj))
         else:
