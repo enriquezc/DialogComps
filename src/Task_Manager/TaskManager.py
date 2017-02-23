@@ -553,7 +553,7 @@ def create_major_dict():
         line = line.strip()
         pair = line.split(';')
 
-        dept_dict[pair[1]] = pair[0]
+        major_dict[pair[1]] = pair[0]
 
 def create_concentration_dict():
     global concentration_dict
@@ -563,7 +563,7 @@ def create_concentration_dict():
         line = line.strip()
         pair = line.split(';')
 
-        dept_dict[pair[1]] = pair[0]
+        concentration_dict[pair[1]] = pair[0]
 
 ## Taken from wiki/Algorithm_Implementation ##
 def edit_distance(s1, s2):
@@ -591,6 +591,10 @@ def edit_distance(s1, s2):
 def department_match(str_in):
     call_debug_print("MATCHING DEPT: " + str_in)
     if str_in.isspace():
+        return None
+    elif str_in == "":
+        return None
+    elif str_in == None:
         return None
     global dept_dict
     global stop_words
@@ -621,7 +625,6 @@ def department_match(str_in):
         if dist < cur_best:
             cur_match = dept_dict[key]
             cur_best = dist
-    call_debug_print("MATCHED: " + cur_match)
     return cur_match
 
 def distro_match(str_in):
@@ -658,7 +661,6 @@ def distro_match(str_in):
         if dist < cur_best:
             cur_match = distro_dict[key]
             cur_best = dist
-    call_debug_print("MATCHED: " + cur_match)
     return cur_match
 
 def major_match(str_in):
@@ -689,13 +691,12 @@ def major_match(str_in):
     for key in major_dict:
         dist = edit_distance(key.lower(),str_in.lower())
         if dist < cur_best:
-            cur_match = major_dict[key]
+            cur_match = (key, major_dict[key])
             cur_best = dist
         dist = edit_distance(major_dict[key].lower(),str_in.lower())
         if dist < cur_best:
-            cur_match = major_dict[key]
+            cur_match = (key, major_dict[key])
             cur_best = dist
-    call_debug_print("MATCHED: " + cur_match)
     return cur_match
 
 def concentration_match(str_in):
@@ -726,13 +727,12 @@ def concentration_match(str_in):
     for key in concentration_dict:
         dist = edit_distance(key.lower(),str_in.lower())
         if dist < cur_best:
-            cur_match = concentration_dict[key]
+            cur_match = (key, concentration_dict[key])
             cur_best = dist
         dist = edit_distance(concentration_dict[key].lower(),str_in.lower())
         if dist < cur_best:
-            cur_match = concentration_dict[key]
+            cur_match = (key, concentration_dict[key])
             cur_best = dist
-    call_debug_print("MATCHED: " + cur_match)
     return cur_match
 
 # Helper function that triggers general type class queries
@@ -763,6 +763,8 @@ def call_debug_print(ob):
 
 if __name__ == "__main__":
     init()
+    print(major_match("Psych")[0] + major_match("Psych")[1])
+    print(concentration_match("American Music")[0] + concentration_match("American Music")[1])
     '''
     results = query_by_distribution("literary_analysis", "ENGL")
     for course in results:
