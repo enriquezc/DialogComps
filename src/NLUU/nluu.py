@@ -245,9 +245,33 @@ class nLUU:
                 s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]) + "\n"
                 a = a + s.format(course.id, course.name, time, prereqs, course.description)
         return a
-    def create_student_info_major_requirements_res(self, userQuery):
-        s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS[0]
-        return s
+    def create_student_info_major_requirements_res_res(self, userQuery):
+        a = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[0]
+        pot_course = userQuery.object.major_classes_needed
+        print(len(pot_course))
+        for course in pot_course:
+            if course is None:
+                continue
+            if course.time == "":
+                time = "an unknown time"
+            else:
+                time = str(course.time)
+            print(course.faculty_name)
+            if course.faculty_name != "":
+                prof = course.faculty_name
+            if course.prereqs == "":
+                prereqs = "This class has no prereqs"
+            else:
+                prereqs = "The prereqs for this class are " + str(course.prereqs)
+            if course.faculty_name != "":
+                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
+                    0]) + "\n"
+                a = a + s.format(course.id, course.name, time, prof, prereqs, course.description)
+            else:
+                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
+                    0]) + "\n"
+                a = a + s.format(course.id, course.name, time, prereqs, course.description)
+        return a
 
     def create_schedule_class_res_res(self, userQuery):
         if len(userQuery.object.current_classes) == 0:
@@ -314,12 +338,8 @@ class nLUU:
         s = constants.Responses.STUDENT_INFO_ABROAD_RES[0]
         return s
 
-    def create_student_info_requirements_res_res(self, userQuery):
-        s = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[0]
-        return s
-
-    def create_student_info_major_requirements_res_res(self, userQuery):
-        s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[0]
+    def create_student_info_major_requirements_res(self, userQuery):
+        s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS[0]
         return s
 
     def create_student_info_concentration_res(self, userQuery):
@@ -398,9 +418,8 @@ class nLUU:
                 return ordinal_dict[s]
         return None
 
-        def call_debug_print(ob):
-            debug.debug_print(ob, self.debug_value)
-
+    def call_debug_print(self, ob):
+        debug.debug_print(ob, self.debug)
 
 
 #if __name__ == '__main__':

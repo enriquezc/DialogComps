@@ -175,12 +175,11 @@ class DecisionTree:
         self.mapOfNodes[User_Query.QueryType.student_info_name].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_time_left], self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_interests]])    # time left / year
         self.mapOfNodes[User_Query.QueryType.student_info_major].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_concentration],self.mapOfNodes[User_Query.QueryType.student_info_major_requirements],])
         self.mapOfNodes[User_Query.QueryType.student_info_major].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_interests]])
-        self.mapOfNodes[User_Query.QueryType.student_info_major_requirements].required_questions.append(self.mapOfNodes[User_Query.QueryType.new_class_name])  # Ask if they want to take a course that fills these reqs
-        self.mapOfNodes[User_Query.QueryType.student_info_major_requirements].potential_next_questions.append(self.mapOfNodes[User_Query.QueryType.student_info_interests])  # interests
+        self.mapOfNodes[User_Query.QueryType.student_info_major_requirements].required_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name], self.mapOfNodes[User_Query.QueryType.new_class_name]])  # Ask if they want to take a course that fills these reqs
+        self.mapOfNodes[User_Query.QueryType.student_info_major_requirements].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name], self.mapOfNodes[User_Query.QueryType.class_info_name], self.mapOfNodes[User_Query.QueryType.new_class_description]])  # department, prof, recommend
         self.mapOfNodes[User_Query.QueryType.student_info_previous_classes].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_interests]])
         self.mapOfNodes[User_Query.QueryType.student_info_interests].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_requirements], self.mapOfNodes[User_Query.QueryType.new_class_name]])
         self.mapOfNodes[User_Query.QueryType.student_info_abroad].required_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_concentration]])  # concentration, major requirements
-        self.mapOfNodes[User_Query.QueryType.student_info_major_requirements].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.new_class_name], self.mapOfNodes[User_Query.QueryType.class_info_name], self.mapOfNodes[User_Query.QueryType.new_class_description]])  # department, prof, recommend
         self.mapOfNodes[User_Query.QueryType.student_info_time_left].potential_next_questions.extend([self.mapOfNodes[User_Query.QueryType.student_info_major], self.mapOfNodes[User_Query.QueryType.student_info_requirements], self.mapOfNodes[User_Query.QueryType.student_info_concentration], self.mapOfNodes[User_Query.QueryType.student_info_interests]])  # major, concentration, distros, interests
         self.mapOfNodes[User_Query.QueryType.student_info_requirements].potential_next_questions.append(self.mapOfNodes[User_Query.QueryType.student_info_interests])  # interests
         self.mapOfNodes[User_Query.QueryType.student_info_requirements].required_questions.append(self.mapOfNodes[User_Query.QueryType.class_info_distributions])  # ask if they want to take a course that fills these reqs
@@ -253,7 +252,7 @@ class DecisionTree:
         if len(past_node.required_questions) > 0:
             self.current_node = past_node.required_questions[0]
             return self.get_next_node()
-        if len(past_node.potential_next_questions) > 0 and len(past_node.required_questions) > 0:
+        if len(past_node.potential_next_questions) > 0:
             self.current_node = past_node.required_questions[0]
             return self.get_next_node()
         self.current_node = self.mapOfNodes[User_Query.QueryType.welcome]
