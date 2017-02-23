@@ -144,7 +144,7 @@ class Conversation:
         # prevent problems in the common case, we check for the presence of I.
         # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
         if unsure:
-            self.student_profile.major = ["undeclared"]
+            self.student_profile.major = set(["undeclared"])
             self.student_profile.concentration = set(["undeclared"])
             self.student_profile.major_classes_needed = ["N/A"]
             return [self.decision_tree.get_next_node()]
@@ -158,18 +158,19 @@ class Conversation:
                     if tm_major is None:
                         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
                     self.call_debug_print(tm_major)
-                    updated = True
-                    self.student_profile.major.add(tm_major)
+                    if len(self.student_profile.major) < 2 and not tm_major is None:
+                        self.student_profile.major.add(tm_major)
         if not updated:
             major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
             self.call_debug_print("major: " + str(major_list))
             for major in major_list:
-
                 if type(major) == type([]):
                     for m in major:
-                        self.student_profile.major.add(m)
+                        if len(self.student_profile.major) < 2 and not m is None:
+                            self.student_profile.major.add(m.title())
                 else:
-                    self.student_profile.major.add(major)
+                    if len(self.student_profile.major) < 2 and not major is None:
+                        self.student_profile.major.add(major.title())
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                 self.decision_tree.get_next_node()]
 
@@ -212,7 +213,7 @@ class Conversation:
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res), self.decision_tree.get_next_node()]
 
 
-    def getDepartmentStringFromLuis(self, input, luisAI, luis_intent, luis_entities, unsure=False):
+    def getDepartmentStringFromLuis(self, input, luisAI, luis_intent, luis_entities, unsure=False, is_major=True):
         # takes the Luis query, and lowers any word in the sequence so long as
         # the word isn't I. NLTK will be able to recognize the majors as nouns if
         # they are lowercase, but will also think i is a noun. Therefore, to
@@ -230,7 +231,6 @@ class Conversation:
             elif "cinema and media" in pot_query:
                 self.student_profile.major.add(self.task_manager_department_match("cams"))
                 pot_query = pot_query.replace("cinema and media", "")
-
             else:
                 double = True
         else:
@@ -239,13 +239,13 @@ class Conversation:
             majors = luisAI.query.split("and")
             self.call_debug_print("major split: " + str(majors))
             for maj in majors:
-                dept.append(self.nluu.find_departments(maj))
+                maj_string = " ".join(self.nluu.find_departments(maj))
+                dept.append(maj_string)
         else:
             major = self.nluu.find_departments(pot_query)
             self.call_debug_print("single major: " + str(major))
-            for word in major:
-                if word != "major" and word != "concentration" and word != "studies":
-                    dept.append(self.task_manager_department_match(word))
+            major_string = " ".join(major)
+            dept.append(self.task_manager_department_match(major_string))
         return dept
 
 
@@ -536,6 +536,8 @@ class Conversation:
             return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
 
     def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False): #16
+        if unsure:
+            return self.decision_tree.get_next_node()
         self.call_debug_print(luisAI.query)
         if "nothing" in luisAI.query or "none" in luisAI.query:
             self.call_debug_print("we bout to graduate boyz")
@@ -547,10 +549,6 @@ class Conversation:
                 if entity.type == "distribution":
                     self.student_profile.distributions_needed.append(Course.Course(entity.entity))
             if len(self.student_profile.distributions_needed) != 0:
-
-                #return [self.decision_tree.get_next_node()]
-                next_node = self.decision_tree.get_next_node()
-                self.call_debug_print(next_node.type)
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res), self.decision_tree.get_next_node()]
         courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False, major=True)
         if courses is None:
@@ -560,12 +558,30 @@ class Conversation:
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 17
         if unsure:
             course = Course.Course()
-            course.department.extend(self.student_profile.major)
-            if self.student_profile.terms_left > 6:
-                course.course_num = 100
+            if self.student_profile.major and self.student_profile.major != "Undecided":
+                course.department = list(self.student_profile.major)[0]
+                if self.student_profile.terms_left > 6:
+                    course.course_num = ["100","200"]
+                    some_courses = self.task_manager_query_courses_by_level(course)
+                else:
+                    course.course_num = ["200","300"]
+                    some_courses = self.task_manager_query_courses_by_level(course)
+
             else:
-                course.course_num = 200
-                some_courses = self.task_manager_query_courses_by_level(course)
+                course.department = list(self.student_profile.major)[0]
+                if self.student_profile.terms_left > 6:
+                    course.course_num = ["100", "200"]
+                    some_courses = self.task_manager_query_courses_by_level(course)
+
+                else:
+                    course.course_num = ["200", "300"]
+                    some_courses = self.task_manager_query_courses_by_level(course)
+            self.student_profile.major_classes_needed.extend(some_courses[0:4])
+            self.student_profile.potential_courses = some_courses[0:4]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_requirements_res),
+                self.decision_tree.get_next_node()]
+
+
         if len(luisAI.query.split(" ")) < 2:
             responseSentiment = self.sentimentAnalyzer.polarity_scores(luisAI.query)
             if responseSentiment["neg"] > responseSentiment["pos"] or "nothing" in luisAI.query:
@@ -801,6 +817,15 @@ class Conversation:
                 return None
         else:
             return tm_department
+
+    def task_manager_major_match(self, major):
+        tm_major = TaskManager.major_match(major)
+        return tm_major
+
+    def task_manager_concentration_match(self, concentration):
+        tm_concentration = TaskManager.concentration_match(concentration)
+        return tm_concentration
+        
 
     def task_manager_class_title_match(self, class_string, department = None):
         #returns a course object
