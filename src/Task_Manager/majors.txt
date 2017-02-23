@@ -1,0 +1,32 @@
+AFAM;African/African American Studies
+AMST;American Studies
+ARTH;Art History
+ARTS;Studio Art
+ASST;Asian Studies
+BIOL;Biology
+CHEM;Chemistry
+CHIN;Chinese
+CAMS;Cinema and Media Studies
+CLAS;Classics
+CS;Computer Science
+ECON;Economics
+ENGL;English
+ENTS;Environmental Studies
+FREN;French and Francophone Studies
+GEOL;Geology
+GERM;German
+HIST;History
+LTAM;Latin American Studies
+LING;Linguistics
+MATH;Mathematics
+MUSC;Music
+PHIL;Philosophy
+PHYS;Physics
+POSC;Political Science
+PSYC;Psychology
+RELG;Religion
+RUSS;Russian
+SOAN;Sociology/Anthropology
+SPAN;Spanish
+THEA;Theater Arts
+WGST;Women's and Gender Studies

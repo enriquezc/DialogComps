@@ -1,0 +1,15 @@
+AMMU;American Music Concentration
+AFAM;African/African American Studies
+ARCN;Archaeology
+BICHM;Biochemistry
+CGSC;Cognitive Science
+CRCST;Cross-Cultural Studies
+EDUC;Educational Studies
+EUST;European Studies
+FREN;French and Francophone Studies
+LTAM;Latin American Studies
+MRST;Medieval & Renaissance Studies
+MEST;Middle East Studies
+NEUR;Neuroscience
+POLEC;Political Economics
+WGST;Women's and Gender Studies
