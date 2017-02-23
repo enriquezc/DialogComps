@@ -542,7 +542,7 @@ class Conversation:
                 course.course_num = 100
             else:
                 course.course_num = 200
-            self.task_manager_query_courses_by_level()
+                some_courses = self.task_manager_query_courses_by_level(course)
         if len(luisAI.query.split(" ")) < 2:
             responseSentiment = self.sentimentAnalyzer.polarity_scores(luisAI.query)
             if responseSentiment["neg"] > responseSentiment["pos"] or "nothing" in luisAI.query:
