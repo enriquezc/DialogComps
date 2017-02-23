@@ -11,14 +11,14 @@ import src.utils.debug as debug
 
 conn = None
 dept_dict = {}
-distro_list = []
+distro_dict = []
 stop_words = None
 debug_value = None
 
 def init(init_debug = False):
     connect_to_db()
     create_dept_dict()
-    create_distro_list()
+    create_distro_dictionary()
     create_stop_words_set()
 
     global debug
@@ -369,11 +369,16 @@ def create_stop_words_set():
     stop_words.add("interest")
     stop_words.add("major")
 
-def create_distro_list():
-    global distro_list
-    distro_list = "a_and_i;arts_practice;statistical_reasoning;lab;literary_analysis;humanistic_inquiry;social_inquiry;\
-        writing_rich_1;writing_rich_2;quantitative_reasoning;\
-        intercultural_domestic_studies;international_studies".split(';')
+def create_distro_dictionary():
+    global distro_dict
+    distro_dict = {"A&I":"a_and_i",
+    "Arts practice":"arts_practice",
+    "Statistical Reasoning":"statistical_reasoning",
+    "Lab":"lab";"literary analysis":"literary_analysis",
+    "Humanistic Inquiry":"humanistic_inquiry",
+    "social inquiry":"social_inquiry",
+    "WR1":"writing_rich_1","WR2":"writing_rich_2","QRE":"quantitative_reasoning",
+    "IDS":"intercultural_domestic_studies","IS":"international_studies"}
 
 # takes a list of keywords, returns a list of classes
 # @params List object 'keywords' which contains words to query on
@@ -600,35 +605,43 @@ def distro_match(str_in):
     elif str_in == None:
         return None
 
-    global distro_list
+    global distro_dict
     global stop_words
 
     # if the string is in our set of stop words, we return nothing
     if str_in in stop_words:
         return None
 
-    if '&' in str_in:
-        return "a_and_i"
-    elif "science" in str_in.split():
-        return "lab"
-    elif "art" in str_in.split() or "arts" in str_in.split():
-        return "arts_practice"
-    elif "domestic" in str_in.split() or "intercultural" in str_in.split():
-        return "intercultural_domestic_studies"
-    else:
-        cur_best = 100
-        cur_match = None
-        str_expand = smart_description_expansion(str_in)
-        for distro in distro_list:
-            distro_str = distro.replace('_',' ')
-            edit_dist = edit_distance(distro_str, str_expand)
-            if edit_dist < cur_best:
-                cur_best = edit_dist
-                cur_match = distro
-        return cur_match
+    cur_match = None
+    cur_best = 100
+    distro_items = distro_dict.items()
+    # check to see if the input already matches a department
+    for key, value in distro_items:
+        if str_in.lower() == key.lower():
+            return value
+        if str_in.lower() == value.lower():
+            return value
+    # otherwise, use edit distance to find the nearest major
+    for key in distro_dict:
+        dist = edit_distance(key.lower(),str_in.lower())
+        if dist < cur_best:
+            cur_match = distro_dict[key]
+            cur_best = dist
+        dist = edit_distance(distro_dict[key].lower(),str_in.lower())
+        if dist < cur_best:
+            cur_match = distro_dict[key]
+            cur_best = dist
+    call_debug_print("MATCHED: " + cur_match)
+    return cur_match
 
 # Helper function that triggers general type class queries
 def query_courses_by_level(course):
+    dept = course.department
+    for key, value in dept_dict.items():
+        if dept == key or dept == value:
+            course.department = key
+            break
+
     return query_courses(course, True)
 
 def get_n_best_indices(row, n):
