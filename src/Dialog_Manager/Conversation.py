@@ -819,6 +819,15 @@ class Conversation:
         else:
             return tm_department
 
+    def task_manager_major_match(self, major):
+        tm_major = TaskManager.major_match(major)
+        return tm_major
+
+    def task_manager_concentration_match(self, concentration):
+        tm_concentration = TaskManager.concentration_match(concentration)
+        return tm_concentration
+        
+
     def task_manager_class_title_match(self, class_string, department = None):
         #returns a course object
         tm_class_match = TaskManager.query_by_title(class_string, department)
