@@ -443,15 +443,16 @@ def query_by_keywords(keywords, exclude=None, threshold = 3, student_department=
     if len(courses) < 1:
         return []
     max = courses[0].weighted_score
+    toReturn = []
+    val = max * 0.3
     for course in courses:
-        val = max - threshold
-        if course.weighted_score < val:
-            courses.remove(course)
+        if course.weighted_score >= val:
+            toReturn.append(course)
     if exclude is None:
-        return courses
+        return toReturn
     coursesToReturn = []
     excludeCourses = set(exclude)
-    for course in courses:
+    for course in toReturn:
         if course not in excludeCourses:
             coursesToReturn.append(course)
     return coursesToReturn
