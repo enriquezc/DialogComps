@@ -83,7 +83,7 @@ def query_courses(course, approximate = False):
                     course_query = course_query + "sec_course_no LIKE '1%%' AND "
                 elif course.course_num == "200":
                     course_query = course_query + "sec_course_no LIKE '2%%' AND "
-                elif course.course_num == "200":
+                elif course.course_num == "300":
                     course_query = course_query + "sec_course_no LIKE '3%%' AND "
 
     course_query = course_query + "sec_name NOT LIKE '%WL%' AND sec_avail_status = 'Open'"
