@@ -323,6 +323,8 @@ class nLUU:
 
     def create_student_info_interests_res_res(self, userQuery):
         pot_course = userQuery.object.potential_courses
+        if pot_course is None:
+            return constants.Responses.TM_COURSE_CLARIFY[0]
         a = constants.Responses.STUDENT_INFO_INTERESTS_RESA
         for course in pot_course:
             s = constants.Responses.STUDENT_INFO_INTERESTS_RESB[0]
