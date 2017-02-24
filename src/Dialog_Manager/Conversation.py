@@ -421,10 +421,7 @@ class Conversation:
             return [self.decision_tree.get_next_node()]
 
     def handleStudentRequirementResponse(self, input, luisAI, luis_intent, luis_entities, unsure=False):
-        course = Course.Course()
-        self.task_manager_information(course)
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res),
-                self.decision_tree.get_next_node()]
+        return [(self.decision_tree.get_next_node)]
 
     def handleClassTimeRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         course = Course.Course()
@@ -470,6 +467,7 @@ class Conversation:
                     if tm_course == stud_course:
                         try:
                             self.student_profile.current_classes.remove(stud_course)
+                            self.student_profile.current_credits -= tm_course.credits
                         except:
                             pass
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)]
@@ -477,6 +475,7 @@ class Conversation:
             to_remove = self.student_profile.relevant_class
             if to_remove in self.student_profile.current_classes:
                 self.student_profile.current_classes.remove(self.student_profile.relevant_class)
+                self.student_profile.current_credits -= self.student_profile.relevant_class.credits
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)]
         else:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
@@ -551,12 +550,10 @@ class Conversation:
         if len(self.last_user_query) > 0:
             if self.last_user_query[-1].type.name == "student_info_major_requirements":
                 return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities)
-            elif self.last_user_query[-1].type.name == "student_info_requirements":
-                return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities)
             else:
-                return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
+                return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities)
         else:
-            return self.handleStudentInterests(input, luisAI, luis_intent, luis_entities)
+            return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities)
 
     def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 16
         if unsure:
@@ -570,15 +567,22 @@ class Conversation:
             for entity in luis_entities:
                 self.call_debug_print("i still gotta finish up that yung" + entity.entity)
                 if entity.type == "distribution":
-                    self.student_profile.distributions_needed.append(Course.Course(entity.entity))
+                    tm_distro = self.task_manager_distribution_match(entity.entity)
+                    self.student_profile.distributions_needed.append(entity.entity) #add the text to gen distros
+                    self.student_profile.potential_courses = tm_distro #add returned courses to last talked about courses
             if len(self.student_profile.distributions_needed) != 0:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res),
                         self.decision_tree.get_next_node()]
-        courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=False, major=True)
+        else:
+            return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities, unsure=False)
+        '''courses = self.task_manager_query_courses_by_distribution()
         if courses is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
-        return self.student_profile.distributions_needed.extend(courses[0:2])
-
+        for course in courses:
+            if course not in self.student_profile.distributions_needed:
+                self.student_profile.distributions_needed.append(course)
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res),
+            self.decision_tree.get_next_node()]''' #fuck it if we don't get entities, lets say they were talking about majors
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 17
         if unsure:
             course = Course.Course()
@@ -879,6 +883,18 @@ class Conversation:
             return tm_level
         else:
             return None
+
+    def task_manager_query_courses_by_distribution(self, distro):
+        # given a course object with 100, 200, 300, returns courses in that department with that level
+        #course = Course.Course()
+        #course.gen_distributions.append(distro)
+        if distro != "":
+            tm_level = TaskManager.query_by_distribution(distro)
+            if len(tm_level) > 0:
+                return tm_level
+            else:
+                return None
+        return None
 
     def call_debug_print(self, ob):
         debug.debug_print(ob, self.debug)
