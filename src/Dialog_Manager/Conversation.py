@@ -272,15 +272,25 @@ class Conversation:
     def handleScheduleClass(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         index = self.nluu.get_number_from_ordinal_str(input)
         tm_courses = None
-        if self.student_profile.potential_courses is not None and len(self.student_profile.potential_courses) != 0 \
-                and index is not None:
-            index = index - 1 if index != float('inf') else len(self.student_profile.potential_courses) - 1
-            tm_courses = [self.student_profile.potential_courses[index]]
+        if self.student_profile.potential_courses is not None and len(self.student_profile.potential_courses) != 0:
+            if index is not None:
+                index = index - 1 if index != float('inf') else len(self.student_profile.potential_courses) - 1
+                tm_courses = [self.student_profile.potential_courses[index]]
+
         tm_courses = tm_courses or self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=True)
         if tm_courses is None:
-            tm_courses = [self.student_profile.potential_courses[0]] if len(
-                self.student_profile.potential_courses) > 0 else [None]
-        if tm_courses[0] is None:
+            if re.search("(\d{3})", input):
+                num = re.search("(\d{3})", input).group(0)
+                tm_course = None
+                for course in self.student_profile.potential_courses:
+                    if course.course_num == num:
+                        tm_course = course
+                        break
+                if tm_course is not None:
+                    tm_courses = [tm_course]
+            tm_courses = tm_courses or [self.student_profile.potential_courses[0]] if len(
+                self.student_profile.potential_courses) > 0 else None
+        if tm_courses is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
         tm_course = tm_courses[0]
         if tm_course is None:
