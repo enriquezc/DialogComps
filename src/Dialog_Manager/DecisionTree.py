@@ -9,12 +9,14 @@ import luis
 from src.Task_Manager import TaskManager
 import src.utils.debug as debug
 
-
+'''
+Node objects are the nodes in the decision tree.
+They contain the UserQuery object that the node corresponds to
+They also have checks for whether or not they were asked/answered
+They have 2 lists of children, one for children you can go to if the question is answered
+and one which you go to if not answered.
+'''
 class NodeObject:
-    # have a relavent function for each user query??!?!?!
-    # how do we do that? Can we just assign a variable to be a function? That doesn't make any sense tho
-    # What if we have a string that is also the name of a function? Can that work? python is dumb and obtrusive
-
 
     def __init__(self, userQ, requiredQ, potentialQ):
         self.userQuery = userQ
@@ -27,6 +29,13 @@ class NodeObject:
         self.potential_next_questions.extend(potentialQ)
         self.node_function = None
 
+
+'''
+Tree that we use to decide our next question.
+Has a bunch of node objects.
+The map of nodes lets us refer to specific nodes corresponding to the userquery object
+And we build a node for every possible userquery, even if we don't refer to them ever.
+'''
 class DecisionTree:
     def __init__(self, student, debug = False):
         self.mapOfNodes = {}
@@ -37,10 +46,16 @@ class DecisionTree:
         self.student = student
         self.debug = debug
         self.numInterests = 0
-
+    
+    #gets current node
     def get_current_node(self):
         return self.current_node
 
+    '''
+    Checks if a specific node is answered. 
+    Different checks for different nodes.
+    Usually depends on the Student object.
+    '''
     def is_answered(self, node):
         if node.userQuery.value == 0: #welcome
             node.answered = True
@@ -161,7 +176,13 @@ class DecisionTree:
         else:
             return False
 
-
+    '''
+    Creates a node for every possible UserQuery.
+    Then creates a tree that we believe makes sense for a conversation structure.
+    Potential problems arise if you don't answer most questions
+    or if you extend the conversation too long, 
+    since at some point most nodes are already answered.
+    '''
     def build_Tree(self):
         for query_type in User_Query.QueryType:
             self.mapOfNodes[query_type] = NodeObject(query_type, [], [])
@@ -205,8 +226,13 @@ class DecisionTree:
         else:
             return User_Query.UserQuery(self.student, self.past_node.userQuery)
 
-    # @params: the current node of the tree
-    # @return: the next node of the tree
+ 
+    ''' @return: a UserQuery object representing the next node in the tree.
+    Picks the first unanswered node from required questions if you answered the current node
+    If you haven't, picks the first one from the potential next questions
+    If all have been answered, naively picks the first node and finds the next node from there.
+    If there are no next nodes, loops back to top and starts searching for unanswered questions.
+    '''
     def get_next_node(self):
 
         past_node = self.current_node
@@ -261,5 +287,6 @@ class DecisionTree:
         self.current_node = self.mapOfNodes[User_Query.QueryType.welcome]
         return self.get_next_node()
 
+    #print in debug mode
     def call_debug_print(self, ob):
         debug.debug_print(ob, self.debug)
