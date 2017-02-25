@@ -40,7 +40,7 @@ class Course:
                 cur_line_length = 0
             cur_line_length += len(token)
             description += " " + token
-        top_line = "{} ({}) : {}".format(self.id, self.weighted_score, self.name)
+        top_line = "{} : {}".format(self.id, self.name)
         centering_spaces = " " * int((line_length - len(top_line)) / 2)
         top_line = "{}{}{}".format(centering_spaces, top_line, centering_spaces)
         prof_line = "This class is taught by {}".format(self.faculty_name) if self.faculty_name != "" else ""
