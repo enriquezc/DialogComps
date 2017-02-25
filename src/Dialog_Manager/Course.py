@@ -40,7 +40,7 @@ class Course:
                 cur_line_length = 0
             cur_line_length += len(token)
             description += " " + token
-        top_line = "{} : {}".format(self.id, self.name)
+        top_line = "{} : {}, {} credits".format(self.id, self.name, self.credits)
         centering_spaces = " " * int((line_length - len(top_line) - 2) / 2)
         top_line = "{}){}{}{}".format(index, centering_spaces, top_line, centering_spaces)
         professor_centering_spaces = " " * int((line_length - len(self.faculty_name))/2)

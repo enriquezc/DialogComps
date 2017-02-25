@@ -86,6 +86,15 @@ class Conversation:
                             if responseSentiment["neg"] > responseSentiment["pos"]:
                                 print("Smell ya later! Thanks for chatting.")
                                 return
+                            elif responseSentiment["neu"] > responseSentiment["pos"]:
+                                self.utterancesStack.append(userQuery)
+                                self.last_user_query.append(userQuery)
+                                if userQuery.type == User_Query.QueryType.goodbye:
+                                    print("Goodbye")
+                                    self.conversing = False
+                                    break
+                            print(self.nluu.create_response(userQuery) + '\n')
+                            time.sleep(1)
                         else:
                             self.utterancesStack.append(userQuery)
                             self.last_user_query.append(userQuery)
@@ -487,10 +496,10 @@ class Conversation:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
     def handleUnregisterRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
-        self.call_debug_print("hey" + input)
-        if self.nluu.get_history(input):
-            self.call_debug_print("hey")
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
+        #self.call_debug_print("hey" + input)
+        #if self.nluu.get_history(input):
+        #    self.call_debug_print("hey")
+        #    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
         tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
         if not tm_courses is None and len(tm_courses) > 0:  # We got returned a list
             for tm_course in tm_courses:
@@ -501,13 +510,13 @@ class Conversation:
                             self.student_profile.current_credits -= tm_course.credits
                         except:
                             pass
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
         if tm_courses is None:
             to_remove = self.student_profile.relevant_class
             if to_remove in self.student_profile.current_classes:
                 self.student_profile.current_classes.remove(self.student_profile.relevant_class)
                 self.student_profile.current_credits -= self.student_profile.relevant_class.credits
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
         else:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
