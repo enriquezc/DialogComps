@@ -300,6 +300,7 @@ class Conversation:
         if tm_course in self.student_profile.current_classes:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res),
                     self.decision_tree.get_next_node()]
+            #return [self.decision_tree.get_next_node()]
         self.student_profile.relevant_class = tm_course
         self.student_profile.current_classes.append(tm_course)
         newCredits = 6 if tm_course.credits is None else tm_course.credits
@@ -310,6 +311,7 @@ class Conversation:
                     self.decision_tree.get_next_node()]
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
             , self.decision_tree.get_next_node()]
+        #return [self.decision_tree.get_next_node()]
 
     def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         self.call_debug_print("hello" + input)
@@ -849,6 +851,8 @@ class Conversation:
         self.call_debug_print("We done")
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
+                if len(tm_courses) > 5:
+                    tm_courses = tm_courses[0:5]
                 return tm_courses
             else:
                 return None
@@ -862,6 +866,8 @@ class Conversation:
                                                    student_department=stud.major, student_interests=stud.interests)
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
+                if len(tm_courses) > 5:
+                    tm_courses = tm_courses[0:5]
                 return tm_courses
             else:
                 return None
@@ -924,6 +930,8 @@ class Conversation:
             '''class_match = TaskManager.query_by_distribution(tm_distro, None, list(self.student_profile.interests),
                                                             list(self.student_profile.major))'''
         if len(class_match) > 0:
+            if len(class_match > 5):
+                class_match = class_match[0:5]
             return class_match
         else:
             return None
