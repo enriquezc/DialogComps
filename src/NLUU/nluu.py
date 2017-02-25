@@ -409,6 +409,17 @@ class nLUU:
         pos = nltk.pos_tag(tokens)
         return [word for word, p in pos if p in ['JJ', 'NN', 'NNS', "NNP"] and word != "major"]  # getting adj and nouns from sentence and proper nouns
 
+    def find_numbers(self, utterance):
+        tokens = self.tokenize(utterance)
+        pos = self.pos_tag(tokens)
+        numbers = []
+        for word, p in pos:
+            if p == 'CD':
+                numbers.add(word)
+            elif p == 'JJ':
+                numbers.add(word.split('-')[0])
+        return numbers
+
     def get_number_from_ordinal_str(self, ordinal_str):
         strs = ordinal_str.split()
         ordinal_dict = {
