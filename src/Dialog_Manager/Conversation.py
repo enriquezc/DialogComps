@@ -504,6 +504,9 @@ class Conversation:
                 self.call_debug_print(course.name)
                 # print(course.gen_distributions)
                 distros = self.task_manager_query_courses_by_distribution(course.name)
+                for distro in distros:
+                    if distro not in distro_list:
+                        
                 distro_list.extend(distros)
             for distro in distro_list:  # somehow get max occurance (a course name will show up more than once if it fills more than one distro
                 self.call_debug_print(distro)
@@ -511,9 +514,10 @@ class Conversation:
                 if distro_list.count(distro) > 1:  # using max occurance / replacement concept, but shouldn't
                     self.student_profile.potential_courses.append(distro)
                     max_occ = distro_list.count(distro)
+                    self.student_profile.distro_courses[]
             self.student_profile.potential_courses = list(set(distro_list))[1:3]
 
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.class_info_distributions_res),
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res
                     self.decision_tree.get_next_node()]
         else:
             for distro in distro_list:
