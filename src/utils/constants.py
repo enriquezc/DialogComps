@@ -31,7 +31,8 @@ class Responses:
     STUDENT_INFO_TIME_LEFT_RES = ("I'll keep that in mind while I'm helping you out.",)
     STUDENT_INFO_ABROAD = ("Do you have any plans to study abroad?",)
     STUDENT_INFO_ABROAD_RES = ("That sounds like an awesome experience.",)
-    STUDENT_INFO_REQUIREMENTS = ("Are there any general graduation requirements (distros) you still need to complete?",)
+    STUDENT_INFO_REQUIREMENTS = ("Which, if any, general graduation requirements (distros) do you still need to complete?",
+                                 "Are there any general graduation requirements (distros) you still need to complete?",)
     STUDENT_INFO_REQUIREMENTS_RES = ("Let's try to find some courses to fill these requirements.", 
                                      "Here are some classes that fill general requirements that you still need:\n{}",)
     STUDENT_INFO_MAJOR_REQUIREMENTS = ("What classes do you still have to take to complete your major?",)
