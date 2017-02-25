@@ -493,7 +493,7 @@ def query_by_distribution(distribution, department = None, keywords = [], studen
         query_string = query_string + "'"
 
     cur = conn.cursor()
-
+    call_debug_print(cur.mogrify(query_string))
     cur.execute(query_string)
 
     results = cur.fetchall()
