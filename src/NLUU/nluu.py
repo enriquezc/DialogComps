@@ -246,30 +246,11 @@ class nLUU:
     def create_new_class_description_res(self, userQuery):
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
-        a = ""
-        pot_course = userQuery.object.potential_courses
-        self.call_debug_print(len(pot_course))
-        for course in pot_course:
-            if course is None:
-                continue
-            if course.time == "":
-                time = "an unknown time"
-            else:
-                time = str(course.time)
-            self.call_debug_print(course.faculty_name)
-            if course.faculty_name != "":
-                prof = course.faculty_name
-            if course.prereqs == "":
-                prereqs = "This class has no prereqs"
-            else:
-                prereqs = "The prereqs for this class are " + str(course.prereqs)
-            if course.faculty_name != "":
-                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]) + "\n"
-                a = a + s.format(course.id, course.name, time, prof, prereqs, course.description)
-            else:
-                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]) + "\n"
-                a = a + s.format(course.id, course.name, time, prereqs, course.description)
+        a = "Here's what I found:\n"
+        for course in userQuery.object.potential_courses:
+            a += str(course)
         return a
+
     def create_student_info_major_requirements_res_res(self, userQuery):
         a = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[0]
         pot_course = userQuery.object.major_classes_needed
@@ -445,10 +426,20 @@ class nLUU:
             if s in ordinal_dict:
                 return ordinal_dict[s]
         return None
-
+    
+    def get_history(self, utterance):
+        
+        tokens = nltk.word_tokenize(utterance)
+        pos = nltk.pos_tag(tokens)
+        codes = ["VBD",  "VBN"]
+        for p in pos:
+            if p[1] in codes:
+                return True
+        return False
+    
     def call_debug_print(self, ob):
         debug.debug_print(ob, self.debug)
-
+    
 
 #if __name__ == '__main__':
 #    nluu = nLUU("https://api.projectoxford.ai/luis/v1/application?id=fc7758f9-4d40-4079-84d3-72d6ccbb3ad2&subscription-key=c18a6e7119874249927033e72b01aeea")
