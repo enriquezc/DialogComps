@@ -12,6 +12,7 @@ from nltk.corpus import stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from copy import deepcopy
 import src.utils.debug as debug
+import pprint
 
 
 class Conversation:
@@ -493,28 +494,41 @@ class Conversation:
     def handleClassDistribution(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         # occurs when the user wants to get courses that satisfy a given distribution
         # returns a list of courses that all satisfy the distribution
-        distro_list = []
+        distro_list = self.student_profile.distributions_needed
 
         self.call_debug_print(distro_list)
         max_occ = 0
-        for course in self.student_profile.distributions_needed:
-            self.call_debug_print(course.name)
-            # print(course.gen_distributions)
-            distros = self.task_manager_distribution_match(course.name)
-            distro_list.extend(distros)
-        for distro in distro_list:  # somehow get max occurance (a course name will show up more than once if it fills more than one distro
-            self.call_debug_print(distro)
-            self.call_debug_print(distro.name)
-            self.student_profile.potential_courses = []
-            if distro_list.count(distro) > 1:  # using max occurance / replacement concept, but shouldn't
-                self.student_profile.potential_courses.append(distro)
-                max_occ = distro_list.count(distro)
-        if self.student_profile.potential_courses == []:
-            self.student_profile.potential_courses = list(set(distro_list))[1:3]
+        if distro_list is None:
+            for course in self.student_profile.potential_courses:
+                self.call_debug_print(course.name)
+                # print(course.gen_distributions)
+                distros = self.task_manager_query_courses_by_distribution(course.name)
+                distro_list.extend(distros)
+            for distro in distro_list:  # somehow get max occurance (a course name will show up more than once if it fills more than one distro
+                self.call_debug_print(distro)
+                self.call_debug_print(distro.name)
+                self.student_profile.potential_courses = []
+                if distro_list.count(distro) > 1:  # using max occurance / replacement concept, but shouldn't
+                    self.student_profile.potential_courses.append(distro)
+                    max_occ = distro_list.count(distro)
+            if self.student_profile.potential_courses == []:
+                self.student_profile.potential_courses = list(set(distro_list))[1:3]
+            else:
+                self.student_profile.potential_courses = list(set(self.student_profile.potential_courses))
+
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.class_info_distributions_res),
+                    self.decision_tree.get_next_node()]
         else:
-            self.student_profile.potential_courses = list(set(self.student_profile.potential_courses))
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.class_info_distributions_res),
-                self.decision_tree.get_next_node()]
+            for distro in distro_list:
+                course = Course.Course()
+                course.gen_distributions.append(distro)
+                tm_courses = self.task_manager_query_courses_by_distribution(course)[0:2]
+                self.student_profile.distro_courses[distro] = tm_courses
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.class_info_distributions_res),
+                        self.decision_tree.get_next_node()]
+
+
+
 
     def handleUncertainResponse(self, input, luisAI, luis_intent, luis_entities):
         new_intent = format(self.decision_tree.current_node.userQuery).split(".")[1]
@@ -577,9 +591,9 @@ class Conversation:
             for entity in luis_entities:
                 self.call_debug_print("i still gotta finish up that yung" + entity.entity)
                 if entity.type == "distribution":
-                    tm_distro = self.task_manager_distribution_match(entity.entity)
+                    tm_distro = self.task_manager_query_courses_by_distribution(entity.entity)
                     self.student_profile.distributions_needed.append(entity.entity) #add the text to gen distros
-                    self.student_profile.potential_courses = tm_distro #add returned courses to last talked about courses
+                    self.student_profile.distro_courses[entity.entity] = tm_distro #add returned courses to last talked about courses
             if len(self.student_profile.distributions_needed) != 0:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res),
                         self.decision_tree.get_next_node()]
@@ -876,15 +890,7 @@ class Conversation:
 
     def task_manager_distribution_match(self, distribution, dept=None):
         tm_distro = TaskManager.distro_match(distribution)
-        if dept != None:
-            tm_department = TaskManager.department_match(dept)
-            class_match = TaskManager.query_by_distribution(tm_distro, tm_department)
-        else:
-            class_match = TaskManager.query_by_distribution(tm_distro)
-        if len(class_match) > 0:
-            return class_match
-        else:
-            return [None]
+        return tm_distro
 
     def task_manager_query_courses_by_level(self, course):
         # given a course object with 100, 200, 300, returns courses in that department with that level
@@ -895,16 +901,23 @@ class Conversation:
             return None
 
     def task_manager_query_courses_by_distribution(self, distro):
-        # given a course object with 100, 200, 300, returns courses in that department with that level
+        # given a course object with distributions, return courses that fulfil that distribution
+        # also potentially uses student major and keywords to query on courses.
         #course = Course.Course()
         #course.gen_distributions.append(distro)
-        if distro != "":
-            tm_level = TaskManager.query_by_distribution(distro)
-            if len(tm_level) > 0:
-                return tm_level
-            else:
-                return None
-        return None
+
+        tm_distro = TaskManager.distro_match(distro)
+        if dept != None:
+            tm_department = TaskManager.department_match(dept)
+            class_match = TaskManager.query_by_distribution(tm_distro, tm_department, list(self.student_profile.interests),
+                                                            list(self.student_profile.major))
+        else:
+            class_match = TaskManager.query_by_distribution(tm_distro, None, list(self.student_profile.interests),
+                                                            list(self.student_profile.major))
+        if len(class_match) > 0:
+            return class_match
+        else:
+            return None
 
     def call_debug_print(self, ob):
         debug.debug_print(ob, self.debug)
