@@ -641,14 +641,9 @@ class Conversation:
                 else:
                     course.course_num = ["200", "300"]
                     some_courses = self.task_manager_query_courses_by_level(course)
-<<<<<<< HEAD
-            self.student_profile.major_classes_needed.extend(some_courses)
-            self.student_profile.potential_courses = some_courses
-=======
             if some_courses is not None:
                 self.student_profile.major_classes_needed.extend(some_courses[0:4])
                 self.student_profile.potential_courses = some_courses[0:4]
->>>>>>> 9fa5f5e301ce30964614057503bf969db23bc651
             return [
                 User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_requirements_res),
                 self.decision_tree.get_next_node()]
@@ -929,22 +924,24 @@ class Conversation:
         # given a distributions, return courses that fulfil that distribution
         # also potentially uses student major and keywords to query on courses.
         tm_distro = self.task_manager_distribution_match(distro)
+        if self.student_profile.major:
+            major = list(self.student_profile.major)[0]
+        else:
+            major = None
         if dept != None:
             tm_department = TaskManager.department_match(dept)
-            class_match = TaskManager.query_by_distribution(tm_distro, tm_department)
-            '''class_match = TaskManager.query_by_distribution(tm_distro, tm_department, list(self.student_profile.interests),
-                                                            list(self.student_profile.major))'''
+            class_match = TaskManager.query_by_distribution(tm_distro, tm_department, list(self.student_profile.interests),
+                                                            major)
         else:
-            class_match = TaskManager.query_by_distribution(tm_distro)
-
-            '''class_match = TaskManager.query_by_distribution(tm_distro, None, list(self.student_profile.interests),
-                                                            list(self.student_profile.major))'''
+            class_match = TaskManager.query_by_distribution(tm_distro, None, list(self.student_profile.interests),
+                                                            major)
         if len(class_match) > 0:
             if len(class_match) > 5:
                 class_match = class_match[0:4]
             return class_match
         else:
             return None
+
 
     def call_debug_print(self, ob):
         debug.debug_print(ob, self.debug)
