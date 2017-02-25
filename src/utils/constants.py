@@ -51,7 +51,8 @@ class Responses:
     CLASS_INFO_TIME_RES = ("{} is during {}.",)
     CLASS_INFO_DISTRIBUTIONS = ("Would you like to fulfill some of those requirements this term?",)
     CLASS_INFO_DISTRIBUTIONS_RES = ("{}",)
-    NEW_CLASS_NAME = ("Are there any classes that you'd like to take?",)
+    NEW_CLASS_NAME = ("What is the name of a class you'd like to take?",
+                      "Are there any classes that you'd like to take?",)
     NEW_CLASS_PROF = ("Is there a professor that you'd like to take a class with?",)
     NEW_CLASS_DEPT = ("Do you want to take a class in any particular department?",)
     NEW_CLASS_SENTIMENT = ("What do you think about taking {}?",)
