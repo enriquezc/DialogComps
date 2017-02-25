@@ -519,7 +519,7 @@ def query_by_distribution(distribution, department = None, keywords = [], studen
                 new_results = []
                 for course in course_results:
                     course.weighted_score = calculate_course_relevance(course, new_keywords, student_major_dept)
-                    if course.prereqs = "":
+                    if course.prereqs == "":
                         new_results.append(course)
                 new_results.sort(key = lambda course: course.weighted_score)
                 new_results.reverse()
