@@ -246,10 +246,14 @@ class nLUU:
     def create_new_class_description_res(self, userQuery):
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
-        a = "Here's what I found:\n"
-        for i, course in enumerate(userQuery.object.potential_courses):
-            a += i + str(course)
-        return a
+        if userQuery.object.potential_courses:
+            a = "Here's what I found:\n"
+            for i, course in enumerate(userQuery.object.potential_courses):
+                a += i + str(course)
+            return a
+        else:
+            #return self.create_clarify_res(userQuery)
+            return ""
 
     def create_student_info_major_requirements_res_res(self, userQuery):
         a = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[0]
