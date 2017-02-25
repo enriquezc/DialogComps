@@ -240,7 +240,7 @@ class nLUU:
 
     def create_class_info_distributions_res_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_DISTRIBUTIONS_RES[0]
-        pot_course = [str(c) for c in userQuery.object.potential_courses]
+        pot_course = [c.__str__(i + 1) for i, c in enumerate(userQuery.object.potential_courses)]
         return s.format("\n".join(pot_course))
 
     def create_new_class_description_res(self, userQuery):
