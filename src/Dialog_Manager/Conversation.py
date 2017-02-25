@@ -62,6 +62,8 @@ class Conversation:
         print(our_str_response)
         while self.conversing:
             client_response = input()
+            if client_response.isspace():
+                continue
             if "goodbye" in client_response.lower() or " bye" in (" " + client_response.lower()):
                 print("Smell ya later! Thanks for chatting.")
                 return
