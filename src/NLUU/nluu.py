@@ -186,30 +186,33 @@ class nLUU:
     def create_student_info_requirements_res_res(self, userQuery):
         response = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[1]
         distro_string = ""
-        for key in userQuery.object.distro_courses:
-            distro_string += (key + ":\n")
-            for course in userQuery.object.distro_courses[key]:
-                if course is None:
-                    continue
-                if course.time == "":
-                    time = "an unknown time"
-                else:
-                    time = str(course.time)
-                if course.faculty_name and course.faculty_name != "":
-                    prof = course.faculty_name
-                if course.prereqs == "":
-                    prereqs = "This class has no prereqs"
-                else:
-                    prereqs = "The prereqs for this course are " + str(course.prereqs)
-                if course.faculty_name != "":
-                    s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
-                    0]) + "\n"
-                    distro_string += s.format(course.id, course.name, time, prof, prereqs, course.description)
-                else:
-                    s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
-                    0]) + "\n"
-                    distro_string += s.format(course.id, course.name, time, prereqs, course.description)
-        return response.format(distro_string)
+        if userQuery.object.distro_courses:
+            for key in userQuery.object.distro_courses:
+                distro_string += (key + ":\n")
+                for course in userQuery.object.distro_courses[key]:
+                    if course is None:
+                        continue
+                    if course.time == "":
+                        time = "an unknown time"
+                    else:
+                        time = str(course.time)
+                    if course.faculty_name and course.faculty_name != "":
+                        prof = course.faculty_name
+                    if course.prereqs == "":
+                        prereqs = "This class has no prereqs"
+                    else:
+                        prereqs = "The prereqs for this course are " + str(course.prereqs)
+                    if course.faculty_name != "":
+                        s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
+                        0]) + "\n"
+                        distro_string += s.format(course.id, course.name, time, prof, prereqs, course.description)
+                    else:
+                        s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
+                        0]) + "\n"
+                        distro_string += s.format(course.id, course.name, time, prereqs, course.description)
+            return response.format(distro_string)
+        else:
+            return self.create_student_info_major_requirements_res_res(userQuery)
 
 
     def create_student_info_major_requirements(self, userQuery):
@@ -255,32 +258,16 @@ class nLUU:
             return self.create_clarify_res(userQuery)
 
     def create_student_info_major_requirements_res_res(self, userQuery):
-        a = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[1]
-        pot_course = userQuery.object.major_classes_needed
+        a = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[0]
+        pot_course = userQuery.object.potential_courses
         self.call_debug_print(len(pot_course))
-        for course in pot_course:
-            if course is None:
-                continue
-            if course.time == "":
-                time = "an unknown time"
-            else:
-                time = str(course.time)
-            self.call_debug_print(course.faculty_name)
-            if course.faculty_name != "":
-                prof = course.faculty_name
-            if course.prereqs == "":
-                prereqs = "This class has no prereqs"
-            else:
-                prereqs = "The prereqs for this class are " + str(course.prereqs)
-            if course.faculty_name != "":
-                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
-                    0]) + "\n"
-                a = a + s.format(course.id, course.name, time, prof, prereqs, course.description)
-            else:
-                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
-                    0]) + "\n"
-                a = a + s.format(course.id, course.name, time, prereqs, course.description)
-        return a
+        if userQuery.object.potential_courses:
+            a += "Here's what I found:\n"
+            for i, course in enumerate(userQuery.object.potential_courses):
+                a += course.__str__(i + 1)
+            return a
+        else:
+            return self.create_clarify_res(userQuery)
 
     def create_schedule_class_res_res(self, userQuery):
         if len(userQuery.object.current_classes) == 0:
