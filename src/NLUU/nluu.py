@@ -247,8 +247,8 @@ class nLUU:
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
         a = "Here's what I found:\n"
-        for course in userQuery.object.potential_courses:
-            a += str(course)
+        for i, course in enumerate(userQuery.object.potential_courses):
+            a += i + str(course)
         return a
 
     def create_student_info_major_requirements_res_res(self, userQuery):
@@ -331,12 +331,10 @@ class nLUU:
         pot_course = userQuery.object.potential_courses
         if pot_course is None:
             return constants.Responses.TM_COURSE_CLARIFY[0]
-        a = constants.Responses.STUDENT_INFO_INTERESTS_RESA
-        for course in pot_course:
-            s = constants.Responses.STUDENT_INFO_INTERESTS_RESB[0]
-            s = s.format(str(course)) + "\n"
-            a += s
-        return a
+        s = "Here's what I found:\n"
+        for i, course in enumerate(pot_course):
+            s += course.__str__(i + 1)
+        return s
 
     def create_student_info_time_left_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_TIME_LEFT_RES[0]

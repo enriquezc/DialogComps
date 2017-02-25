@@ -29,7 +29,7 @@ class Course:
         self.relevance = None
         self.weighted_score = 0.0
 
-    def __str__(self):
+    def __str__(self, index):
         description = ""
         desc_tokens = self.description.split()
         line_length = 80
@@ -41,9 +41,10 @@ class Course:
             cur_line_length += len(token)
             description += " " + token
         top_line = "{} : {}".format(self.id, self.name)
-        centering_spaces = " " * int((line_length - len(top_line)) / 2)
-        top_line = "{}{}{}".format(centering_spaces, top_line, centering_spaces)
-        prof_line = "This class is taught by {}".format(self.faculty_name) if self.faculty_name != "" else ""
+        centering_spaces = " " * int((line_length - len(top_line) - 2) / 2)
+        top_line = "{}){}{}{}".format(index, centering_spaces, top_line, centering_spaces)
+        professor_centering_spaces = " " * int((line_length - len(self.faculty_name))/2)
+        prof_line = "{}{}\n".format(professor_centering_spaces, self.faculty_name) if self.faculty_name != "" else ""
         return "\n{}\n{}\n{}\n".format(top_line, prof_line, description)
 
     def __eq__(self, other):
