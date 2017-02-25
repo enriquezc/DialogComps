@@ -793,7 +793,7 @@ def parse_time_room(str_in):
 def query_courses_by_level(course):
     dept = course.department
     for key, value in dept_dict.items():
-        if dept == key or dept == value:
+        if dept.lower() == key.lower() or dept.lower() == value.lower():
             course.department = key
             break
 

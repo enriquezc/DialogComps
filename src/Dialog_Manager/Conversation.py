@@ -641,8 +641,14 @@ class Conversation:
                 else:
                     course.course_num = ["200", "300"]
                     some_courses = self.task_manager_query_courses_by_level(course)
+<<<<<<< HEAD
             self.student_profile.major_classes_needed.extend(some_courses)
             self.student_profile.potential_courses = some_courses
+=======
+            if some_courses is not None:
+                self.student_profile.major_classes_needed.extend(some_courses[0:4])
+                self.student_profile.potential_courses = some_courses[0:4]
+>>>>>>> 9fa5f5e301ce30964614057503bf969db23bc651
             return [
                 User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_requirements_res),
                 self.decision_tree.get_next_node()]
@@ -876,7 +882,7 @@ class Conversation:
         else:
             return [tm_courses]
 
-    def task_manager_department_match(self, dept):
+    def task_manager_department_match(self, dept, majors=True):
         tm_department = TaskManager.department_match(dept)
         if type(tm_department) is list:
             if len(tm_department) > 0:
@@ -913,6 +919,8 @@ class Conversation:
         # given a course object with 100, 200, 300, returns courses in that department with that level
         tm_level = TaskManager.query_courses_by_level(course)
         if len(tm_level) > 0:
+            if len(tm_level) > 5:
+                tm_level = tm_level[0:4]
             return tm_level
         else:
             return None
