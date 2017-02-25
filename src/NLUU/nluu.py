@@ -189,9 +189,10 @@ class nLUU:
         courses = []
         for requirement, courselist in userQuery.object.distro_courses.items():
             s += "These courses fulfill the {} requirement:\n".format(requirement)
-            for i, course in enumerate(courselist):
-                s += course.__str__(i + 1)
-            s += "\n\n"
+            if courselist is not None:
+                for i, course in enumerate(courselist):
+                    s += course.__str__(i + 1)
+                s += "\n\n"
         return s
 
 
