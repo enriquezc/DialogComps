@@ -474,7 +474,7 @@ def query_by_keywords(keywords, exclude=None, threshold = 3, student_department=
     return coursesToReturn
 
 # queries a list of classes that fill out a distribution
-def query_by_distribution(distribution, department = None, keywords = [], student_major_dept = None, ):
+def query_by_distribution(distribution, department = None, keywords = [], student_major_dept = None):
     global dept_dict
     global conn
 
@@ -517,6 +517,8 @@ def query_by_distribution(distribution, department = None, keywords = [], studen
                             new_keywords.append(k.upper())
                 for course in course_results:
                     course.weighted_score = calculate_course_relevance(course, new_keywords, student_major_dept)
+                course_results.sort(key = lambda course: course.weighted_score)
+                course_results.reverse()
         except:
             continue
 
