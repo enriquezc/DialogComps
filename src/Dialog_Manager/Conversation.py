@@ -504,17 +504,13 @@ class Conversation:
                 self.call_debug_print(course.name)
                 # print(course.gen_distributions)
                 distros = self.task_manager_query_courses_by_distribution(course.name)
-                for distro in distros:
-                    if distro not in distro_list:
-                        
-                distro_list.extend(distros)
             for distro in distro_list:  # somehow get max occurance (a course name will show up more than once if it fills more than one distro
                 self.call_debug_print(distro)
                 self.student_profile.potential_courses = []
                 if distro_list.count(distro) > 1:  # using max occurance / replacement concept, but shouldn't
                     self.student_profile.potential_courses.append(distro)
                     max_occ = distro_list.count(distro)
-                    self.student_profile.distro_courses[]
+                    self.student_profile.distro_courses[distro] = distro_list
             self.student_profile.potential_courses = list(set(distro_list))[1:3]
 
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res
@@ -848,8 +844,12 @@ class Conversation:
     def task_manager_keyword(self, keywords):
         # returns a list
         stud = self.student_profile
-        tm_courses = TaskManager.query_by_keywords(keywords,
-                                                   student_department=stud.major, student_interests=stud.interests)
+        if stud.major and stud.interests:
+            tm_courses = TaskManager.query_by_keywords(keywords,stud.major,stud.interests)
+        elif stud.interests:
+            tm_courses = TaskManager.query_by_keywords(keywords, None, stud.interests)
+        else:
+            tm_courses = TaskManager.query_by_keywords(keywords, None, None)
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
                 return tm_courses
