@@ -596,7 +596,7 @@ class Conversation:
         if unsure:
             return self.decision_tree.get_next_node()
         self.call_debug_print(luisAI.query)
-        if "nothing" in luisAI.query or "none" in luisAI.query:
+        if "nothing" in luisAI.query or "none" in luisAI.query or " no " in luisAI.query:
             self.call_debug_print("we bout to graduate boyz")
             self.decision_tree.current_node.answered = True
             return self.decision_tree.get_next_node()
