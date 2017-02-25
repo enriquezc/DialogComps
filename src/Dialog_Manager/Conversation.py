@@ -13,6 +13,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from copy import deepcopy
 import src.utils.debug as debug
 import pprint
+import time
 
 
 class Conversation:
@@ -74,12 +75,10 @@ class Conversation:
                 our_str_response = ""
                 if type(userQueries) is list:
                     for userQuery in userQueries:
-
                         ###
                         if User_Query.QueryType.full_schedule_check == userQuery.type:
                             print(self.nluu.create_response(userQuery) + '\n')
                             responseToCredits = input()
-
                             responseSentiment = self.sentimentAnalyzer.polarity_scores(responseToCredits)
                             if responseSentiment["neg"] > responseSentiment["pos"]:
                                 print("Smell ya later! Thanks for chatting.")
@@ -91,12 +90,13 @@ class Conversation:
                                 print("Goodbye")
                                 self.conversing = False
                                 break
-                            our_str_response += self.nluu.create_response(userQuery) + '\n'
+                            print(self.nluu.create_response(userQuery) + '\n')
+                            time.sleep(1)
                     # This mess of code stops descriptions with accents from
                     # throwing an error
                     our_str_response = our_str_response.encode("ascii", "ignore")
                     our_str_response = our_str_response.decode("ascii")
-                    print(str(our_str_response))
+
                 else:
                     self.utterancesStack.append(userQueries)
                     self.last_user_query.append(userQueries)
@@ -865,7 +865,9 @@ class Conversation:
     def task_manager_keyword(self, keywords):
         # returns a list
         stud = self.student_profile
-        tm_courses = TaskManager.query_by_keywords(keywords, exclude=set(self.student_profile.potential_courses),
+        exclude = set(self.student_profile.potential_courses) if self.student_profile.potential_courses is not None \
+            else set()
+        tm_courses = TaskManager.query_by_keywords(keywords, exclude=exclude,
                                                    student_department=stud.major, student_interests=stud.interests)
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
