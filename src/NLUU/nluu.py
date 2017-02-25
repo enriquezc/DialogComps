@@ -185,12 +185,13 @@ class nLUU:
         return s
 
     def create_student_info_requirements_res_res(self, userQuery):
-        s = "Here's what I got:\n"
+        s = ""
         courses = []
-        for courselist in list(userQuery.object.distro_courses.values()):
-            courses.extend(courselist)
-        for i, course in enumerate(courses):
-            s += course.__str__(i + 1)
+        for requirement, courselist in userQuery.object.distro_courses.items():
+            s += "These courses fulfill the {} requirement:\n".format(requirement)
+            for i, course in enumerate(courselist):
+                s += course.__str__(i + 1)
+            s += "\n\n"
         return s
 
 
