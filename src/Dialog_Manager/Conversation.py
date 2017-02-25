@@ -12,6 +12,7 @@ from nltk.corpus import stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from copy import deepcopy
 import src.utils.debug as debug
+import pprint
 
 
 class Conversation:
