@@ -62,6 +62,7 @@ class Conversation:
         print(our_str_response)
         while self.conversing:
             client_response = input()
+            print('\n')
             if client_response.isspace():
                 continue
             if "goodbye" in client_response.lower() or " bye" in (" " + client_response.lower()):
@@ -92,7 +93,8 @@ class Conversation:
                                 print("Goodbye")
                                 self.conversing = False
                                 break
-                            print(self.nluu.create_response(userQuery) + '\n')
+                            print("-" * 100)
+                            print(self.nluu.create_response(userQuery))
                             time.sleep(1)
                     # This mess of code stops descriptions with accents from
                     # throwing an error
@@ -279,7 +281,8 @@ class Conversation:
         if self.student_profile.potential_courses is not None and len(self.student_profile.potential_courses) != 0:
             if index is not None:
                 index = index - 1 if index != float('inf') else len(self.student_profile.potential_courses) - 1
-                tm_courses = [self.student_profile.potential_courses[index]]
+                if index < len(self.student_profile.potential_courses):
+                    tm_courses = [self.student_profile.potential_courses[index]]
 
         tm_courses = tm_courses or self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=True)
         if tm_courses is None:
