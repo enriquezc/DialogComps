@@ -894,7 +894,28 @@ class Conversation:
                     tm_courses = tm_courses[0:5]
                 return tm_courses
             else:
-                return None
+                if len(keywords) == 1:
+                    tm_courses = TaskManager.query_by_title(keywords[0])
+                    if len(tm_courses) > 0:
+                        if len(tm_courses) > 5:
+                            tm_courses = tm_courses[0:5]
+                        return tm_courses
+                    else:
+                        return None
+                elif len(keywords) > 1:
+                    query_str = ""
+                    for keyword in keywords:
+                        query_str = query_str + keyword + ' '
+                    query_str = query_str[:-1]
+                    tm_courses = TaskManager.query_by_title(query_str)
+                    if len(tm_courses) > 0:
+                        if len(tm_courses) > 5:
+                            tm_courses = tm_courses[0:5]
+                        return tm_courses
+                    else:
+                        return None
+                else:
+                    return None
         else:
             return [tm_courses]
 
