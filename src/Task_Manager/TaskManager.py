@@ -210,7 +210,8 @@ def fill_out_courses(results, new_keywords=None, student_major=None, student_int
             if res != None:
                 result_course.classroom = res[0]
                 result_course.time = res[1]
-        result_course.description = result[29]
+        if result[29] != None:
+            result_course.description = result[29]
         if result[30] != None:
             result_course.prereqs = result[30]
         call_debug_print(result_course.prereqs)

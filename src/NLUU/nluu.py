@@ -271,7 +271,7 @@ class nLUU:
     def create_student_info_name_res_res(self, userQuery):
         if userQuery.object.name:
             s = constants.Responses.STUDENT_INFO_NAME_RES[0]
-            return s.format(userQuery.object.name)
+            return s.format(userQuery.object.name.title())
         else:
             s = constants.Responses.STUDENT_INFO_NAME_RES[1]
             return s

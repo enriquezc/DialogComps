@@ -526,6 +526,7 @@ class Conversation:
                         try:
                             self.student_profile.current_classes.remove(stud_course)
                             self.student_profile.current_credits -= tm_course.credits
+                            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
                         except:
                             pass
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
@@ -631,6 +632,10 @@ class Conversation:
             if len(self.student_profile.distributions_needed) != 0:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res),
                         self.decision_tree.get_next_node()]
+            else:
+                return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities,
+                                                                   unsure=False)
+
         else:
             return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities, unsure=False)
         '''courses = self.task_manager_query_courses_by_distribution()
@@ -896,7 +901,28 @@ class Conversation:
                     tm_courses = tm_courses[0:5]
                 return tm_courses
             else:
-                return None
+                if len(keywords) == 1:
+                    tm_courses = TaskManager.query_by_title(keywords[0])
+                    if len(tm_courses) > 0:
+                        if len(tm_courses) > 5:
+                            tm_courses = tm_courses[0:5]
+                        return tm_courses
+                    else:
+                        return None
+                elif len(keywords) > 1:
+                    query_str = ""
+                    for keyword in keywords:
+                        query_str = query_str + keyword + ' '
+                    query_str = query_str[:-1]
+                    tm_courses = TaskManager.query_by_title(query_str)
+                    if len(tm_courses) > 0:
+                        if len(tm_courses) > 5:
+                            tm_courses = tm_courses[0:5]
+                        return tm_courses
+                    else:
+                        return None
+                else:
+                    return None
         else:
             return [tm_courses]
 
