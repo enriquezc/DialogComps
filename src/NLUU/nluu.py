@@ -8,6 +8,7 @@ from src.utils import constants
 from nltk.stem.snowball import SnowballStemmer
 import src.utils.debug as debug
 
+
 class nLUU:
     def __init__(self, luisurl, debug = False):
         self.luis = luis.Luis(luisurl)
@@ -270,15 +271,14 @@ class nLUU:
             return self.create_clarify_res(userQuery)
 
     def create_schedule_class_res_res(self, userQuery):
+        s = constants.Responses.SCHEDULE_CLASS_RES[0]
         if len(userQuery.object.current_classes) == 0:
-            s = constants.Responses.EMPTY_SCHEDULE_RES[0]
-            return s
+            return constants.Responses.EMPTY_SCHEDULE_RES[0]
         else:
-            s = constants.Responses.SCHEDULE_CLASS_RES[0]
             course_list = ""
             for course in userQuery.object.current_classes:
                 course_list += (course.name + "\n")
-            return s.format(course_list)
+            return s.format(userQuery.object.current_credits, course_list)
 
     def create_full_schedule_check_res(self, userQuery):
         s = constants.Responses.FULL_SCHEDULE_CHECK[0]
@@ -395,19 +395,40 @@ class nLUU:
         pos = nltk.pos_tag(tokens)
         return [word for word, p in pos if p in ['JJ', 'NN', 'NNS', "NNP"] and word != "major"]  # getting adj and nouns from sentence and proper nouns
 
+    def find_numbers(self, utterance):
+        tokens = self.tokenize(utterance)
+        pos = self.pos_tag(tokens)
+        numbers = []
+        for word, p in pos:
+            if p == 'CD':
+                numbers.add(word)
+            elif p == 'JJ':
+                numbers.add(word.split('-')[0])
+        return numbers
+
     def get_number_from_ordinal_str(self, ordinal_str):
         strs = ordinal_str.split()
         ordinal_dict = {
             "first": 1,
+            "1st": 1,
             "second": 2,
+            "2nd": 2,
             "third": 3,
+            "3rd": 3,
             "fourth": 4,
+            "4th": 4,
             "fifth": 5,
+            "5th": 5,
             "sixth": 6,
+            "6th": 6,
             "seventh": 7,
+            "7th": 7,
             "eighth": 8,
+            "8th": 8,
             "ninth": 9,
+            "9th": 9,
             "tenth": 10,
+            "10th": 10,
             "last": float("inf")
         }
         for s in strs:
