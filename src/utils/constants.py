@@ -61,7 +61,7 @@ class Responses:
     NEW_CLASS_DESCRIPTIONA = ("So, here's what I know about {}.\n {} is available next term at {}, taught by {}.",)
     NEW_CLASS_DESCRIPTIONB = ("So, here's what I know about {}.\n {} is available next term at {}",)
     NEW_CLASS_DESCRIPTIONC = ("\n {}. Here's its official description:\n {}",)
-    SCHEDULE_CLASS_RES = ("Here are the classes you're currently registered for:\n {}",)
+    SCHEDULE_CLASS_RES = ("You are registered for {} credits. \nHere are the classes you're currently registered for:\n {}",)
     EMPTY_SCHEDULE_RES = ("You are not currently registered for any classes.",)
     FULL_SCHEDULE_CHECK = ("Here are the classes you're currently registered for:\n {} You're registered for {} credits, do you want to register for more classes?",)
     ALREADY_TALKED_ABOUT = ("We already talked about all the relevant courses to these interests. Ask about something else.",)

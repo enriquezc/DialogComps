@@ -238,42 +238,25 @@ class nLUU:
 
     def create_student_info_major_requirements_res_res(self, userQuery):
         a = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[0]
-        pot_course = userQuery.object.major_classes_needed
+        pot_course = userQuery.object.potential_courses
         self.call_debug_print(len(pot_course))
-        for course in pot_course:
-            if course is None:
-                continue
-            if course.time == "":
-                time = "an unknown time"
-            else:
-                time = str(course.time)
-            self.call_debug_print(course.faculty_name)
-            if course.faculty_name != "":
-                prof = course.faculty_name
-            if course.prereqs == "":
-                prereqs = "This class has no prereqs"
-            else:
-                prereqs = "The prereqs for this class are " + str(course.prereqs)
-            if course.faculty_name != "":
-                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
-                    0]) + "\n"
-                a = a + s.format(course.id, course.name, time, prof, prereqs, course.description)
-            else:
-                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
-                    0]) + "\n"
-                a = a + s.format(course.id, course.name, time, prereqs, course.description)
-        return a
+        if userQuery.object.potential_courses:
+            a += "Here's what I found:\n"
+            for i, course in enumerate(userQuery.object.potential_courses):
+                a += course.__str__(i + 1)
+            return a
+        else:
+            return self.create_clarify_res(userQuery)
 
     def create_schedule_class_res_res(self, userQuery):
+        s = constants.Responses.SCHEDULE_CLASS_RES[0]
         if len(userQuery.object.current_classes) == 0:
-            s = constants.Responses.EMPTY_SCHEDULE_RES[0]
-            return s
+            return constants.Responses.EMPTY_SCHEDULE_RES[0]
         else:
-            s = constants.Responses.SCHEDULE_CLASS_RES[0]
             course_list = ""
             for course in userQuery.object.current_classes:
                 course_list += (course.name + "\n")
-            return s.format(course_list)
+            return s.format(userQuery.object.current_credits, course_list)
 
     def create_full_schedule_check_res(self, userQuery):
         s = constants.Responses.FULL_SCHEDULE_CHECK[0]
