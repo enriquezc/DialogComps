@@ -9,7 +9,7 @@ class Student:
         self.previous_classes = []
         self.distributions_needed = []
         self.major_classes_needed = []
-        self.terms_left = 0
+        self.terms_left = 12
         self.total_credits = 0
         self.current_credits = 0
         #some way of listing interests. Three proposals so far are:
@@ -21,6 +21,7 @@ class Student:
         self.all_classes = set()
         self.potential_courses = []
         self.relevant_class = Course.Course()
+        self.distro_courses= {}
 
     def __str__(self):
         major_str = ""

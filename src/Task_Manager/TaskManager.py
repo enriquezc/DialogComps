@@ -11,17 +11,21 @@ import src.utils.debug as debug
 
 conn = None
 dept_dict = {}
-distro_dict = []
+distro_dict = {}
+major_dict = {}
+concentration_dict = {}
 stop_words = None
 debug_value = None
 
 def init(init_debug = False):
     connect_to_db()
     create_dept_dict()
+    create_major_dict()
+    create_concentration_dict()
     create_distro_dictionary()
     create_stop_words_set()
 
-    global debug
+    global debug_value
     debug_value = init_debug
 
 
@@ -140,33 +144,45 @@ def query_by_title(title_string, department = None):
                 else:
                     cur_string = cur_string + " " + word_array[i].lower() + "%"
             else:
-                cur_string = cur_string + " " \
-                + dept_dict[word_array[i].upper()].lower() + "%"
+                dept_string = dept_dict[word_array[i].upper()].lower()
+                for word in dept_string.split():
+                    if word in stop_words:
+                        dept_string = dept_string.replace(" " +word, "%")
+                cur_string = cur_string + " " + dept_string + "%"
         else:
             new_string = new_string  + new_word_array[i].lower() + "%"
-            if word_array[i] not in dept_dict:
+            if word_array[i].upper() not in dept_dict:
                 if word_array[i] in stop_words:
                     continue
                 else:
                     cur_string = cur_string + word_array[i].lower() + "%"
             else:
-                cur_string = cur_string + dept_dict[word_array[i]].lower() + "%"
-
+                dept_string = dept_dict[word_array[i].upper()].lower()
+                for word in dept_string.split():
+                    if word in stop_words:
+                        dept_string = dept_string.replace(word, "%")
+                cur_string = cur_string + dept_string + "%"
+    call_debug_print(new_string)
+    call_debug_print(cur_string)
     # Placing both strings in a query for the database
-    query_string = "SELECT * FROM COURSE WHERE ((sec_term LIKE '17%') AND sec_term NOT LIKE '%SU') AND \
-                    (lower(sec_short_title) LIKE '{}' OR \
+    query_string = "SELECT * FROM COURSE WHERE ((sec_term LIKE '17%%') AND sec_term NOT LIKE '%%SU') AND \
+                    (lower(sec_short_title) LIKE %s OR \
                     lower(sec_short_title) \
-                    LIKE '{}') AND sec_name NOT LIKE '%WL%'".format(new_string, cur_string)
+                    LIKE %s) AND sec_name NOT LIKE '%%WL%%'"
 
     # adding a deparment criteria to narrow search if passed
     if department != None:
         query_string = query_string + " AND sec_subject = '" + department + "'"
 
     cur = conn.cursor()
-    cur.execute(query_string)
+    cur.execute(query_string, (new_string, cur_string))
 
     results = cur.fetchall()
     courses = fill_out_courses(results)
+    for course in courses:
+
+        call_debug_print(course.name)
+
 
     return list(set(courses))
 
@@ -189,11 +205,11 @@ def fill_out_courses(results, new_keywords=None, student_major=None, student_int
         result_course.name = result[16]
         result_course.term = result[19]
         result_course.credits = result[11]
-        classroom_str = result[24]
-        if classroom_str != None:
-            classroom_str = classroom_str.split()
-            classroom = classroom_str[0] + " " + classroom_str[1]
-            result_course.classroom = classroom
+        if result[24] != None:
+            res = parse_time_room(result[24])
+            if res != None:
+                result_course.classroom = res[0]
+                result_course.time = res[1]
         result_course.description = result[29]
         if result[30] != None:
             result_course.prereqs = result[30]
@@ -368,6 +384,7 @@ def create_stop_words_set():
     stop_words.add("course")
     stop_words.add("interest")
     stop_words.add("major")
+    stop_words.add("student")
 
 def create_distro_dictionary():
     global distro_dict
@@ -443,21 +460,22 @@ def query_by_keywords(keywords, exclude=None, threshold = 3, student_department=
     if len(courses) < 1:
         return []
     max = courses[0].weighted_score
+    toReturn = []
+    val = max * 0.3
     for course in courses:
-        val = max - threshold
-        if course.weighted_score < val:
-            courses.remove(course)
+        if course.weighted_score >= val:
+            toReturn.append(course)
     if exclude is None:
-        return courses
+        return toReturn
     coursesToReturn = []
     excludeCourses = set(exclude)
-    for course in courses:
+    for course in toReturn:
         if course not in excludeCourses:
             coursesToReturn.append(course)
     return coursesToReturn
 
 # queries a list of classes that fill out a distribution
-def query_by_distribution(distribution, department = None):
+def query_by_distribution(distribution, department = None, keywords = [], student_major_dept = None):
     global dept_dict
     global conn
 
@@ -472,11 +490,11 @@ def query_by_distribution(distribution, department = None):
     # Building the query string
     query_string = "SELECT DISTINCT course_name FROM distribution WHERE {} > 0".format(distribution)
     if department != None:
-        query_string = query_string + "AND actual_dept = '{}".format(department)
+        query_string = query_string + "AND actual_dept = '{}".format(department.upper())
         query_string = query_string + "'"
 
     cur = conn.cursor()
-
+    call_debug_print(cur.mogrify(query_string))
     cur.execute(query_string)
 
     results = cur.fetchall()
@@ -488,6 +506,24 @@ def query_by_distribution(distribution, department = None):
             course.course_num = result[0][-3:]
 
             course_results.extend(query_courses(course))
+            if keywords != []:
+                new_keywords = []
+                for keyword in keywords:
+                    kss = smart_description_expansion(keyword)
+                    #new_keywords.append(keyword)
+                    #new_keywords.append(kss)
+                    ks = kss.split()
+                    for k in ks:
+                        if k.lower() not in stop_words:
+                            new_keywords.append(k.upper())
+                new_results = []
+                for course in course_results:
+                    course.weighted_score = calculate_course_relevance(course, new_keywords, student_major_dept)
+                    if course.prereqs == "":
+                        new_results.append(course)
+                new_results.sort(key = lambda course: course.weighted_score)
+                new_results.reverse()
+                return new_results
         except:
             continue
 
@@ -541,6 +577,26 @@ def create_dept_dict():
 
         dept_dict[pair[0]] = pair[1]
 
+def create_major_dict():
+    global major_dict
+    file = open('./src/Task_Manager/majors.txt', 'r')
+    # file = open('course_subjects.txt', 'r')
+    for line in file:
+        line = line.strip()
+        pair = line.split(';')
+
+        major_dict[pair[1]] = pair[0]
+
+def create_concentration_dict():
+    global concentration_dict
+    file = open('./src/Task_Manager/concentrations.txt', 'r')
+    # file = open('course_subjects.txt', 'r')
+    for line in file:
+        line = line.strip()
+        pair = line.split(';')
+
+        concentration_dict[pair[1]] = pair[0]
+
 ## Taken from wiki/Algorithm_Implementation ##
 def edit_distance(s1, s2):
     if len(s1) < len(s2):
@@ -568,14 +624,15 @@ def department_match(str_in):
     call_debug_print("MATCHING DEPT: " + str_in)
     if str_in.isspace():
         return None
+    elif str_in == "":
+        return None
+    elif str_in == None:
+        return None
     global dept_dict
     global stop_words
 
     # if the string is in our set of stop words, we return nothing
     if str_in in stop_words:
-        return None
-
-    if str_in.lower() == "major":
         return None
 
     cur_match = None
@@ -593,11 +650,10 @@ def department_match(str_in):
         if dist < cur_best:
             cur_match = dept_dict[key]
             cur_best = dist
-        dist = edit_distance(dept_dict[key],str_in)
+        dist = edit_distance(dept_dict[key].lower(),str_in.lower())
         if dist < cur_best:
             cur_match = dept_dict[key]
             cur_best = dist
-    call_debug_print("MATCHED: " + cur_match)
     return cur_match
 
 def distro_match(str_in):
@@ -616,7 +672,7 @@ def distro_match(str_in):
         return None
 
     cur_match = None
-    cur_best = 100
+    cur_best = 20
     distro_items = distro_dict.items()
     # check to see if the input already matches a department
     for key, value in distro_items:
@@ -634,15 +690,118 @@ def distro_match(str_in):
         if dist < cur_best:
             cur_match = distro_dict[key]
             cur_best = dist
-    call_debug_print("MATCHED: " + cur_match)
     return cur_match
+
+def major_match(str_in):
+    if str_in.isspace():
+        return None
+    elif str_in == "":
+        return None
+    elif str_in == None:
+        return None
+
+    global major_dict
+    global stop_words
+
+    # if the string is in our set of stop words, we return nothing
+    if str_in in stop_words:
+        return None
+
+    cur_match = None
+    cur_best = 100
+    major_items = major_dict.items()
+    # check to see if the input already matches a department
+    for key, value in major_items:
+        if str_in.lower() == key.lower():
+            return value
+        if str_in.lower() == value.lower():
+            return value
+    # otherwise, use edit distance to find the nearest major
+    for key in major_dict:
+        dist = edit_distance(key.lower(),str_in.lower())
+        if dist < cur_best:
+            cur_match = major_dict[key]
+            cur_best = dist
+        dist = edit_distance(major_dict[key].lower(),str_in.lower())
+        if dist < cur_best:
+            cur_match = major_dict[key]
+            cur_best = dist
+    return cur_match
+
+def concentration_match(str_in):
+    if str_in.isspace():
+        return None
+    elif str_in == "":
+        return None
+    elif str_in == None:
+        return None
+
+    global concentration_dict
+    global stop_words
+
+    # if the string is in our set of stop words, we return nothing
+    if str_in in stop_words:
+        return None
+
+    cur_match = None
+    cur_best = 100
+    concentration_items = concentration_dict.items()
+    # check to see if the input already matches a department
+    for key, value in concentration_items:
+        if str_in.lower() == key.lower():
+            return value
+        if str_in.lower() == value.lower():
+            return value
+    # otherwise, use edit distance to find the nearest major
+    for key in concentration_dict:
+        dist = edit_distance(key.lower(),str_in.lower())
+        if dist < cur_best:
+            cur_match = concentration_dict[key]
+            cur_best = dist
+        dist = edit_distance(concentration_dict[key].lower(),str_in.lower())
+        if dist < cur_best:
+            cur_match = concentration_dict[key]
+            cur_best = dist
+    return cur_match
+
+def parse_time_room(str_in):
+    if str_in.isspace():
+        return None
+    elif str_in == "":
+        return None
+    elif str_in == None:
+        return None
+
+    classroom = ""
+    meeting_times = []
+
+    meeting_strings = str_in.split('|')
+
+    for meeting_string in meeting_strings:
+        meeting_list = meeting_string.split()
+        if len(meeting_list) < 2 or len(meeting_list) > 5:
+            return None
+        else:
+            if classroom == "":
+                classroom = meeting_list[0] + " " + meeting_list[1]
+            if meeting_list[2] == "TBA" or meeting_list[3] == "TBA":
+                break
+            elif len(meeting_list) == 5:
+                meeting = [meeting_list[2]]
+                meeting.append((meeting_list[3].lstrip('0'), meeting_list[4].lstrip('0')))
+                meeting_times.append(meeting)
+            else:
+                break
+
+    return (classroom, meeting_times)
+
 
 # Helper function that triggers general type class queries
 def query_courses_by_level(course):
     dept = course.department
     for key, value in dept_dict.items():
-        if dept == key or dept == value:
-            course.department = key
+        if dept.lower() == key.lower() or dept.lower() == value.lower():
+            course.department = key.upper()
             break
 
     return query_courses(course, True)
@@ -665,6 +824,13 @@ def call_debug_print(ob):
 
 if __name__ == "__main__":
     init()
+    #print(major_match("Psych")[0] + major_match("Psych")[1])
+    #print(concentration_match("American Music")[0] + concentration_match("American Music")[1])
+    print(parse_time_room("OLIN 102      T       10:10AM 11:55AM|OLIN 104      T       10:10AM 11:55AM"))
+    print(parse_time_room("COWL DANC     MW      08:55PM 09:35PM"))
+    print(parse_time_room("MDRC LL30     TBA     TBA"))
+    print(parse_time_room("LDC  330      MW      08:30AM 09:40AM|LDC  330      TTH     08:15AM 09:20AM|LDC  330      F       08:30AM 09:30AM"))
+    print(parse_time_room("LDC  345      MTWTHF  08:00AM 05:00PM"))
     '''
     results = query_by_distribution("literary_analysis", "ENGL")
     for course in results:

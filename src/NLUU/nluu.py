@@ -8,6 +8,7 @@ from src.utils import constants
 from nltk.stem.snowball import SnowballStemmer
 import src.utils.debug as debug
 
+
 class nLUU:
     def __init__(self, luisurl, debug = False):
         self.luis = luis.Luis(luisurl)
@@ -184,8 +185,15 @@ class nLUU:
         return s
 
     def create_student_info_requirements_res_res(self, userQuery):
-        s = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[0]
+        s = ""
+        courses = []
+        for requirement, courselist in userQuery.object.distro_courses.items():
+            s += "These courses fulfill the {} requirement:\n".format(requirement)
+            for i, course in enumerate(courselist):
+                s += course.__str__(i + 1)
+            s += "\n\n"
         return s
+
 
     def create_student_info_major_requirements(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS[0]
@@ -215,74 +223,41 @@ class nLUU:
 
     def create_class_info_distributions_res_res(self, userQuery):
         s = constants.Responses.CLASS_INFO_DISTRIBUTIONS_RES[0]
-        pot_course = [str(c) for c in userQuery.object.potential_courses]
+        pot_course = [c.__str__(i + 1) for i, c in enumerate(userQuery.object.potential_courses)]
         return s.format("\n".join(pot_course))
 
     def create_new_class_description_res(self, userQuery):
         '''s = constants.Responses.NEW_CLASS_DESCRIPTION[0]
         return s.format(userQuery.object.relevant_class[0].name, userQuery.object.relevant_class[0].description) '''
-        a = ""
-        pot_course = userQuery.object.potential_courses
-        self.call_debug_print(len(pot_course))
-        for course in pot_course:
-            if course is None:
-                continue
-            if course.time == "":
-                time = "an unknown time"
-            else:
-                time = str(course.time)
-            self.call_debug_print(course.faculty_name)
-            if course.faculty_name != "":
-                prof = course.faculty_name
-            if course.prereqs == "":
-                prereqs = "This class has no prereqs"
-            else:
-                prereqs = "The prereqs for this class are " + str(course.prereqs)
-            if course.faculty_name != "":
-                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]) + "\n"
-                a = a + s.format(course.id, course.name, time, prof, prereqs, course.description)
-            else:
-                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[0]) + "\n"
-                a = a + s.format(course.id, course.name, time, prereqs, course.description)
-        return a
+        if userQuery.object.potential_courses:
+            a = "Here's what I found:\n"
+            for i, course in enumerate(userQuery.object.potential_courses):
+                a += course.__str__(i + 1)
+            return a
+        else:
+            return self.create_clarify_res(userQuery)
+
     def create_student_info_major_requirements_res_res(self, userQuery):
         a = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[0]
-        pot_course = userQuery.object.major_classes_needed
-        print(len(pot_course))
-        for course in pot_course:
-            if course is None:
-                continue
-            if course.time == "":
-                time = "an unknown time"
-            else:
-                time = str(course.time)
-            print(course.faculty_name)
-            if course.faculty_name != "":
-                prof = course.faculty_name
-            if course.prereqs == "":
-                prereqs = "This class has no prereqs"
-            else:
-                prereqs = "The prereqs for this class are " + str(course.prereqs)
-            if course.faculty_name != "":
-                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
-                    0]) + "\n"
-                a = a + s.format(course.id, course.name, time, prof, prereqs, course.description)
-            else:
-                s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
-                    0]) + "\n"
-                a = a + s.format(course.id, course.name, time, prereqs, course.description)
-        return a
+        pot_course = userQuery.object.potential_courses
+        self.call_debug_print(len(pot_course))
+        if userQuery.object.potential_courses:
+            a += "Here's what I found:\n"
+            for i, course in enumerate(userQuery.object.potential_courses):
+                a += course.__str__(i + 1)
+            return a
+        else:
+            return self.create_clarify_res(userQuery)
 
     def create_schedule_class_res_res(self, userQuery):
+        s = constants.Responses.SCHEDULE_CLASS_RES[0]
         if len(userQuery.object.current_classes) == 0:
-            s = constants.Responses.EMPTY_SCHEDULE_RES[0]
-            return s
+            return constants.Responses.EMPTY_SCHEDULE_RES[0]
         else:
-            s = constants.Responses.SCHEDULE_CLASS_RES[0]
             course_list = ""
             for course in userQuery.object.current_classes:
                 course_list += (course.name + "\n")
-            return s.format(course_list)
+            return s.format(userQuery.object.current_credits, course_list)
 
     def create_full_schedule_check_res(self, userQuery):
         s = constants.Responses.FULL_SCHEDULE_CHECK[0]
@@ -325,12 +300,10 @@ class nLUU:
         pot_course = userQuery.object.potential_courses
         if pot_course is None:
             return constants.Responses.TM_COURSE_CLARIFY[0]
-        a = constants.Responses.STUDENT_INFO_INTERESTS_RESA
-        for course in pot_course:
-            s = constants.Responses.STUDENT_INFO_INTERESTS_RESB[0]
-            s = s.format(str(course)) + "\n"
-            a += s
-        return a
+        s = "Here's what I found:\n"
+        for i, course in enumerate(pot_course):
+            s += course.__str__(i + 1)
+        return s
 
     def create_student_info_time_left_res_res(self, userQuery):
         s = constants.Responses.STUDENT_INFO_TIME_LEFT_RES[0]
@@ -401,25 +374,57 @@ class nLUU:
         pos = nltk.pos_tag(tokens)
         return [word for word, p in pos if p in ['JJ', 'NN', 'NNS', "NNP"] and word != "major"]  # getting adj and nouns from sentence and proper nouns
 
+    def find_numbers(self, utterance):
+        tokens = self.tokenize(utterance)
+        pos = self.pos_tag(tokens)
+        numbers = []
+        for word, p in pos:
+            if p == 'CD':
+                numbers.add(word)
+            elif p == 'JJ':
+                numbers.add(word.split('-')[0])
+        return numbers
+
     def get_number_from_ordinal_str(self, ordinal_str):
         strs = ordinal_str.split()
         ordinal_dict = {
             "first": 1,
+            "1st": 1,
             "second": 2,
+            "2nd": 2,
             "third": 3,
+            "3rd": 3,
             "fourth": 4,
+            "4th": 4,
             "fifth": 5,
+            "5th": 5,
             "sixth": 6,
+            "6th": 6,
             "seventh": 7,
+            "7th": 7,
             "eighth": 8,
+            "8th": 8,
             "ninth": 9,
+            "9th": 9,
             "tenth": 10,
+            "10th": 10,
             "last": float("inf")
         }
         for s in strs:
             if s in ordinal_dict:
                 return ordinal_dict[s]
         return None
+
+    def get_history(self, utterance):
+
+        tokens = nltk.word_tokenize(utterance)
+        pos = nltk.pos_tag(tokens)
+        codes = ["VBD",  "VBN"]
+        for p in pos:
+            if p[1] in codes:
+                if "was" not in p[0]:
+                    return True
+        return False
 
     def call_debug_print(self, ob):
         debug.debug_print(ob, self.debug)
