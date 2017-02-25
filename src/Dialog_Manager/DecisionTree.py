@@ -89,7 +89,7 @@ class DecisionTree:
             node.answered = False
             return False
         elif node.userQuery.value == 14: #student_info_time_left
-            if self.student.terms_left == 0:
+            if self.student.terms_left == 12:
                 node.answered = False
                 return False
             node.answered = True
