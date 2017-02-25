@@ -851,6 +851,8 @@ class Conversation:
         self.call_debug_print("We done")
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
+                if len(tm_courses) > 5:
+                    tm_courses = tm_courses[0:5]
                 return tm_courses
             else:
                 return None
@@ -864,6 +866,8 @@ class Conversation:
                                                    student_department=stud.major, student_interests=stud.interests)
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
+                if len(tm_courses) > 5:
+                    tm_courses = tm_courses[0:5]
                 return tm_courses
             else:
                 return None
@@ -926,6 +930,8 @@ class Conversation:
             '''class_match = TaskManager.query_by_distribution(tm_distro, None, list(self.student_profile.interests),
                                                             list(self.student_profile.major))'''
         if len(class_match) > 0:
+            if len(class_match > 5):
+                class_match = class_match[0:5]
             return class_match
         else:
             return None
