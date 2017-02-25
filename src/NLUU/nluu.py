@@ -453,7 +453,8 @@ class nLUU:
         codes = ["VBD",  "VBN"]
         for p in pos:
             if p[1] in codes:
-                return True
+                if "was" not in p[0]:
+                    return True
         return False
     
     def call_debug_print(self, ob):
