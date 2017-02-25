@@ -249,7 +249,7 @@ class nLUU:
         if userQuery.object.potential_courses:
             a = "Here's what I found:\n"
             for i, course in enumerate(userQuery.object.potential_courses):
-                a += i + str(course)
+                a += course.__str__(i + 1)
             return a
         else:
             return self.create_clarify_res(userQuery)
