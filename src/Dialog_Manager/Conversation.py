@@ -934,8 +934,8 @@ class Conversation:
             '''class_match = TaskManager.query_by_distribution(tm_distro, None, list(self.student_profile.interests),
                                                             list(self.student_profile.major))'''
         if len(class_match) > 0:
-            if len(class_match > 5):
-                class_match = class_match[0:5]
+            if len(class_match) > 5:
+                class_match = class_match[0:4]
             return class_match
         else:
             return None
