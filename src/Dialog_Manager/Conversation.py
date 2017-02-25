@@ -508,6 +508,7 @@ class Conversation:
                         try:
                             self.student_profile.current_classes.remove(stud_course)
                             self.student_profile.current_credits -= tm_course.credits
+                            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
                         except:
                             pass
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
