@@ -151,7 +151,6 @@ class Conversation:
             self.student_profile.concentration = set(["undeclared"])
             self.student_profile.major_classes_needed = ["N/A"]
             return [self.decision_tree.get_next_node()]
-        updated = False
         if "not" in luisAI.query:
             return self.handleRemoveMajor(input, luisAI, luis_intent, luis_entities)
         if "concentration" in luisAI.query:
@@ -166,17 +165,19 @@ class Conversation:
                     self.call_debug_print(tm_major)
                     if len(self.student_profile.major) < 2 and not tm_major is None:
                         self.student_profile.major.add(tm_major)
-        if not updated:
-            major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
-            self.call_debug_print("major: " + str(major_list))
-            for major in major_list:
-                if type(major) == type([]):
-                    for m in major:
-                        if len(self.student_profile.major) < 2 and not m is None:
-                            self.student_profile.major.add(m.title())
-                else:
-                    if len(self.student_profile.major) < 2 and not major is None:
-                        self.student_profile.major.add(major.title())
+        major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
+        self.call_debug_print("major: " + str(major_list))
+        if len(luis_entities) == 0 and len(major_list) == 0:
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
+                    self.decision_tree.get_next_node()]
+        for major in major_list:
+            if type(major) == type([]):
+                for m in major:
+                    if len(self.student_profile.major) < 2 and not m is None:
+                        self.student_profile.major.add(m.title())
+            else:
+                if len(self.student_profile.major) < 2 and not major is None:
+                    self.student_profile.major.add(major.title())
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
                 self.decision_tree.get_next_node()]
 
@@ -510,18 +511,13 @@ class Conversation:
                 if distro_list.count(distro) > 1:  # using max occurance / replacement concept, but shouldn't
                     self.student_profile.potential_courses.append(distro)
                     max_occ = distro_list.count(distro)
-            if self.student_profile.potential_courses == []:
-                self.student_profile.potential_courses = list(set(distro_list))[1:3]
-            else:
-                self.student_profile.potential_courses = list(set(self.student_profile.potential_courses))
+            self.student_profile.potential_courses = list(set(distro_list))[1:3]
 
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.class_info_distributions_res),
                     self.decision_tree.get_next_node()]
         else:
             for distro in distro_list:
-                course = Course.Course()
-                course.gen_distributions.append(distro)
-                tm_courses = self.task_manager_query_courses_by_distribution(course)[0:2]
+                tm_courses = self.task_manager_query_courses_by_distribution(distro)[0:2]
                 self.student_profile.distro_courses[distro] = tm_courses
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.class_info_distributions_res),
                         self.decision_tree.get_next_node()]
@@ -900,20 +896,19 @@ class Conversation:
             return None
 
     def task_manager_query_courses_by_distribution(self, distro, dept=None):
-        # given a course object with distributions, return courses that fulfil that distribution
+        # given a distributions, return courses that fulfil that distribution
         # also potentially uses student major and keywords to query on courses.
-        #course = Course.Course()
-        #course.gen_distributions.append(distro)
         tm_distro = self.task_manager_distribution_match(distro)
         if dept != None:
             tm_department = TaskManager.department_match(dept)
-            #class_match = TaskManager.query_by_distribution(tm_distro, tm_department, list(self.student_profile.interests),
-                                                            #ist(self.student_profile.major))
             class_match = TaskManager.query_by_distribution(tm_distro, tm_department)
+            '''class_match = TaskManager.query_by_distribution(tm_distro, tm_department, list(self.student_profile.interests),
+                                                            list(self.student_profile.major))'''
         else:
-            #class_match = TaskManager.query_by_distribution(tm_distro, None, list(self.student_profile.interests),
-                                                            #list(self.student_profile.major))
-            class_match = TaskManager.query_by_distribution(tm_distro, None)
+            class_match = TaskManager.query_by_distribution(tm_distro)
+
+            '''class_match = TaskManager.query_by_distribution(tm_distro, None, list(self.student_profile.interests),
+                                                            list(self.student_profile.major))'''
         if len(class_match) > 0:
             return class_match
         else:
