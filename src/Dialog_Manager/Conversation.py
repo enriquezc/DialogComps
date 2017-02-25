@@ -618,6 +618,7 @@ class Conversation:
                     tm_distro = self.task_manager_query_courses_by_distribution(entity.entity)
                     self.student_profile.distributions_needed.append(entity.entity) #add the text to gen distros
                     self.student_profile.distro_courses[entity.entity] = tm_distro #add returned courses to last talked about courses
+                    self.student_profile.potential_courses = tm_distro
             if len(self.student_profile.distributions_needed) != 0:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res),
                         self.decision_tree.get_next_node()]
