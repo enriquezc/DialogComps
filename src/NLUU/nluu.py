@@ -284,15 +284,14 @@ class nLUU:
         return a
 
     def create_schedule_class_res_res(self, userQuery):
+        s = constants.Responses.SCHEDULE_CLASS_RES[0]
         if len(userQuery.object.current_classes) == 0:
-            s = constants.Responses.EMPTY_SCHEDULE_RES[0]
-            return s
+            return constants.Responses.EMPTY_SCHEDULE_RES[0]
         else:
-            s = constants.Responses.SCHEDULE_CLASS_RES[0]
             course_list = ""
             for course in userQuery.object.current_classes:
                 course_list += (course.name + "\n")
-            return s.format(course_list)
+            return s.format(userQuery.object.current_credits, course_list)
 
     def create_full_schedule_check_res(self, userQuery):
         s = constants.Responses.FULL_SCHEDULE_CHECK[0]
