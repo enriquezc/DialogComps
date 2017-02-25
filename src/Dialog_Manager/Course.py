@@ -43,7 +43,8 @@ class Course:
         top_line = "{} ({}) : {}".format(self.id, self.weighted_score, self.name)
         centering_spaces = " " * int((line_length - len(top_line)) / 2)
         top_line = "{}{}{}".format(centering_spaces, top_line, centering_spaces)
-        return "\n{}\nThis class is taught by {}\n{}\n".format(top_line, self.faculty_name, description)
+        prof_line = "This class is taught by {}".format(self.faculty_name) if self.faculty_name != "" else ""
+        return "\n{}\n{}\n{}\n".format(top_line, prof_line, description)
 
     def __eq__(self, other):
         return other is not None and self.department == other.department and self.course_num == other.course_num
