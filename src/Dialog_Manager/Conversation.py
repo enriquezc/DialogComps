@@ -13,6 +13,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from copy import deepcopy
 import src.utils.debug as debug
 import pprint
+import time
 
 
 class Conversation:
@@ -61,6 +62,8 @@ class Conversation:
         print(our_str_response)
         while self.conversing:
             client_response = input()
+            if client_response.isspace():
+                continue
             if "goodbye" in client_response.lower() or " bye" in (" " + client_response.lower()):
                 print("Smell ya later! Thanks for chatting.")
                 return
@@ -74,12 +77,10 @@ class Conversation:
                 our_str_response = ""
                 if type(userQueries) is list:
                     for userQuery in userQueries:
-
                         ###
                         if User_Query.QueryType.full_schedule_check == userQuery.type:
                             print(self.nluu.create_response(userQuery) + '\n')
                             responseToCredits = input()
-
                             responseSentiment = self.sentimentAnalyzer.polarity_scores(responseToCredits)
                             if responseSentiment["neg"] > responseSentiment["pos"]:
                                 print("Smell ya later! Thanks for chatting.")
@@ -91,12 +92,13 @@ class Conversation:
                                 print("Goodbye")
                                 self.conversing = False
                                 break
-                            our_str_response += self.nluu.create_response(userQuery) + '\n'
+                            print(self.nluu.create_response(userQuery) + '\n')
+                            time.sleep(1)
                     # This mess of code stops descriptions with accents from
                     # throwing an error
                     our_str_response = our_str_response.encode("ascii", "ignore")
                     our_str_response = our_str_response.decode("ascii")
-                    print(str(our_str_response))
+
                 else:
                     self.utterancesStack.append(userQueries)
                     self.last_user_query.append(userQueries)
@@ -473,9 +475,11 @@ class Conversation:
         try:
             self.call_debug_print(interests)
             tm_courses = self.task_manager_keyword(interests)
-            self.student_profile.potential_courses = tm_courses
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),
+            if tm_courses != None:
+                self.student_profile.potential_courses = tm_courses
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),
                     self.decision_tree.get_next_node()]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
         except:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
@@ -484,8 +488,6 @@ class Conversation:
         if self.nluu.get_history(input):
             self.call_debug_print("hey")
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
-
-
         tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
         if not tm_courses is None and len(tm_courses) > 0:  # We got returned a list
             for tm_course in tm_courses:
@@ -509,7 +511,11 @@ class Conversation:
     def handleClassDistribution(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         # occurs when the user wants to get courses that satisfy a given distribution
         # returns a list of courses that all satisfy the distribution
-        distro_list = self.student_profile.distributions_needed
+        if luis_entities:
+            return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities, unsure=False)
+        else:
+            return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities, unsure=False)
+        '''distro_list = self.student_profile.distributions_needed
 
         self.call_debug_print(distro_list)
         max_occ = 0
@@ -517,17 +523,16 @@ class Conversation:
             for course in self.student_profile.potential_courses:
                 self.call_debug_print(course.name)
                 # print(course.gen_distributions)
-                distros = self.task_manager_query_courses_by_distribution(course.name)
-                distro_list.extend(distros)
+                distros = self.task_manager_query_courses_by_distribution(course.gen_distributions[0])
             for distro in distro_list:  # somehow get max occurance (a course name will show up more than once if it fills more than one distro
                 self.call_debug_print(distro)
                 self.student_profile.potential_courses = []
                 if distro_list.count(distro) > 1:  # using max occurance / replacement concept, but shouldn't
                     self.student_profile.potential_courses.append(distro)
                     max_occ = distro_list.count(distro)
+                    self.student_profile.distro_courses[distro] = distro_list
             self.student_profile.potential_courses = list(set(distro_list))[1:3]
-
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.class_info_distributions_res),
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res),
                     self.decision_tree.get_next_node()]
         else:
             for distro in distro_list:
@@ -535,9 +540,7 @@ class Conversation:
                 self.student_profile.distro_courses[distro] = tm_courses
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.class_info_distributions_res),
                         self.decision_tree.get_next_node()]
-
-
-
+    '''
 
     def handleUncertainResponse(self, input, luisAI, luis_intent, luis_entities):
         new_intent = format(self.decision_tree.current_node.userQuery).split(".")[1]
@@ -583,7 +586,6 @@ class Conversation:
         if self.nluu.get_history(input):
             self.call_debug_print("hey")
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
-
         if len(self.last_user_query) > 0:
             if self.last_user_query[-1].type.name == "student_info_major_requirements":
                 return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities)
@@ -596,7 +598,7 @@ class Conversation:
         if unsure:
             return self.decision_tree.get_next_node()
         self.call_debug_print(luisAI.query)
-        if "nothing" in luisAI.query or "none" in luisAI.query:
+        if "nothing" in luisAI.query or "none" in luisAI.query or " no " in luisAI.query:
             self.call_debug_print("we bout to graduate boyz")
             self.decision_tree.current_node.answered = True
             return self.decision_tree.get_next_node()
@@ -656,8 +658,8 @@ class Conversation:
         if courses is None:
             return [
                 self.decision_tree.get_next_node()]  # bc if we don't get a course, lets assume there isn't one, greiss maximum and shit
-        self.student_profile.major_classes_needed.extend(courses[0:4])
-        self.student_profile.potential_courses = courses[0:4]
+        self.student_profile.major_classes_needed.extend(courses)
+        self.student_profile.potential_courses = courses
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_requirements_res),
                 self.decision_tree.get_next_node()]
 
@@ -865,7 +867,9 @@ class Conversation:
     def task_manager_keyword(self, keywords):
         # returns a list
         stud = self.student_profile
-        tm_courses = TaskManager.query_by_keywords(keywords, exclude=set(self.student_profile.potential_courses),
+        exclude = set(self.student_profile.potential_courses) if self.student_profile.potential_courses is not None \
+            else set()
+        tm_courses = TaskManager.query_by_keywords(keywords, exclude=exclude,
                                                    student_department=stud.major, student_interests=stud.interests)
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
@@ -924,22 +928,24 @@ class Conversation:
         # given a distributions, return courses that fulfil that distribution
         # also potentially uses student major and keywords to query on courses.
         tm_distro = self.task_manager_distribution_match(distro)
+        if self.student_profile.major:
+            major = list(self.student_profile.major)[0]
+        else:
+            major = None
         if dept != None:
             tm_department = TaskManager.department_match(dept)
-            class_match = TaskManager.query_by_distribution(tm_distro, tm_department)
-            '''class_match = TaskManager.query_by_distribution(tm_distro, tm_department, list(self.student_profile.interests),
-                                                            list(self.student_profile.major))'''
+            class_match = TaskManager.query_by_distribution(tm_distro, tm_department, list(self.student_profile.interests),
+                                                            major)
         else:
-            class_match = TaskManager.query_by_distribution(tm_distro)
-
-            '''class_match = TaskManager.query_by_distribution(tm_distro, None, list(self.student_profile.interests),
-                                                            list(self.student_profile.major))'''
+            class_match = TaskManager.query_by_distribution(tm_distro, None, list(self.student_profile.interests),
+                                                            major)
         if len(class_match) > 0:
             if len(class_match) > 5:
-                class_match = class_match[0:5]
+                class_match = class_match[0:4]
             return class_match
         else:
             return None
+
 
     def call_debug_print(self, ob):
         debug.debug_print(ob, self.debug)
