@@ -522,8 +522,7 @@ class Conversation:
                     max_occ = distro_list.count(distro)
                     self.student_profile.distro_courses[distro] = distro_list
             self.student_profile.potential_courses = list(set(distro_list))[1:3]
-
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res),
                     self.decision_tree.get_next_node()]
         else:
             for distro in distro_list:
