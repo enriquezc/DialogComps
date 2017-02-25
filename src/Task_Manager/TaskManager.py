@@ -384,6 +384,7 @@ def create_stop_words_set():
     stop_words.add("course")
     stop_words.add("interest")
     stop_words.add("major")
+    stop_words.add("student")
 
 def create_distro_dictionary():
     global distro_dict
@@ -489,7 +490,7 @@ def query_by_distribution(distribution, department = None, keywords = [], studen
     # Building the query string
     query_string = "SELECT DISTINCT course_name FROM distribution WHERE {} > 0".format(distribution)
     if department != None:
-        query_string = query_string + "AND actual_dept = '{}".format(department)
+        query_string = query_string + "AND actual_dept = '{}".format(department.upper())
         query_string = query_string + "'"
 
     cur = conn.cursor()
@@ -515,10 +516,14 @@ def query_by_distribution(distribution, department = None, keywords = [], studen
                     for k in ks:
                         if k.lower() not in stop_words:
                             new_keywords.append(k.upper())
+                new_results = []
                 for course in course_results:
                     course.weighted_score = calculate_course_relevance(course, new_keywords, student_major_dept)
-                course_results.sort(key = lambda course: course.weighted_score)
-                course_results.reverse()
+                    if course.prereqs = "":
+                        new_results.append(course)
+                new_results.sort(key = lambda course: course.weighted_score)
+                new_results.reverse()
+                return new_results
         except:
             continue
 
@@ -796,7 +801,7 @@ def query_courses_by_level(course):
     dept = course.department
     for key, value in dept_dict.items():
         if dept.lower() == key.lower() or dept.lower() == value.lower():
-            course.department = key
+            course.department = key.upper()
             break
 
     return query_courses(course, True)
