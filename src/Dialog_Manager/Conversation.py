@@ -300,6 +300,7 @@ class Conversation:
         if tm_course in self.student_profile.current_classes:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res),
                     self.decision_tree.get_next_node()]
+            #return [self.decision_tree.get_next_node()]
         self.student_profile.relevant_class = tm_course
         self.student_profile.current_classes.append(tm_course)
         newCredits = 6 if tm_course.credits is None else tm_course.credits
@@ -310,6 +311,7 @@ class Conversation:
                     self.decision_tree.get_next_node()]
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res)
             , self.decision_tree.get_next_node()]
+        #return [self.decision_tree.get_next_node()]
 
     def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         if unsure:
