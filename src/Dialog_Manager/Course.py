@@ -30,7 +30,20 @@ class Course:
         self.weighted_score = 0.0
 
     def __str__(self):
-        return "{} ({}) : {}\n{}".format(self.id, self.weighted_score, self.name, self.description)
+        description = ""
+        desc_tokens = self.description.split()
+        line_length = 80
+        cur_line_length = 0
+        for token in desc_tokens:
+            if line_length < cur_line_length + len(token):
+                description += "\n"
+                cur_line_length = 0
+            cur_line_length += len(token)
+            description += " " + token
+        top_line = "{} ({}) : {}".format(self.id, self.weighted_score, self.name)
+        centering_spaces = " " * int((line_length - len(top_line)) / 2)
+        top_line = "{}{}{}".format(centering_spaces, top_line, centering_spaces)
+        return "\n{}\nThis class is taught by {}\n{}\n".format(top_line, self.faculty_name, description)
 
     def __eq__(self, other):
         return other is not None and self.department == other.department and self.course_num == other.course_num

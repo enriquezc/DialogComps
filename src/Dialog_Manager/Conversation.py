@@ -47,7 +47,7 @@ class Conversation:
         self.mapOfIntents = {}
         self.sentimentAnalyzer = SentimentIntensityAnalyzer()
         self.debug = debug
-
+        self.pretty_print = pprint.PrettyPrinter(indent=4)
         TaskManager.init(debug)
 
     def start_conversation(self, debug=False):
