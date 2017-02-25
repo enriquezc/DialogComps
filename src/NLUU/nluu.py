@@ -444,10 +444,20 @@ class nLUU:
             if s in ordinal_dict:
                 return ordinal_dict[s]
         return None
-
+    
+    def get_history(self, utterance):
+        
+        tokens = nltk.word_tokenize(utterance)
+        pos = nltk.pos_tag(tokens)
+        codes = ["VBD",  "VBN"]
+        for p in pos:
+            if p[1] in codes:
+                return True
+        return False
+    
     def call_debug_print(self, ob):
         debug.debug_print(ob, self.debug)
-
+    
 
 #if __name__ == '__main__':
 #    nluu = nLUU("https://api.projectoxford.ai/luis/v1/application?id=fc7758f9-4d40-4079-84d3-72d6ccbb3ad2&subscription-key=c18a6e7119874249927033e72b01aeea")

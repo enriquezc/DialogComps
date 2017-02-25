@@ -311,6 +311,10 @@ class Conversation:
             , self.decision_tree.get_next_node()]
 
     def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
+        self.call_debug_print("hello" + input)
+        if self.nluu.get_history(input):
+            self.call_debug_print("hey")
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
         if unsure:
             course = Course.Course()
             if self.student_profile.major != ["undeclared"]:
@@ -471,6 +475,12 @@ class Conversation:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
     def handleUnregisterRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
+        self.call_debug_print("hey" + input)
+        if self.nluu.get_history(input):
+            self.call_debug_print("hey")
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
+
+        
         tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
         if not tm_courses is None and len(tm_courses) > 0:  # We got returned a list
             for tm_course in tm_courses:
@@ -558,6 +568,10 @@ class Conversation:
 
     def handleStudentRequirementRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         self.call_debug_print("ayyyyy")
+        if self.nluu.get_history(input):
+            self.call_debug_print("hey")
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
+
         if len(self.last_user_query) > 0:
             if self.last_user_query[-1].type.name == "student_info_major_requirements":
                 return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities)
