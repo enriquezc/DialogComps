@@ -900,7 +900,7 @@ class Conversation:
         else:
             return None
 
-    def task_manager_query_courses_by_distribution(self, distro):
+    def task_manager_query_courses_by_distribution(self, dept):
         # given a course object with distributions, return courses that fulfil that distribution
         # also potentially uses student major and keywords to query on courses.
         #course = Course.Course()
