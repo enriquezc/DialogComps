@@ -186,7 +186,7 @@ class nLUU:
     def create_student_info_requirements_res_res(self, userQuery):
         a = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[0]
         pot_course = userQuery.object.potential_courses
-        print(len(pot_course))
+        self.call_debug_print(len(pot_course))
         for course in pot_course:
             if course is None:
                 continue
@@ -194,7 +194,7 @@ class nLUU:
                 time = "an unknown time"
             else:
                 time = str(course.time)
-            print(course.faculty_name)
+            self.call_debug_print(course.faculty_name)
             if course.faculty_name != "":
                 prof = course.faculty_name
             if course.prereqs == "":
@@ -272,7 +272,7 @@ class nLUU:
     def create_student_info_major_requirements_res_res(self, userQuery):
         a = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[0]
         pot_course = userQuery.object.major_classes_needed
-        print(len(pot_course))
+        self.call_debug_print(len(pot_course))
         for course in pot_course:
             if course is None:
                 continue
@@ -280,7 +280,7 @@ class nLUU:
                 time = "an unknown time"
             else:
                 time = str(course.time)
-            print(course.faculty_name)
+            self.call_debug_print(course.faculty_name)
             if course.faculty_name != "":
                 prof = course.faculty_name
             if course.prereqs == "":
