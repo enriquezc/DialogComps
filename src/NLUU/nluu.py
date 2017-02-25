@@ -184,7 +184,7 @@ class nLUU:
         return s
 
     def create_student_info_requirements_res_res(self, userQuery):
-        a = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[0]
+        '''a = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[0]
         pot_course = userQuery.object.potential_courses
         print(len(pot_course))
         for course in pot_course:
@@ -209,7 +209,34 @@ class nLUU:
                 s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
                     0]) + "\n"
                 a = a + s.format(course.id, course.name, time, prereqs, course.description)
-        return a
+        return a'''
+        s = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[0]
+        distro_string = ""
+        for key in userQuery.object.distro_courses:
+            distro_string.append(key + ":\n")
+            for course in userQuery.object.distro_courses[key]:
+                if course is None:
+                    continue
+                if course.time == "":
+                    time = "an unknown time"
+                else:
+                    time = str(course.time)
+                if course.faculty_name and course.faculty_name != "":
+                    prof = course.faculty_name
+                if course.prereqs == "":
+                    prereqs = "This class has no prereqs"
+                else:
+                    prereqs = "The prereqs for this course are " + str(course.prereqs)
+                if course.faculty_name != "":
+                    s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
+                    0]) + "\n"
+                    distro_string += s.format(course.id, course.name, time, prof, prereqs, course.description)
+                else:
+                    s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
+                    0]) + "\n"
+                    distro_string += s.format(course.id, course.name, time, prereqs, course.description)
+        return distro_string
+
 
     def create_student_info_major_requirements(self, userQuery):
         s = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS[0]
