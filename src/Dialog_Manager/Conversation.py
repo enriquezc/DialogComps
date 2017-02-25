@@ -473,9 +473,11 @@ class Conversation:
         try:
             self.call_debug_print(interests)
             tm_courses = self.task_manager_keyword(interests)
-            self.student_profile.potential_courses = tm_courses
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),
+            if tm_courses != None:
+                self.student_profile.potential_courses = tm_courses
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),
                     self.decision_tree.get_next_node()]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
         except:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
@@ -485,7 +487,7 @@ class Conversation:
             self.call_debug_print("hey")
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
 
-        
+
         tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
         if not tm_courses is None and len(tm_courses) > 0:  # We got returned a list
             for tm_course in tm_courses:
@@ -937,7 +939,7 @@ class Conversation:
             '''class_match = TaskManager.query_by_distribution(tm_distro, None, list(self.student_profile.interests),
                                                             list(self.student_profile.major))'''
         if len(class_match) > 0:
-            if len(class_match > 5):
+            if len(class_match) > 5:
                 class_match = class_match[0:5]
             return class_match
         else:
