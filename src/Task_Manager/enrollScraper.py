@@ -1,4 +1,5 @@
 import re, csv, requests
+import nltk
 
 all = re.findall(r'''value="[^"]*"''', '''<option value="AFAM">African/African American Studies (AFAM)</option>
 <option value="AMMU">American Music Concentration (AMMU)</option>
@@ -59,50 +60,69 @@ all = re.findall(r'''value="[^"]*"''', '''<option value="AFAM">African/African A
 for i in range(len(all)):
     all[i] = all[i][7:-1]
     #print all[i]
-    
+'''
 e = open("CourseData.csv", "w")
 w = csv.writer(e)
 w.writerow(["Course_Name", "Related_Dept", "Actual_Dept", "A&I", "Arts_Practice", "Statistical_Reasoning", "Lab",
  "Literary_Analysis", "Humanistic_Inquiry", "Social_Inquiry", "Writing_Rich_1", "Writing_Rich_2", "Quantitive_Reasoning",
   "Intercultural_Domestic_Studies", "International_Studies"])
-
+'''
 '''course format is: [name of course, related_dept, actual_dept, A&I, Arts Practice, Statistical Reasoning, Lab,
  Literary analysis, Humanistic Inquiry, Social Inquiry, WR1, WR2, Quantitive Reasoning,
   Intercultural Domestic Studies, International Studies]'''
 courses = []
 requirements = ["Argument & Inquiry Seminar", "Arts Practice", "Formal or Statistical Reasoning", "Science with Lab Component", "Literary/Artistic Analysis", "Humanistic Inquiry", "Social Inquiry", "Writing Rich 1", "Writing Rich 2", "Quantitative Reasoning", "Intercultural Domestic Studies", "International Studies"]
+badCourses = []
 for dept in all:
 
     coursesFallURL = 'https://apps.carleton.edu/campus/registrar/schedule/enroll/?term=16FA&subject=''' + dept
     coursesWinterURL = 'https://apps.carleton.edu/campus/registrar/schedule/enroll/?term=17WI&subject=''' + dept
     coursesSpringURL = 'https://apps.carleton.edu/campus/registrar/schedule/enroll/?term=17SP&subject=''' + dept
-    coursesFall = requests.get(coursesFallURL).text.split("Search for Courses")[0].split('''h3 class="title"><span class="coursenum" title=''')[1:]
-    coursesWinter = requests.get(coursesWinterURL).text.split("Search for Courses")[0].split('''h3 class="title"><span class="coursenum" title=''')[1:]
-    coursesSpring = requests.get(coursesSpringURL).text.split("Search for Courses")[0].split('''h3 class="title"><span class="coursenum" title=''')[1:]
+    pattern = r'''[0123456789.]*<\/span>[^<]*<span'''
+    coursesFall = re.findall(pattern, requests.get(coursesFallURL).text)#("Search for Courses")[0].split('''h3 class="title"><span class="coursenum" title=''')[1:]
+    coursesWinter = re.findall(pattern, requests.get(coursesWinterURL).text)#requests.get(coursesWinterURL).text.split("Search for Courses")[0].split('''h3 class="title"><span class="coursenum" title=''')[1:]
+    coursesSpring = re.findall(pattern, requests.get(coursesSpringURL).text)#requests.get(coursesSpringURL).text.split("Search for Courses")[0].split('''h3 class="title"><span class="coursenum" title=''')[1:]
     allCourses = coursesFall
     allCourses.extend(coursesWinter)
     allCourses.extend(coursesSpring)
+    print 1
     for course in allCourses:
-        courseName = course[7:].split(".")[0].split(">")
-        courseName = courseName[len(courseName) - 1]
-        related_dept = dept
-        actual_dept = courseName.split(" ")[0]
-        courseName = courseName.replace(" ", "")
-        #print courseName, related_dept, actual_dept
-        reqs = []
-        for req in requirements:
-            if req in course:
-                reqs.append(1)
-            else:
-                reqs.append(0)
+        courseName = course.split(">")[1].split("<")[0]
+        #courseName = courseName[len(courseName) - 1]
         
-        info = [courseName, related_dept, actual_dept]
-        info.extend(reqs)
-        w.writerow(info)
         print courseName
+        #exit()
+        tokens = nltk.word_tokenize(courseName)
+        pos = nltk.pos_tag(tokens)
+        codes = ["VBD",  "VBN"]
+        badWords = ["was", 'directed', 'measured', 'were', 'established', 'situated']
+        #badWords is a list of all the past tense verbs
+        #that occur in any course title, as well as the word "was"
+        for p in pos:
+            #print p
+            if p[1] in codes:
+                
+                if p[0] not in badWords: 
+                    badCourses.append(p[0])
+        #related_dept = dept
+        #actual_dept = courseName.split(" ")[0]
+        #courseName = courseName.replace(" ", "")
+        #print courseName, related_dept, actual_dept
+        #reqs = []
+        #for req in requirements:
+        #    if req in course:
+        #        reqs.append(1)
+        #    else:
+        #        reqs.append(0)
+        
+        #info = [courseName, related_dept, actual_dept]
+        #info.extend(reqs)
+        #w.writerow(info)
+        #print courseName
     
     
     #print coursesFall[1]
     #break
+print badCourses
     
     

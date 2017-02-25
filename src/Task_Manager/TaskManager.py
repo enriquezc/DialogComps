@@ -205,11 +205,11 @@ def fill_out_courses(results, new_keywords=None, student_major=None, student_int
         result_course.name = result[16]
         result_course.term = result[19]
         result_course.credits = result[11]
-        classroom_str = result[24]
-        if classroom_str != None:
-            classroom_str = classroom_str.split()
-            classroom = classroom_str[0] + " " + classroom_str[1]
-            result_course.classroom = classroom
+        if result[24] != None:
+            res = parse_time_room(result[24])
+            if res != None:
+                result_course.classroom = res[0]
+                result_course.time = res[1]
         result_course.description = result[29]
         if result[30] != None:
             result_course.prereqs = result[30]
@@ -757,6 +757,38 @@ def concentration_match(str_in):
             cur_best = dist
     return cur_match
 
+def parse_time_room(str_in):
+    if str_in.isspace():
+        return None
+    elif str_in == "":
+        return None
+    elif str_in == None:
+        return None
+
+    classroom = ""
+    meeting_times = []
+
+    meeting_strings = str_in.split('|')
+
+    for meeting_string in meeting_strings:
+        meeting_list = meeting_string.split()
+        if len(meeting_list) < 2 or len(meeting_list) > 5:
+            return None
+        else:
+            if classroom == "":
+                classroom = meeting_list[0] + " " + meeting_list[1]
+            if meeting_list[2] == "TBA" or meeting_list[3] == "TBA":
+                break
+            elif len(meeting_list) == 5:
+                meeting = [meeting_list[2]]
+                meeting.append((meeting_list[3].lstrip('0'), meeting_list[4].lstrip('0')))
+                meeting_times.append(meeting)
+            else:
+                break
+
+    return (classroom, meeting_times)
+
+
 # Helper function that triggers general type class queries
 def query_courses_by_level(course):
     dept = course.department
@@ -785,8 +817,13 @@ def call_debug_print(ob):
 
 if __name__ == "__main__":
     init()
-    print(major_match("Psych")[0] + major_match("Psych")[1])
-    print(concentration_match("American Music")[0] + concentration_match("American Music")[1])
+    #print(major_match("Psych")[0] + major_match("Psych")[1])
+    #print(concentration_match("American Music")[0] + concentration_match("American Music")[1])
+    print(parse_time_room("OLIN 102      T       10:10AM 11:55AM|OLIN 104      T       10:10AM 11:55AM"))
+    print(parse_time_room("COWL DANC     MW      08:55PM 09:35PM"))
+    print(parse_time_room("MDRC LL30     TBA     TBA"))
+    print(parse_time_room("LDC  330      MW      08:30AM 09:40AM|LDC  330      TTH     08:15AM 09:20AM|LDC  330      F       08:30AM 09:30AM"))
+    print(parse_time_room("LDC  345      MTWTHF  08:00AM 05:00PM"))
     '''
     results = query_by_distribution("literary_analysis", "ENGL")
     for course in results:
