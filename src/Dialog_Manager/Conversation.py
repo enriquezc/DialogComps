@@ -473,9 +473,11 @@ class Conversation:
         try:
             self.call_debug_print(interests)
             tm_courses = self.task_manager_keyword(interests)
-            self.student_profile.potential_courses = tm_courses
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),
+            if tm_courses != None:
+                self.student_profile.potential_courses = tm_courses
+                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_interests_res),
                     self.decision_tree.get_next_node()]
+            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
         except:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
