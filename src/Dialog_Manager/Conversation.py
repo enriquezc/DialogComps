@@ -505,7 +505,11 @@ class Conversation:
     def handleClassDistribution(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         # occurs when the user wants to get courses that satisfy a given distribution
         # returns a list of courses that all satisfy the distribution
-        distro_list = self.student_profile.distributions_needed
+        if luis_entities:
+            return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities, unsure=False)
+        else:
+            return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities, unsure=False)
+        '''distro_list = self.student_profile.distributions_needed
 
         self.call_debug_print(distro_list)
         max_occ = 0
@@ -513,7 +517,7 @@ class Conversation:
             for course in self.student_profile.potential_courses:
                 self.call_debug_print(course.name)
                 # print(course.gen_distributions)
-                distros = self.task_manager_query_courses_by_distribution(course.name)
+                distros = self.task_manager_query_courses_by_distribution(course.gen_distributions[0])
             for distro in distro_list:  # somehow get max occurance (a course name will show up more than once if it fills more than one distro
                 self.call_debug_print(distro)
                 self.student_profile.potential_courses = []
@@ -530,9 +534,7 @@ class Conversation:
                 self.student_profile.distro_courses[distro] = tm_courses
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.class_info_distributions_res),
                         self.decision_tree.get_next_node()]
-
-
-
+    '''
 
     def handleUncertainResponse(self, input, luisAI, luis_intent, luis_entities):
         new_intent = format(self.decision_tree.current_node.userQuery).split(".")[1]
@@ -578,7 +580,6 @@ class Conversation:
         if self.nluu.get_history(input):
             self.call_debug_print("hey")
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
-
         if len(self.last_user_query) > 0:
             if self.last_user_query[-1].type.name == "student_info_major_requirements":
                 return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities)
