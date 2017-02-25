@@ -21,6 +21,7 @@ class Student:
         self.all_classes = set()
         self.potential_courses = []
         self.relevant_class = Course.Course()
+        self.distro_courses = {}
 
     def __str__(self):
         major_str = ""
