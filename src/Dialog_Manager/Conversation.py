@@ -613,6 +613,10 @@ class Conversation:
             if len(self.student_profile.distributions_needed) != 0:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res),
                         self.decision_tree.get_next_node()]
+            else:
+                return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities,
+                                                                   unsure=False)
+
         else:
             return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities, unsure=False)
         '''courses = self.task_manager_query_courses_by_distribution()
