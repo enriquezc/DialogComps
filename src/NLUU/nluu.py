@@ -185,35 +185,13 @@ class nLUU:
         return s
 
     def create_student_info_requirements_res_res(self, userQuery):
-        response = constants.Responses.STUDENT_INFO_REQUIREMENTS_RES[1]
-        distro_string = ""
-        if userQuery.object.distro_courses:
-            for key in userQuery.object.distro_courses:
-                distro_string += (key + ":\n")
-                for course in userQuery.object.distro_courses[key]:
-                    if course is None:
-                        continue
-                    if course.time == "":
-                        time = "an unknown time"
-                    else:
-                        time = str(course.time)
-                    if course.faculty_name and course.faculty_name != "":
-                        prof = course.faculty_name
-                    if course.prereqs == "":
-                        prereqs = "This class has no prereqs"
-                    else:
-                        prereqs = "The prereqs for this course are " + str(course.prereqs)
-                    if course.faculty_name != "":
-                        s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONA[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
-                        0]) + "\n"
-                        distro_string += s.format(course.id, course.name, time, prof, prereqs, course.description)
-                    else:
-                        s = "".join(constants.Responses.NEW_CLASS_DESCRIPTIONB[0] + constants.Responses.NEW_CLASS_DESCRIPTIONC[
-                        0]) + "\n"
-                        distro_string += s.format(course.id, course.name, time, prereqs, course.description)
-            return response.format(distro_string)
-        else:
-            return self.create_student_info_major_requirements_res_res(userQuery)
+        s = "Here's what I got:\n"
+        courses = []
+        for courselist in list(userQuery.object.distro_courses.values()):
+            courses.extend(courselist)
+        for i, course in enumerate(courses):
+            s += course.__str__(i + 1)
+        return s
 
 
     def create_student_info_major_requirements(self, userQuery):
