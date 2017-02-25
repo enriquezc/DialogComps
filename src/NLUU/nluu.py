@@ -257,7 +257,7 @@ class nLUU:
     def create_student_info_major_requirements_res_res(self, userQuery):
         a = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[0]
         pot_course = userQuery.object.major_classes_needed
-        print(len(pot_course))
+        self.call_debug_print(len(pot_course))
         for course in pot_course:
             if course is None:
                 continue
@@ -265,7 +265,7 @@ class nLUU:
                 time = "an unknown time"
             else:
                 time = str(course.time)
-            print(course.faculty_name)
+            self.call_debug_print(course.faculty_name)
             if course.faculty_name != "":
                 prof = course.faculty_name
             if course.prereqs == "":
@@ -427,9 +427,9 @@ class nLUU:
             if s in ordinal_dict:
                 return ordinal_dict[s]
         return None
-    
+
     def get_history(self, utterance):
-        
+
         tokens = nltk.word_tokenize(utterance)
         pos = nltk.pos_tag(tokens)
         codes = ["VBD",  "VBN"]
@@ -438,10 +438,10 @@ class nLUU:
                 if "was" not in p[0]:
                     return True
         return False
-    
+
     def call_debug_print(self, ob):
         debug.debug_print(ob, self.debug)
-    
+
 
 #if __name__ == '__main__':
 #    nluu = nLUU("https://api.projectoxford.ai/luis/v1/application?id=fc7758f9-4d40-4079-84d3-72d6ccbb3ad2&subscription-key=c18a6e7119874249927033e72b01aeea")
