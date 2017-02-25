@@ -506,7 +506,6 @@ class Conversation:
                 distro_list.extend(distros)
             for distro in distro_list:  # somehow get max occurance (a course name will show up more than once if it fills more than one distro
                 self.call_debug_print(distro)
-                self.call_debug_print(distro.name)
                 self.student_profile.potential_courses = []
                 if distro_list.count(distro) > 1:  # using max occurance / replacement concept, but shouldn't
                     self.student_profile.potential_courses.append(distro)
@@ -900,20 +899,21 @@ class Conversation:
         else:
             return None
 
-    def task_manager_query_courses_by_distribution(self, dept):
+    def task_manager_query_courses_by_distribution(self, distro, dept=None):
         # given a course object with distributions, return courses that fulfil that distribution
         # also potentially uses student major and keywords to query on courses.
         #course = Course.Course()
         #course.gen_distributions.append(distro)
-
-        tm_distro = TaskManager.distro_match(distro)
+        tm_distro = self.task_manager_distribution_match(distro)
         if dept != None:
             tm_department = TaskManager.department_match(dept)
-            class_match = TaskManager.query_by_distribution(tm_distro, tm_department, list(self.student_profile.interests),
-                                                            list(self.student_profile.major))
+            #class_match = TaskManager.query_by_distribution(tm_distro, tm_department, list(self.student_profile.interests),
+                                                            #ist(self.student_profile.major))
+            class_match = TaskManager.query_by_distribution(tm_distro, tm_department)
         else:
-            class_match = TaskManager.query_by_distribution(tm_distro, None, list(self.student_profile.interests),
-                                                            list(self.student_profile.major))
+            #class_match = TaskManager.query_by_distribution(tm_distro, None, list(self.student_profile.interests),
+                                                            #list(self.student_profile.major))
+            class_match = TaskManager.query_by_distribution(tm_distro, None)
         if len(class_match) > 0:
             return class_match
         else:
