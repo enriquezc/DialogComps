@@ -1,14 +1,8 @@
-import queue
 import re
-import sys
-from nltk.tree import Tree
 from src.NLUU import nluu
-import nltk
-import luis
 from src.Task_Manager import TaskManager
 from src.Dialog_Manager import Student, Course, User_Query, DecisionTree
 import datetime
-from nltk.corpus import stopwords
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from copy import deepcopy
 import src.utils.debug as debug
@@ -33,6 +27,12 @@ class Conversation:
                       "WRB": "Wh-adverb"}
 
     def __init__(self, luis_url, debug=False):
+        """
+        Initializes Conversation object.
+
+        :param luis_url: url to connect to luis. Used in NLUU for analysis
+        :param debug: flag to see if printed output should be actually printed
+        """
         self.student_profile = Student.Student()
         self.student_profile.current_class = Course.Course()
         self.last_query = 0
@@ -52,6 +52,14 @@ class Conversation:
         TaskManager.init(debug)
 
     def start_conversation(self, debug=False):
+        """
+        Starts the conversation with client. Pushes interactions onto stack of utterances that can be looked at down
+        the road of the conversation in order to contextualize generic utterances. Passes client utterances on to
+        handle functions based on intent/context and prints a string response from NLUU based on what is returned from
+        handle function.
+
+        :param debug: Debug for printing
+        """
         self.conversing = True
         self.debug = debug
         our_response = [self.get_current_node()[0],
@@ -124,7 +132,11 @@ class Conversation:
     # @params
     # @return
     def classify_intent(self, luis_input):
-        # input is a luis dictionary
+        """
+        Takes highest non-None intent so long as it is above a threshold of 0.15.
+        :param luis_input:
+        :return: intent
+        """
         if luis_input.intents[0] == "None" and luis_input.intents[0].score > .5:
             return luis_input.intents[0]
         for intent in luis_input.intents:
@@ -496,11 +508,17 @@ class Conversation:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_clarify)]
 
     def handleUnregisterRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
-        #self.call_debug_print("hey" + input)
-        #if self.nluu.get_history(input):
-        #    self.call_debug_print("hey")
-        #    return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.schedule_class_res), User_Query.UserQuery(self.student_profile, self.decision_tree.current_node.userQuery)]
-        tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
+        """
+        Handler for unregistration. Queries against database on input to find course they wish to
+        unregister for and removes it from the student_profile's current courses
+        :param input: string raw input
+        :param luisAI: luis analysis of input
+        :param luis_intent: luis intents
+        :param luis_entities: luis entities
+        :param unsure: if response to question was unsure
+        :return: returns list of UserQuery's
+        """
+        tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities, specific=True)
         if not tm_courses is None and len(tm_courses) > 0:  # We got returned a list
             for tm_course in tm_courses:
                 for stud_course in self.student_profile.current_classes:
@@ -528,34 +546,22 @@ class Conversation:
             return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities, unsure=False)
         else:
             return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities, unsure=False)
-        '''distro_list = self.student_profile.distributions_needed
 
-        self.call_debug_print(distro_list)
-        max_occ = 0
-        if distro_list is None:
-            for course in self.student_profile.potential_courses:
-                self.call_debug_print(course.name)
-                # print(course.gen_distributions)
-                distros = self.task_manager_query_courses_by_distribution(course.gen_distributions[0])
-            for distro in distro_list:  # somehow get max occurance (a course name will show up more than once if it fills more than one distro
-                self.call_debug_print(distro)
-                self.student_profile.potential_courses = []
-                if distro_list.count(distro) > 1:  # using max occurance / replacement concept, but shouldn't
-                    self.student_profile.potential_courses.append(distro)
-                    max_occ = distro_list.count(distro)
-                    self.student_profile.distro_courses[distro] = distro_list
-            self.student_profile.potential_courses = list(set(distro_list))[1:3]
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res),
-                    self.decision_tree.get_next_node()]
-        else:
-            for distro in distro_list:
-                tm_courses = self.task_manager_query_courses_by_distribution(distro)[0:2]
-                self.student_profile.distro_courses[distro] = tm_courses
-                return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.class_info_distributions_res),
-                        self.decision_tree.get_next_node()]
-    '''
 
     def handleUncertainResponse(self, input, luisAI, luis_intent, luis_entities):
+        """
+        If the response from the user was unsure (eg. 'Im not sure', 'I dont know') , we want to look at what we asked them, and then call their handle
+        function with the flag unsure=True.
+
+        Uses an eval to pattern-match with functions defined in this file.
+
+        :param input: string raw input
+        :param luisAI: luis analysis of input
+        :param luis_intent: luis intents
+        :param luis_entities: luis entities
+        :param unsure: if response to question was unsure
+        :return: returns whatever the function called returns
+        """
         new_intent = format(self.decision_tree.current_node.userQuery).split(".")[1]
         self.call_debug_print(new_intent)
         eval_fn = None
