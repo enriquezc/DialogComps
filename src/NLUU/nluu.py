@@ -252,8 +252,7 @@ class nLUU:
                 a += i + str(course)
             return a
         else:
-            #return self.create_clarify_res(userQuery)
-            return ""
+            return self.create_clarify_res(userQuery)
 
     def create_student_info_major_requirements_res_res(self, userQuery):
         a = constants.Responses.STUDENT_INFO_MAJOR_REQUIREMENTS_RES[0]
