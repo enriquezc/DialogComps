@@ -639,8 +639,8 @@ class Conversation:
                 else:
                     course.course_num = ["200", "300"]
                     some_courses = self.task_manager_query_courses_by_level(course)
-            self.student_profile.major_classes_needed.extend(some_courses[0:4])
-            self.student_profile.potential_courses = some_courses[0:4]
+            self.student_profile.major_classes_needed.extend(some_courses)
+            self.student_profile.potential_courses = some_courses
             return [
                 User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_requirements_res),
                 self.decision_tree.get_next_node()]
@@ -653,8 +653,8 @@ class Conversation:
         if courses is None:
             return [
                 self.decision_tree.get_next_node()]  # bc if we don't get a course, lets assume there isn't one, greiss maximum and shit
-        self.student_profile.major_classes_needed.extend(courses[0:4])
-        self.student_profile.potential_courses = courses[0:4]
+        self.student_profile.major_classes_needed.extend(courses)
+        self.student_profile.potential_courses = courses
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_requirements_res),
                 self.decision_tree.get_next_node()]
 
@@ -862,12 +862,8 @@ class Conversation:
     def task_manager_keyword(self, keywords):
         # returns a list
         stud = self.student_profile
-        if stud.major and stud.interests:
-            tm_courses = TaskManager.query_by_keywords(keywords,stud.major,stud.interests)
-        elif stud.interests:
-            tm_courses = TaskManager.query_by_keywords(keywords, None, stud.interests)
-        else:
-            tm_courses = TaskManager.query_by_keywords(keywords, None, None)
+        tm_courses = TaskManager.query_by_keywords(keywords, exclude=set(self.student_profile.potential_courses),
+                                                   student_department=stud.major, student_interests=stud.interests)
         if type(tm_courses) is list:
             if len(tm_courses) > 0:
                 if len(tm_courses) > 5:
