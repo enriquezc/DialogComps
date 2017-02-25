@@ -459,6 +459,8 @@ class Conversation:
             # if len(luis_entities) < 10:
         i = 0
         interests = self.nluu.find_interests(luisAI.query)
+        if len(interests) == 0:
+            interests = list(self.student_profile.interests) if self.student_profile.interests is not None else []
         new_interests = []
         for interest in interests:
             if "interest" in interest or "class" in interest:
