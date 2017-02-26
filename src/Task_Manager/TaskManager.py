@@ -39,17 +39,17 @@ def connect_to_db():
     conn = psycopg2.connect(host = "cmc307-07.mathcs.carleton.edu", \
     database = "dialogcomps", user = "dialogcomps", password = "dialog!=comps")
 
-# @params Course object 'course' containing some initialized member variables,
-# and searches for courses which share those values
-# @return List of length >= 0 containing Course objects which match the input
+
 def query_courses(course, approximate = False):
     '''
     Returns a list of course objects which share the attributes defined for the
     course object passed as argument. Used to query courses based on multiple
     criteria.
-    :param course:
-    :param approximate:
-    :return:
+    :param course: course object that has a select group of attributes already
+    filled
+    :param approximate: boolean flag that tell us whether or not to use
+    approximations instead of precise course numbers
+    :return: a list of course objects
     '''
 
     #call_debug_print("ENTERING QUERY COURSES FUNCTION")
@@ -111,16 +111,13 @@ def query_courses(course, approximate = False):
     return list(set(results))
 
 
-# Takes a title string and a potential department, returns a list of classes
-# @params String object 'title_string'
-# @params Optional String object 'department'
-# @return List of length >= 0 containing Course objects which match title_string
 def query_by_title(title_string, department = None):
     """
-
-    :param title_string:
-    :param department:
-    :return:
+    Takes an approximate title, and uses the LIKE syntax to find the nearest
+    course that matches that course
+    :param title_string: string that is an approximation of the title
+    :param department: department that could be used to limit the query
+    :return: a list of course objects
     """
     if type(title_string) != type("this is a string"):
         return []
@@ -200,19 +197,9 @@ def query_by_title(title_string, department = None):
     return list(set(courses))
 
 
-# Helper function that takes the SQL results list, and fills out a list of
-# course objects according to the contents of the SQL list. Only works if the
-# SQL query is run on course with a SELECT * function. Otherwise, will have an
-# index out of bounds error.
-# returns a list of course objects
 def fill_out_courses(results, new_keywords=None, student_major=None, student_interests=None):
     """
-
-    :param results:
-    :param new_keywords:
-    :param student_major:
-    :param student_interests:
-    :return:
+    
     """
     global conn
     cur = conn.cursor()
