@@ -67,9 +67,9 @@ class Conversation:
             our_response[1])
         self.utterancesStack.append(our_response)
         print(our_str_response)
-        self.conversation(debug)
+        self.start_conversation(debug)
 
-    def conversation(self, debug=False):
+    def start_conversation(self, debug=False):
         """
         Starts the conversation with client. Pushes interactions onto stack of utterances that can be looked at down
         the road of the conversation in order to contextualize generic utterances. Passes client utterances on to
@@ -161,7 +161,7 @@ class Conversation:
                     self.conversing = False
                     self.conversation(debug)
                 time.sleep(1)
-            self.conversation(debug)
+            self.start_conversation(debug)
 
     # @params
     # @return
@@ -196,6 +196,8 @@ class Conversation:
     
     #Checks for a concentration, adds it to the list of concentrations, and then moves on
     def handleStudentConcentration(self, input, luisAI, luis_intent, luis_entities, unsure=False):
+        if "no" in luisAI.query:
+            return [self.decision_tree.get_next_node()]
         depts = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities, unsure, False)
         for dept in depts:
             self.student_profile.concentration.add(dept)
@@ -686,9 +688,10 @@ class Conversation:
             for entity in luis_entities:
                 self.call_debug_print("i still gotta finish up that " + entity.entity)
                 if entity.type == "distribution":
-                    tm_distro = self.task_manager_query_courses_by_distribution(entity.entity)
-                    self.student_profile.distributions_needed.append(entity.entity) #add the text to gen distros
-                    self.student_profile.distro_courses[entity.entity] = tm_distro #add returned courses to last talked about courses
+                    distro = self.task_manager_distribution_match(entity.entity)
+                    tm_distro = self.task_manager_query_courses_by_distribution(distro)
+                    self.student_profile.distributions_needed.append(distro) #add the text to gen distros
+                    self.student_profile.distro_courses[distro] = tm_distro #add returned courses to last talked about courses
                     self.student_profile.potential_courses = tm_distro
             if len(self.student_profile.distributions_needed) != 0:
                 return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res),
