@@ -328,7 +328,8 @@ class nLUU:
             s = constants.Responses.STUDENT_INFO_CONCENTRATION_RES[0]
             concentration_string = ""
             for concentration in userQuery.object.concentration:
-                concentration_string += (concentration + "\n")
+                concentration_string += (concentration + ", ")
+            concentration_string = concentration_string[:-2]
             return s.format(concentration_string)
 
         else:
@@ -459,4 +460,3 @@ class nLUU:
 
     def call_debug_print(self, ob):
         debug.debug_print(ob, self.debug)
-

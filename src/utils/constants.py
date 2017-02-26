@@ -20,7 +20,7 @@ class Responses:
                               "{} major, huh? I've heard they're the best students.",
                               "So you haven't chosen your major yet?",)
     STUDENT_INFO_CONCENTRATION = ("Do you have a concentration? If so, what is it?",)
-    STUDENT_INFO_CONCENTRATION_RES = ("Ok, so you concentrations include:\n {}", 
+    STUDENT_INFO_CONCENTRATION_RES = ("Ok, so you concentrations include: {}", 
                                       "So you don't have any concentrations?")
     STUDENT_INFO_PREVIOUS_CLASSES = ("Can you tell me about classes you've already taken?",)
     STUDENT_INFO_PREVIOUS_CLASSES_RES = ("I'll try to find classes for you to look at other than:\n {}",)
@@ -33,7 +33,7 @@ class Responses:
     STUDENT_INFO_ABROAD_RES = ("That sounds like an awesome experience.",)
     STUDENT_INFO_REQUIREMENTS = ("Which, if any, general graduation requirements (distros) do you still need to complete?",
                                  "Are there any general graduation requirements (distros) you still need to complete?",)
-    STUDENT_INFO_REQUIREMENTS_RES = ("Let's try to find some courses to fill these requirements.", 
+    STUDENT_INFO_REQUIREMENTS_RES = ("Let's try to find some courses to fill these requirements.",
                                      "Here are some classes that fill general requirements that you still need:\n{}",)
     STUDENT_INFO_MAJOR_REQUIREMENTS = ("What classes, if any, do you need to take to complete your major?",)
     STUDENT_INFO_MAJOR_REQUIREMENTS_RES = ("Let's try to find some classes to fill these requirements.\n",)
@@ -65,4 +65,3 @@ class Responses:
     EMPTY_SCHEDULE_RES = ("You are not currently registered for any classes.",)
     FULL_SCHEDULE_CHECK = ("Here are the classes you're currently registered for:\n{}You're registered for {} credits, do you want to register for more classes?",)
     ALREADY_TALKED_ABOUT = ("We already talked about all the relevant courses to these interests. Ask about something else.",)
-
