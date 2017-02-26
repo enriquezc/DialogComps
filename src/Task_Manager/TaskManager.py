@@ -388,6 +388,9 @@ def create_stop_words_set():
     stop_words.add("major")
     stop_words.add("student")
     stop_words.add("class")
+    stop_words.add("i")
+    stop_words.add("concentration")
+
 
 def create_distro_dictionary():
     global distro_dict
@@ -833,6 +836,8 @@ def concentration_match(str_in):
     :return: String concentration
     """
 
+    call_debug_print(str_in)
+
     # Handling bad input
     if str_in.isspace():
         return None
@@ -847,6 +852,14 @@ def concentration_match(str_in):
     # If the string is in the stop word set, return None type
     if str_in in stop_words:
         return None
+    new_word_array = []
+    for word in str_in.split():
+        if word not in stop_words:
+            new_word_array.append(word)
+
+    str_in = " ".join(new_word_array)
+
+    call_debug_print(str_in)
 
     cur_match = None
     cur_best = 100

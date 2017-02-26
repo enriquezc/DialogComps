@@ -196,7 +196,7 @@ class Conversation:
     
     #Checks for a concentration, adds it to the list of concentrations, and then moves on
     def handleStudentConcentration(self, input, luisAI, luis_intent, luis_entities, unsure=False):
-        depts = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
+        depts = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities, unsure, False)
         for dept in depts:
             self.student_profile.concentration.add(dept)
         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_concentration_res), self.decision_tree.get_next_node()]
