@@ -1,6 +1,6 @@
 """
  Conversation.py
-
+ Dialog Management functionality, interfacing between NLUU and Task Manager
 
 """
 

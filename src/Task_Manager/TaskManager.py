@@ -1,6 +1,9 @@
-# Task Manager.py
-# Serves to decide what actions need to be taken next to facilitate
-# conversation for the Dialogue Manager
+"""
+ Conversation.py
+ Serves to decide what actions need to be taken next to facilitate conversation for the Dialog Manager
+
+"""
+
 import psycopg2
 import numpy as np
 import string
@@ -407,7 +410,16 @@ def create_distro_dictionary():
 # @params List object 'keywords' which contains words to query on
 # @params Optional int 'threshold' which limits number of courses to return
 # @return List of length >= 0 containing Course objects which matched keywords
-def query_by_keywords(keywords, exclude=None, threshold = 3, student_department=None, student_interests=None):
+def query_by_keywords(keywords, exclude = None, threshold = 3, student_department = None, student_interests = None):
+    """
+    Queries a list of Courses based on a list of keyword Strings
+    :param keywords: List of String keywords to query based on
+    :param exclude: Set of Course objects to be excluded from query
+    :param threshold:
+    :param student_department:
+    :param student_interests:
+    :return:
+    """
     if type(keywords) != type([]):
         call_debug_print("QUERY BY KEYWORDS NOT PASSED LIST TYPE")
         return []
@@ -450,6 +462,7 @@ def query_by_keywords(keywords, exclude=None, threshold = 3, student_department=
              AND (( sec_term LIKE '17%') \
              AND sec_term NOT LIKE '%SU')".format(str(tuple(department_names)))
     query += " AND (UPPER(long_description) LIKE '%{}%'".format(new_keywords[0])
+
     if len(keywords) > 1:
         for keyword in new_keywords[1:]:
             query += "OR UPPER(long_description) LIKE '%{}%'".format(keyword)
@@ -458,26 +471,35 @@ def query_by_keywords(keywords, exclude=None, threshold = 3, student_department=
     query = query + " AND sec_name NOT LIKE '%WL%'"
     cur.execute(query)
     results = cur.fetchall()
-    courses = fill_out_courses(results, new_keywords, student_major=student_department,
-                               student_interests=student_interests)
+
+    courses = fill_out_courses(results, new_keywords, student_major = student_department,
+                               student_interests = student_interests)
     courses = list(set(courses))
+
     courses.sort(key = lambda course: course.weighted_score)
     courses.reverse()
+
     if len(courses) < 1:
         return []
+
     max = courses[0].weighted_score
     toReturn = []
     val = max * 0.3
+
     for course in courses:
         if course.weighted_score >= val:
             toReturn.append(course)
+
     if exclude is None:
         return toReturn
+
     coursesToReturn = []
     excludeCourses = set(exclude)
+
     for course in toReturn:
         if course not in excludeCourses:
             coursesToReturn.append(course)
+
     return coursesToReturn
 
 
@@ -487,7 +509,7 @@ def query_by_distribution(distribution, department = None, keywords = [], studen
     :param distribution: String distribution requirement tag
     :param department: String department, initialized to None
     :param keywords: List of keywords included in distribution query, initially empty
-    :param student_major_dept: String major of Student object disro is being queried for
+    :param student_major_dept: String major of Student object distro is being queried for
     :return: List of Course objects returned by query
     """
 
@@ -530,27 +552,32 @@ def query_by_distribution(distribution, department = None, keywords = [], studen
         except:
             continue
 
+    # Check if results should be limited/sorted on defined keywords
     if keywords != []:
         new_keywords = []
+
+        # Expand keywords
         for keyword in keywords:
             kss = smart_description_expansion(keyword)
-            #new_keywords.append(keyword)
-            #new_keywords.append(kss)
             ks = kss.split()
+
             for k in ks:
                 if k.lower() not in stop_words:
                     new_keywords.append(k.upper())
+
+        # Calculate relevancy based on keywords/major
         for course in course_results:
             course.weighted_score = calculate_course_relevance(course, new_keywords, student_major_dept, None)[1]
             if course.prereqs == "":
                 new_results.append(course)
 
-
+    # Sort results based on matching if keywords defined
     if keywords != []:
         new_results.sort(key=lambda course: course.weighted_score)
         new_results.reverse()
         course_results = new_results
 
+    # Return 10 best results
     if len(course_results) > 10:
         return course_results[:10]
     else:
