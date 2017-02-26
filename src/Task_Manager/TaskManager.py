@@ -20,7 +20,6 @@ concentration_dict = {}
 stop_words = None
 debug_value = None
 
-
 def init(init_debug = False):
     connect_to_db()
     create_dept_dict()
@@ -197,22 +196,35 @@ def query_by_title(title_string, department = None):
     return list(set(courses))
 
 
-def fill_out_courses(results, new_keywords=None, student_major=None, student_interests=None):
+
+def fill_out_courses(results, new_keywords = None, student_major = None, student_interests = None):
     """
-    
+    Helper function that takes the SQL results list, and fills out a list of course objects according to the contents
+    of the SQL list. Only works if the SQL query is run on course with a SELECT * function. Otherwise, will have an
+    index out of bounds error
+    :param results: List of PSQL query result arrays
+    :param new_keywords: List of String keywords to determine relevancy with
+    :param student_major: String major of Student object query being done for
+    :param student_interests: List of String interests of Student object query being done for
+    :return: List of Course objects built from query results
     """
+
     global conn
+
     cur = conn.cursor()
     courses = []
+
     for result in results:
+        # Build Course object from current result
         result_course = Course.Course()
-        #result_course = Course()
         result_course.department = result[17]
         result_course.course_num = result[2]
         result_course.id = result[13]
         result_course.name = result[16]
         result_course.term = result[19]
         result_course.credits = result[11]
+
+        # Parse classroom/meeting times/description/prerequisites if defined
         if result[24] != None:
             res = parse_time_room(result[24])
             if res != None:
@@ -223,7 +235,8 @@ def fill_out_courses(results, new_keywords=None, student_major=None, student_int
         if result[30] != None:
             result_course.prereqs = result[30]
         call_debug_print(result_course.prereqs)
-        # adding professor information based on id found in courses
+
+        # Adding professor information based on id found in courses
         if result[21] != None:
             result_course.faculty_id = result[21]
             if '|' in result_course.faculty_id:
@@ -249,8 +262,8 @@ def fill_out_courses(results, new_keywords=None, student_major=None, student_int
                 if len(name) > 0 and len(name[0]) > 0:
                     result_course.faculty_name = name[0][0]
 
-        # only runs in the case where this is called by query_by_keywords
-        # uses the new_keywords list in the query_by_keywords function
+        # Only runs in the case where this is called by query_by_keywords
+        # Uses the new_keywords list in the query_by_keywords function
         if new_keywords is not None:
             relevance_list, weighted_relevance = calculate_course_relevance(result_course, new_keywords,
                                                                             student_major, student_interests)
@@ -263,7 +276,7 @@ def fill_out_courses(results, new_keywords=None, student_major=None, student_int
 
 def makeCooccurenceMatrix():
     """
-
+    Helper function to construct co-occurrence matrix, which is now stored on the database
     """
     from ast import literal_eval as make_tuple
     stop_words = set()
@@ -283,6 +296,7 @@ def makeCooccurenceMatrix():
     distinct_word = set()
     dept_dictionaries = []
 
+    # Columns correspond to department
     for dept in dept_results:
         call_debug_print("dept: {}".format(dept[0]))
         if dept[0] != None:
@@ -293,6 +307,8 @@ def makeCooccurenceMatrix():
 
             punctuationset = set(string.punctuation)
             dept_dictionary = {}
+
+            # Strip punctuation/stop words and populate distinct words
             for title, description in dept_tuples:
                 titleArray = title.split()
                 for word in titleArray:
@@ -318,9 +334,12 @@ def makeCooccurenceMatrix():
 
 
             dept_dictionaries.append((str(dept), dept_dictionary))
+
     call_debug_print("Done with that")
     distinct_word_list = list(distinct_word)
     matrix = []
+
+    # Build matrix
     for (dept_name, d) in dept_dictionaries:
         call_debug_print("Dept_name {}".format(dept_name))
         l = [None] * (len(distinct_word_list) + 1)
@@ -333,44 +352,54 @@ def makeCooccurenceMatrix():
                 l[r] = 0
         matrix.append(l)
 
+    # Write to csv to upload to sql database
     result_file = io.open('results.csv', 'w', encoding='utf8')
     transpose = []
+
     for i in range(len(matrix[0])):
         dept_row = []
         for j in range(len(matrix)):
             dept_row.append(matrix[j][i])
         transpose.append(dept_row)
     numrows = 0
+
     for i, row in enumerate(transpose):
         if i == 0:
             result_file.write(','.join(row))
             result_file.write('\n')
             continue
+
         call_debug_print(row)
+
         if sum(row) < 5:
             continue
         numrows += 1
         row_str = [str(d) for d in row]
+
         if i > 0:
             row_str.insert(0, distinct_word_list[i - 1])
+
         result_file.write(','.join(row_str))
         result_file.write('\n')
+
     result_file.close()
     call_debug_print("Rows: {}".format(numrows))
 
-# checks if a description can be expanded from shorthand used
-# @params String object 'description' which contains some keywords for query
-# @return String object which has all shorthand keywords expanded
+
 def smart_description_expansion(description):
     """
-
-    :param description:
-    :return:
+    Checks if a description can be expanded from shorthand used
+    :param description: String which contains some keywords for query
+    :return: String description with shorthands expanded
     """
+
     call_debug_print("EXPANDING DESCRIPTION: " + description)
+
     global conn
+
     new_description = ""
     cur = conn.cursor()
+
     for word in description.split():
         query = "select * from shorthands where lower(short)=lower('{}')".format(word)
         cur.execute(query)
@@ -383,6 +412,7 @@ def smart_description_expansion(description):
                 new_description += " {}".format(word)
         else:
             new_description += " {}".format(word)
+
     if len(new_description) > 0 and new_description[0] == ' ':
         new_description = new_description[1:]
         call_debug_print("RETURNING EXPANDED: " + new_description)
@@ -394,7 +424,6 @@ def create_stop_words_set():
     global stop_words
     stop_words = set()
     stop_words_file = open('./src/Task_Manager/stop_words.txt', 'r')
-    #stop_words_file = open('stop_words.txt', 'r')
     for word in stop_words_file:
         stop_words.add(word.strip())
     stop_words.add("register")
@@ -441,8 +470,6 @@ def query_by_keywords(keywords, exclude = None, threshold = 3, student_departmen
     new_keywords = []
     for keyword in keywords:
         kss = smart_description_expansion(keyword)
-        #new_keywords.append(keyword)
-        #new_keywords.append(kss)
         ks = kss.split()
         for k in ks:
             if k.lower() not in stop_words:
