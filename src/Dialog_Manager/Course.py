@@ -32,7 +32,7 @@ class Course:
     def __str__(self, index):
         description = ""
         desc_tokens = self.description.split()
-        line_length = 80
+        line_length = 85
         cur_line_length = 0
         for token in desc_tokens:
             if line_length < cur_line_length + len(token):
