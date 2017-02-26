@@ -216,7 +216,7 @@ class Conversation:
             return self.handleRemoveMajor(input, luisAI, luis_intent, luis_entities)
         if "concentrat" in luisAI.query:
             return self.handleStudentConcentration(input, luisAI, luis_intent, luis_entities)
-        major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
+        major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities, False, True)
         self.call_debug_print("major: " + str(major_list))
         if len(luis_entities) == 0 and len(major_list) == 0:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_major_res),
