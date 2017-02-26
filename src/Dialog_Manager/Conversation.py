@@ -208,7 +208,7 @@ class Conversation:
         if luis_entities:
             for entity in luis_entities:
                 if entity.type == "department":
-                    tm_major = self.task_manager_department_match(entity.entity)
+                    tm_major = self.task_manager_major_match(entity.entity)
                     if tm_major is None:
                         return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
                     self.call_debug_print(tm_major)
@@ -284,7 +284,7 @@ class Conversation:
                 dept.append(self.task_manager_department_match("wgst"))
                 pot_query = pot_query.replace("women and gender", "")
             elif "cinema and media" in pot_query and is_major:
-                dept.append(self.task_manager_department_match("cams"))
+                dept.append(self.task_manager_major_match("cams"))
                 pot_query = pot_query.replace("cinema and media", "")
             else:
                 double = True
@@ -296,12 +296,12 @@ class Conversation:
                 self.call_debug_print("major split: " + str(majors))
                 for maj in majors:
                     maj_string = " ".join(self.nluu.find_departments(maj))
-                    dept.append(self.task_manager_department_match(maj_string))
+                    dept.append(self.task_manager_major_match(maj_string))
             else:
                 major = self.nluu.find_departments(pot_query)
                 self.call_debug_print("single major: " + str(major))
                 major_string = " ".join(major)
-                dept.append(self.task_manager_department_match(major_string))
+                dept.append(self.task_manager_major_match(major_string))
             return dept
         else:
             if double:
@@ -309,12 +309,12 @@ class Conversation:
                 self.call_debug_print("major split: " + str(majors))
                 for maj in majors:
                     maj_string = " ".join(self.nluu.find_departments(maj))
-                    dept.append(self.task_manager_department_match(maj_string))
+                    dept.append(self.task_manager_concentration_match(maj_string))
             else:
                 major = self.nluu.find_departments(pot_query)
                 self.call_debug_print("single major: " + str(major))
                 major_string = " ".join(major)
-                dept.append(self.task_manager_department_match(major_string))
+                dept.append(self.task_manager_concentration_match(major_string))
             return dept
 
     def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities, unsure=False):
