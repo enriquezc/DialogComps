@@ -46,6 +46,9 @@ def query_courses(course, approximate = False):
     Returns a list of course objects which share the attributes defined for the
     course object passed as argument. Used to query courses based on multiple
     criteria.
+    :param course:
+    :param approximate:
+    :return:
     '''
 
     #call_debug_print("ENTERING QUERY COURSES FUNCTION")
@@ -112,7 +115,12 @@ def query_courses(course, approximate = False):
 # @params Optional String object 'department'
 # @return List of length >= 0 containing Course objects which match title_string
 def query_by_title(title_string, department = None):
-    # just confirming that we are being given a string
+    """
+
+    :param title_string:
+    :param department:
+    :return:
+    """
     if type(title_string) != type("this is a string"):
         return []
 
@@ -197,6 +205,14 @@ def query_by_title(title_string, department = None):
 # index out of bounds error.
 # returns a list of course objects
 def fill_out_courses(results, new_keywords=None, student_major=None, student_interests=None):
+    """
+
+    :param results:
+    :param new_keywords:
+    :param student_major:
+    :param student_interests:
+    :return:
+    """
     global conn
     cur = conn.cursor()
     courses = []
@@ -256,8 +272,11 @@ def fill_out_courses(results, new_keywords=None, student_major=None, student_int
 
     return courses
 
-# Helper function
+
 def makeCooccurenceMatrix():
+    """
+
+    """
     from ast import literal_eval as make_tuple
     stop_words = set()
     stop_words_file = open('stop_words.txt', 'r')
@@ -355,6 +374,11 @@ def makeCooccurenceMatrix():
 # @params String object 'description' which contains some keywords for query
 # @return String object which has all shorthand keywords expanded
 def smart_description_expansion(description):
+    """
+
+    :param description:
+    :return:
+    """
     call_debug_print("EXPANDING DESCRIPTION: " + description)
     global conn
     new_description = ""
@@ -407,25 +431,24 @@ def create_distro_dictionary():
     "WR2":"writing_rich_2","QRE":"quantitative_reasoning",
     "IDS":"intercultural_domestic_studies","IS":"international_studies"}
 
-# takes a list of keywords, returns a list of classes
-# @params List object 'keywords' which contains words to query on
-# @params Optional int 'threshold' which limits number of courses to return
-# @return List of length >= 0 containing Course objects which matched keywords
+
 def query_by_keywords(keywords, exclude = None, threshold = 3, student_department = None, student_interests = None):
     """
     Queries a list of Courses based on a list of keyword Strings
     :param keywords: List of String keywords to query based on
     :param exclude: Set of Course objects to be excluded from query
-    :param threshold:
-    :param student_department:
-    :param student_interests:
-    :return:
+    :param threshold: Optional Integer 'threshold' which limits number of courses to return
+    :param student_department: String optional argument of department
+    :param student_interests: List of length >= 0 containing Course objects which matched keywords
+    :return: List of Course objects return by query, sorted based on relevancy
     """
+
     if type(keywords) != type([]):
         call_debug_print("QUERY BY KEYWORDS NOT PASSED LIST TYPE")
         return []
 
     global stop_words
+
     recommended_departments = set()
     new_keywords = []
     for keyword in keywords:
@@ -437,7 +460,7 @@ def query_by_keywords(keywords, exclude = None, threshold = 3, student_departmen
             if k.lower() not in stop_words:
                 new_keywords.append(k.upper())
 
-    # trying to catch any errors if new_keywords is never changed
+    # Trying to catch any errors if new_keywords is never changed
     if new_keywords == []:
         return []
 
@@ -455,10 +478,11 @@ def query_by_keywords(keywords, exclude = None, threshold = 3, student_departmen
     department_names = []
     for i in recommended_departments - set((0,)):
         department_names.append(colnames[i].upper())
+
     # If we don't find any departments to query on, we just return nothing. DM's problem now
     if department_names == []:
         return []
-    #call_debug_print(department_names)
+
     query = "SELECT DISTINCT * FROM COURSE c where UPPER(sec_subject) in {} \
              AND (( sec_term LIKE '17%') \
              AND sec_term NOT LIKE '%SU')".format(str(tuple(department_names)))
