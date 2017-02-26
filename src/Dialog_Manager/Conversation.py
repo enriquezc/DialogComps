@@ -1,3 +1,10 @@
+"""
+ Conversation.py
+
+
+"""
+
+
 import re
 from src.NLUU import nluu
 from src.Task_Manager import TaskManager
@@ -166,11 +173,14 @@ class Conversation:
         return [self.decision_tree.get_next_node()]
 
     def handleStudentMajorRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
-        # takes the Luis query, and lowers any word in the sequence so long as
-        # the word isn't I. NLTK will be able to recognize the majors as nouns if
-        # they are lowercase, but will also think i is a noun. Therefore, to
-        # prevent problems in the common case, we check for the presence of I.
-        # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
+        """
+        takes the Luis query, and lowers any word in the sequence so long as
+        the word isn't I. NLTK will be able to recognize the majors as nouns if
+        they are lowercase, but will also think i is a noun. Therefore, to
+        prevent problems in the common case, we check for the presence of I.
+        sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
+
+        """
         if unsure:
             self.student_profile.major = set(["undeclared"])
             self.student_profile.concentration = set(["undeclared"])
@@ -465,7 +475,7 @@ class Conversation:
             return [self.decision_tree.get_next_node()]
 
     def handleStudentRequirementResponse(self, input, luisAI, luis_intent, luis_entities, unsure=False):
-        return [(self.decision_tree.get_next_node)]
+        return [self.decision_tree.get_next_node]
 
     def handleClassTimeRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         course = Course.Course()
