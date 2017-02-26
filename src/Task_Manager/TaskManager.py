@@ -136,7 +136,7 @@ def query_by_title(title_string, department = None):
         # if the first word is being read, no need for a space before the word
         # anything else, and we add a space before
         if i > 0:
-            new_string = new_string + " " + new_substring + "%"
+            new_string = new_string + " " + new_word_array[i].lower() + "%"
             if word_array[i].upper() not in dept_dict:
                 # do nothing if a stop word is currently being read
                 if word_array[i].lower() in stop_words:
@@ -624,7 +624,11 @@ def edit_distance(s1, s2):
 # @params String object 'str_in' which is a department code or description
 # @return String object that is the best guess for a valid, capitalized dept code
 def department_match(str_in):
+
+
     call_debug_print("MATCHING DEPT: " + str_in)
+
+    # Handling bad input
     if str_in.isspace():
         return None
     elif str_in == "":
@@ -660,6 +664,7 @@ def department_match(str_in):
     return cur_match
 
 def distro_match(str_in):
+    # Handling bad input
     if str_in.isspace():
         return None
     elif str_in == "":
@@ -670,20 +675,21 @@ def distro_match(str_in):
     global distro_dict
     global stop_words
 
-    # if the string is in our set of stop words, we return nothing
+    # If the string is in our set of stop words, we return nothing
     if str_in in stop_words:
         return None
 
     cur_match = None
     cur_best = 20
     distro_items = distro_dict.items()
-    # check to see if the input already matches a department
+
+    # Check to see if the input already matches a distro
     for key, value in distro_items:
         if str_in.lower() == key.lower():
             return value
         if str_in.lower() == value.lower():
             return value
-    # otherwise, use edit distance to find the nearest major
+    # Otherwise, use edit distance to find the nearest distro
     for key in distro_dict:
         dist = edit_distance(key.lower(),str_in.lower())
         if dist < cur_best:
@@ -693,9 +699,12 @@ def distro_match(str_in):
         if dist < cur_best:
             cur_match = distro_dict[key]
             cur_best = dist
+
     return cur_match
 
 def major_match(str_in):
+
+    # Handling bad input
     if str_in.isspace():
         return None
     elif str_in == "":
@@ -706,32 +715,43 @@ def major_match(str_in):
     global major_dict
     global stop_words
 
-    # if the string is in our set of stop words, we return nothing
+    # If the string is in stop words set, return None type
     if str_in in stop_words:
         return None
 
     cur_match = None
     cur_best = 100
     major_items = major_dict.items()
-    # check to see if the input already matches a department
+
+    # Check to see if the input already matches a major
     for key, value in major_items:
         if str_in.lower() == key.lower():
-            return value
+            return key
         if str_in.lower() == value.lower():
-            return value
-    # otherwise, use edit distance to find the nearest major
+            return key
+
+    # Otherwise, use edit distance to find the nearest major
     for key in major_dict:
         dist = edit_distance(key.lower(),str_in.lower())
         if dist < cur_best:
-            cur_match = major_dict[key]
+            cur_match = key
             cur_best = dist
         dist = edit_distance(major_dict[key].lower(),str_in.lower())
         if dist < cur_best:
-            cur_match = major_dict[key]
+            cur_match = key
             cur_best = dist
+
     return cur_match
 
+
 def concentration_match(str_in):
+    """
+    Match input string to concentration
+    :param str_in: String description of concentration
+    :return: String concentration
+    """
+
+    # Handling bad input
     if str_in.isspace():
         return None
     elif str_in == "":
@@ -742,32 +762,43 @@ def concentration_match(str_in):
     global concentration_dict
     global stop_words
 
-    # if the string is in our set of stop words, we return nothing
+    # If the string is in the stop word set, return None type
     if str_in in stop_words:
         return None
 
     cur_match = None
     cur_best = 100
     concentration_items = concentration_dict.items()
-    # check to see if the input already matches a department
+
+    # Check to see if the input already matches a concentration
     for key, value in concentration_items:
         if str_in.lower() == key.lower():
-            return value
+            return key
         if str_in.lower() == value.lower():
-            return value
-    # otherwise, use edit distance to find the nearest major
+            return key
+
+    # Otherwise, use edit distance to find the nearest concentration
     for key in concentration_dict:
         dist = edit_distance(key.lower(),str_in.lower())
         if dist < cur_best:
-            cur_match = concentration_dict[key]
+            cur_match = key
             cur_best = dist
         dist = edit_distance(concentration_dict[key].lower(),str_in.lower())
         if dist < cur_best:
-            cur_match = concentration_dict[key]
+            cur_match = key
             cur_best = dist
+
     return cur_match
 
+
 def parse_time_room(str_in):
+    """
+    Helper function for parsing classroom and meeting time from database string
+    :param str_in: String of white space separated classroom/meeting times for course
+    :return: Tuple containing classroom string and nested list of meeting time/dates
+    """
+
+    # Handling bad input
     if str_in.isspace():
         return None
     elif str_in == "":
@@ -778,18 +809,25 @@ def parse_time_room(str_in):
     classroom = ""
     meeting_times = []
 
+    # Meeting times separated by | character
     meeting_strings = str_in.split('|')
 
     for meeting_string in meeting_strings:
         meeting_list = meeting_string.split()
+
+        # Check for valid formatting on DB side
         if len(meeting_list) < 2 or len(meeting_list) > 5:
             return None
         else:
+            # Populate classroom string with appropriate substrings
             if classroom == "":
                 classroom = meeting_list[0] + " " + meeting_list[1]
+
+            # Check for course with classroom/time still to be determined
             if meeting_list[2] == "TBA" or meeting_list[3] == "TBA":
                 break
             elif len(meeting_list) == 5:
+                # Each meeting_times list element is a start/end time string tuple
                 meeting = [meeting_list[2]]
                 meeting.append((meeting_list[3].lstrip('0'), meeting_list[4].lstrip('0')))
                 meeting_times.append(meeting)
@@ -799,8 +837,12 @@ def parse_time_room(str_in):
     return (classroom, meeting_times)
 
 
-# Helper function that triggers general type class queries
 def query_courses_by_level(course):
+    """
+    Helper function that triggers general type class queries, setting approximate tag 'True'
+    :param course: Course object to be queried on
+    :return: List of Course objects returned by query_courses function
+    """
     dept = course.department
     for key, value in dept_dict.items():
         if dept.lower() == key.lower() or dept.lower() == value.lower():
@@ -809,31 +851,52 @@ def query_courses_by_level(course):
 
     return query_courses(course, True)
 
+
 def get_n_best_indices(row, n):
+    """
+    Finds the n best departments in a given row
+    :param row: List containing occurrence counts by Department
+    :param n: Integer size of result List
+    :return: List containing best n departments
+    """
+
     res = []
     arr = np.array(row[1:len(row)])
+
     while len(res) < n:
         i = np.argmax(arr)
+
         if arr[i] == 0:
             return arr
+
         res.append(i + 1)
         arr[i] = 0
+
     return res
 
+
 def call_debug_print(ob):
+    """
+    Shell function for debug printing in TaskManager
+    :param ob: Object containing debug text/variable to be output to command line
+    """
+
     global debug_value
     debug.debug_print(ob, debug_value)
 
 
+## main function for isolated testing purposes ##
 if __name__ == "__main__":
     init()
-    #print(major_match("Psych")[0] + major_match("Psych")[1])
+
+    print(major_match("English"))
+    print(concentration_match("NEURO"))
     #print(concentration_match("American Music")[0] + concentration_match("American Music")[1])
-    print(parse_time_room("OLIN 102      T       10:10AM 11:55AM|OLIN 104      T       10:10AM 11:55AM"))
-    print(parse_time_room("COWL DANC     MW      08:55PM 09:35PM"))
-    print(parse_time_room("MDRC LL30     TBA     TBA"))
-    print(parse_time_room("LDC  330      MW      08:30AM 09:40AM|LDC  330      TTH     08:15AM 09:20AM|LDC  330      F       08:30AM 09:30AM"))
-    print(parse_time_room("LDC  345      MTWTHF  08:00AM 05:00PM"))
+    #print(parse_time_room("OLIN 102      T       10:10AM 11:55AM|OLIN 104      T       10:10AM 11:55AM"))
+    #print(parse_time_room("COWL DANC     MW      08:55PM 09:35PM"))
+    #print(parse_time_room("MDRC LL30     TBA     TBA"))
+    #print(parse_time_room("LDC  330      MW      08:30AM 09:40AM|LDC  330      TTH     08:15AM 09:20AM|LDC  330      F       08:30AM 09:30AM"))
+    #print(parse_time_room("LDC  345      MTWTHF  08:00AM 05:00PM"))
     '''
     results = query_by_distribution("literary_analysis", "ENGL")
     for course in results:
