@@ -132,6 +132,9 @@ class Conversation:
                         self.conversing = False
                         break
                     our_str_response += self.nluu.create_response(userQueries) + '\n'
+                    spaces = " " * (100 - len(our_str_response) + 1)
+                    our_str_response = spaces + our_str_response
+                    print("-" * 100)
                     print(our_str_response)
         exit()
 
