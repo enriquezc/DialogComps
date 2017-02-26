@@ -31,7 +31,10 @@ class Course:
 
     def __str__(self, index):
         description = ""
+        time_str = str(self.time).strip('[]')
         desc_tokens = self.description.split()
+        prereq = " Pre-requisites for this course are:"
+        prereq_tokens = self.prereqs.split()
         line_length = 85
         cur_line_length = 0
         for token in desc_tokens:
@@ -45,7 +48,15 @@ class Course:
         top_line = "{}){}{}{}".format(index, centering_spaces, top_line, centering_spaces)
         professor_centering_spaces = " " * int((line_length - len(self.faculty_name))/2)
         prof_line = "{}{}\n".format(professor_centering_spaces, self.faculty_name) if self.faculty_name != "" else ""
-        return "\n{}\n{}\n{}\n".format(top_line, prof_line, description)
+        time_spacing = " " * int((line_length - len(time_str))/2)
+        time_line = "{}{}\n".format(time_spacing, self.time) if self.time != [] else ""
+        for token in prereq_tokens:
+            if line_length < cur_line_length + len(token):
+                prereq += "\n"
+                cur_line_length = 0
+            cur_line_length += len(token)
+            prereq += " " + token
+        return "\n{}\n{}\n{}\n{}\n{}\n".format(top_line, prof_line, time_line, prereq, description)
 
     def __eq__(self, other):
         return other is not None and self.department == other.department and self.course_num == other.course_num
