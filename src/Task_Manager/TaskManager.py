@@ -393,6 +393,7 @@ def create_stop_words_set():
     stop_words.add("class")
     stop_words.add("i")
     stop_words.add("concentration")
+    stop_words.add("concentrator")
 
 
 def create_distro_dictionary():
