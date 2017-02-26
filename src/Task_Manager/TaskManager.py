@@ -435,7 +435,7 @@ def create_stop_words_set():
     stop_words.add("i")
     stop_words.add("concentration")
     stop_words.add("concentrator")
-
+    stop_words.add("yes")
 
 def create_distro_dictionary():
     global distro_dict
