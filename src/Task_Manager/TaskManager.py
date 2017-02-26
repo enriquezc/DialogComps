@@ -20,6 +20,7 @@ concentration_dict = {}
 stop_words = None
 debug_value = None
 
+
 def init(init_debug = False):
     connect_to_db()
     create_dept_dict()
