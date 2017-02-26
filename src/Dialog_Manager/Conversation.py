@@ -358,6 +358,8 @@ class Conversation:
                         break
                 if tm_course is not None:
                     tm_courses = [tm_course]
+            elif len(self.student_profile.potential_courses) == 1:
+                tm_courses = [self.student_profile.potential_courses[0]]
         if tm_courses is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
         tm_course = tm_courses[0]
