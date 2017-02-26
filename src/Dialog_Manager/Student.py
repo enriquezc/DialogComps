@@ -1,5 +1,9 @@
 from src.Dialog_Manager import Course
 
+'''Student object
+Basically stores all our information about the student
+There's some info we don't use, but could be used in the future
+Variable names are self explanitory. '''
 class Student:
     def __init__(self):
         self.name = None
@@ -12,10 +16,6 @@ class Student:
         self.terms_left = 12
         self.total_credits = 0
         self.current_credits = 0
-        #some way of listing interests. Three proposals so far are:
-        #1. Departments and professors they enjoy taking classes in
-        #2. Enums of different categories of interests we've thought of, which we can expand as we go
-        #3. Strings with phrases we believe they said they were interested in
         self.interests = set()
         self.abroad = None
         self.all_classes = set()
@@ -23,6 +23,9 @@ class Student:
         self.relevant_class = Course.Course()
         self.distro_courses= {}
 
+    '''Prints out relevant information about student
+    Never used outside of testing
+    '''
     def __str__(self):
         major_str = ""
         if len(self.major) == 0:
