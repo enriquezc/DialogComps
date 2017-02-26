@@ -23,4 +23,16 @@ We use Microsoft's LUIS to extract intent from a client's response. We have trai
 This is the real brains of the program in terms of conversation decision making and handling. A number of files in this folder are domain objects to help us group piece of information, such as courses and students. Every time the student asks about particular classes, each is filled out and manipulated using a `Course` object. Each conversation as well is given a `Student` object that holds information about previous things we have learned about the student as well as courses we've talked about. These are relatively brainless collections of data that do not provide functionality, except for a pretty way of printing to the terminal. The two main files in this domain are `Conversation.py` and `decision_tree.py`.
 
 ### Conversation
-This file starts the conversation, enters a conversational loop, and handles all of the decision making given the current intent and the past context in which a particular utterance is made. For instance, "Put me in CS111" will give back the same `ScheduleClass` intent as before, and `Conversation` will determine that `CS111` is a course, query the database (via TaskManager) to fill out the information, add it to the student's schedule
+This file starts the conversation, enters a conversational loop, and handles all of the decision making given the current intent and the past context in which a particular utterance is made. For instance, "Put me in CS111" will give back the same `ScheduleClass` intent as before, and `Conversation` will determine that `CS111` is a course, query the database (via TaskManager) to fill out the information, and add it to the student's schedule. 
+
+More interestingly, we handle more complicated interactions that last longer than a single input/output. For instance, say the client is interested in rocks. We query the database about classes that may have something to do with rocks and suggest 3-5 courses for the client to consider. They may wish to register for one of those courses, but colloquially referring to a listed course by its title may sound irregular. One would instead say "Register me for the 2nd one". Being able to understand the intent and the context is integral to producing the correct behavior. This is what `Conversation` attempts to do.
+
+
+### Decision Tree
+The decision tree is a tree of nodes that guide the conversation. We ask leading questions, respond to deviations in the trajectory in the conversation made by the client in intelligent ways that still allow us to accomplish our objective of registering the client for 3 courses. The order in which we ask questions and determining how questions have been answered or deflected is handled here. 
+
+
+## Task Manager
+This acts as an intelligent database. It has access to the real PostgreSQL database that houses information on courses, professors and a calculated keyword co-occurence matrix. 
+
+
