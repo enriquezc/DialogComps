@@ -16,21 +16,22 @@ class nLUU:
         self.stem_dict = pickle.load(open('src/utils/stem_dict.dat', 'rb'))
         self.stemmer = SnowballStemmer("english")
         self.debug = debug
-        #Requires a local copy of atis.cfg
-        #atis_grammar = nltk.data.load("atis.cfg")
-        #self.parser = nltk.ChartParser(atis_grammar)
 
-    def create_new_class_name_res(self, userQuery): #Just calls new_class_request_res
-        return self.create_new_class_request_res(userQuery)
+    '''def create_new_class_name_res(self, userQuery): #Just calls new_class_request_res
+        return self.create_new_class_request_res(userQuery)'''
 
-
+    '''
+    Uses the built in tokenizer from nltk to tokenize the input string s.
+    '''
     def tokenize(self, s):
         '''
             Tokenizes input from client
         '''
         return nltk.word_tokenize(s)
 
-
+    '''
+    Uses the built in part of speech tagger from nltk to tag the input string s.
+    '''
     def pos_tag(self, s):
         '''
             Part-of-speech taging for str
@@ -46,13 +47,6 @@ class nLUU:
             return self.stem_dict[s_stem]
         else:
             return [s]
-
-
-    def create_syntax_tree(self, s):
-        '''
-            Creates a syntax tree from str
-        '''
-        return self.parser.parse(s)
 
 
     def get_luis(self, s):
@@ -84,6 +78,12 @@ class nLUU:
         if fun == None:
             fun = self.response_dict[QueryType.welcome]
         return fun(userQuery)
+
+    '''
+    Given a UserQuery object, creates a response string of the appropriate type.
+    '''
+    def create_new_class_name_res(self, userQuery): #Just calls new_class_request_res
+        return self.create_new_class_request_res(userQuery)
 
     def create_welcome_res(self, userQuery):
         return constants.Responses.WELCOME[0]
@@ -343,15 +343,24 @@ class nLUU:
         s = constants.Responses.TM_COURSE_CLARIFY[0]
         return s
 
-
+    '''
+    Stems the input string s.
+    '''
     def stem(self, s):
         return(self.stemmer.stem(s))
 
+    '''
+    Returns a list of words with the adjective, proper noun, singular noun, or plural noun tags
+    that may comprise a course title.
+    '''
     def find_course(self, utterance):
         tokens = nltk.word_tokenize(utterance)
         pos = nltk.pos_tag(tokens)
         return [word for word,p in pos if p in ['JJ','NNP','NN','NNS'] and word.lower() != "register"]
 
+    '''
+    Finds and returns possible name by joining every word from the input with the proper noun tag.
+    '''
     def find_name(self, utterance):
         tokens = nltk.word_tokenize(utterance)
         pos = nltk.pos_tag(tokens)
@@ -359,6 +368,10 @@ class nLUU:
         name = " ".join(name_list)
         return name
 
+    '''
+    Returns a list of words with the proper noun, plural noun, adjective, gerund, or singular noun tags
+    that may comprise a user's interest.
+    '''
     def find_interests(self, utterance):
         tokens = self.tokenize(utterance)
         pos = self.pos_tag(tokens)
@@ -371,11 +384,18 @@ class nLUU:
                     interests.append(word)
         return interests
 
+    '''
+    Returns a list of words other than "major" with the adjective, singular noun, plural noun,
+    or proper noun tags that may comprise a department name.
+    '''
     def find_departments(self, utterance):
         tokens = nltk.word_tokenize(utterance)
         pos = nltk.pos_tag(tokens)
         return [word for word, p in pos if p in ['JJ', 'NN', 'NNS', "NNP"] and word != "major"]  # getting adj and nouns from sentence and proper nouns
 
+    '''
+    Uses part of speech tagging to return a list of numbers from the utterance.
+    '''
     def find_numbers(self, utterance):
         tokens = self.tokenize(utterance)
         pos = self.pos_tag(tokens)
@@ -387,6 +407,10 @@ class nLUU:
                 numbers.add(word.split('-')[0])
         return numbers
 
+    '''
+    Creates a dictionary with ordinal keys and number values, and then returns the number
+    associated with the ordinal found in ordinal_str.
+    '''
     def get_number_from_ordinal_str(self, ordinal_str):
         strs = ordinal_str.split()
         ordinal_dict = {
@@ -417,6 +441,10 @@ class nLUU:
                 return ordinal_dict[s]
         return None
 
+    '''
+    Returns True if utterance contains verbs tagged as either past tense or
+    past participle, and False otherwise.
+    '''
     def get_history(self, utterance):
 
         tokens = nltk.word_tokenize(utterance)
@@ -431,20 +459,3 @@ class nLUU:
     def call_debug_print(self, ob):
         debug.debug_print(ob, self.debug)
 
-
-#if __name__ == '__main__':
-#    nluu = nLUU("https://api.projectoxford.ai/luis/v1/application?id=fc7758f9-4d40-4079-84d3-72d6ccbb3ad2&subscription-key=c18a6e7119874249927033e72b01aeea")
-#    res = nluu.get_luis("when is Intro CS this year?")
-#    print("res1:{}".format(res))
-#    intents = res.intents
-#    results = []
-#    if intents[0].intent == 'StudentMajorResponse' or intents[0].intent == 'None':
-#        line = res.query
-#        pos = nluu.pos_tag(nluu.tokenize(line))
-#        for word, p in pos:
-#            if p == 'JJ' or p == 'NNP':
-#                results.append(word)
-
-#    if intents[0].intent == 'ClassDescriptionRequest':
-#        pass
-#    print("res: {}".format(" ".join(results)))
