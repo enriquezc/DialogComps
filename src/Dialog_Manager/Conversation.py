@@ -924,9 +924,9 @@ class Conversation:
             if entity.type == "department":
                 course.department = entity.entity
                 tm_course = self.task_manager_information(course)  # type checking is done in tm informaiton
-                if not type(tm_course) is list:
+                if not type(tm_course) is list and tm_course is not None:
                     toReturn = [tm_course]
-                else:
+                elif tm_course is not None:
                     toReturn = tm_course
             if entity.type == "distribution":
                 course.gen_distributions.append(entity.entity)
