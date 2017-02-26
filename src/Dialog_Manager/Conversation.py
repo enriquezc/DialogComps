@@ -87,7 +87,7 @@ class Conversation:
             #Let's see if they're done with us.
             if "goodbye" in client_response.lower() or " bye" in (" " + client_response.lower()):
                 print("Smell ya later! Thanks for chatting.")
-                return
+                break
             #Also checks for empty strings.
             if client_response != "" and client_response != "\n":
                 luis_analysis = self.nluu.get_luis(client_response)
@@ -214,18 +214,8 @@ class Conversation:
             return [self.decision_tree.get_next_node()]
         if "not" in luisAI.query:
             return self.handleRemoveMajor(input, luisAI, luis_intent, luis_entities)
-        if "concentration" in luisAI.query:
+        if "concentrat" in luisAI.query:
             return self.handleStudentConcentration(input, luisAI, luis_intent, luis_entities)
-
-        if luis_entities:
-            for entity in luis_entities:
-                if entity.type == "department":
-                    tm_major = self.task_manager_department_match(entity.entity)
-                    if tm_major is None:
-                        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
-                    self.call_debug_print(tm_major)
-                    if len(self.student_profile.major) < 2 and not tm_major is None:
-                        self.student_profile.major.add(tm_major)
         major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
         self.call_debug_print("major: " + str(major_list))
         if len(luis_entities) == 0 and len(major_list) == 0:
@@ -251,7 +241,7 @@ class Conversation:
             if format(luis_intent) != "student_info_concentration":
                 for entity in luis_entities:
                     if entity.type == "department":
-                        dept = self.task_manager_department_match(entity.entity)
+                        dept = self.task_manager_major_match(entity.entity)
                         if dept in relevant_major:
                             try:
                                 self.student_profile.major.remove(dept)
@@ -262,7 +252,7 @@ class Conversation:
             else:
                 for entity in luis_entities:
                     if entity.type == "department":
-                        dept = self.task_manager_department_match(entity.entity)
+                        dept = self.task_manager_concentration_match(entity.entity)
                         if dept in relevant_major:
                             try:
                                 self.student_profile.concentration.remove(dept)
@@ -288,45 +278,42 @@ class Conversation:
         # sidenote: we collect proper nouns "NNP" along with nouns "NN" down below...
         # tokenizes the query that has been adjusted by the code above
         # returns a list
-        pot_query = luisAI.query
+        pot_query = luisAI.query.lower()
         dept = []
         double = False
-        if "and" in luisAI.query:
-            if "women and gender" in pot_query:
-                dept.append(self.task_manager_department_match("wgst"))
-                pot_query = pot_query.replace("women and gender", "")
-            elif "cinema and media" in pot_query and is_major:
-                dept.append(self.task_manager_department_match("cams"))
-                pot_query = pot_query.replace("cinema and media", "")
-            else:
-                double = True
+        pot_query = re.sub("i ", " ", pot_query)
+        pot_query = re.sub("wom[ae]n.*gender (studies)?", "wgst", pot_query)
+        pot_query = re.sub("cinema.*media (studies)?", "cams", pot_query)
+        pot_query = re.sub("french.*francophone (studies)?", "fren", pot_query)
+        if "and" in pot_query:
+            double = True
         else:
             double = False
         if is_major:
             if double:
-                majors = luisAI.query.split("and")
+                majors = pot_query.split("and")
                 self.call_debug_print("major split: " + str(majors))
                 for maj in majors:
                     maj_string = " ".join(self.nluu.find_departments(maj))
-                    dept.append(self.task_manager_department_match(maj_string))
+                    dept.append(self.task_manager_major_match(maj_string))
             else:
                 major = self.nluu.find_departments(pot_query)
                 self.call_debug_print("single major: " + str(major))
                 major_string = " ".join(major)
-                dept.append(self.task_manager_department_match(major_string))
+                dept.append(self.task_manager_major_match(major_string))
             return dept
         else:
             if double:
-                majors = luisAI.query.split("and")
+                majors = pot_query.split("and")
                 self.call_debug_print("major split: " + str(majors))
                 for maj in majors:
                     maj_string = " ".join(self.nluu.find_departments(maj))
-                    dept.append(self.task_manager_department_match(maj_string))
+                    dept.append(self.task_manager_concentration_match(maj_string))
             else:
                 major = self.nluu.find_departments(pot_query)
                 self.call_debug_print("single major: " + str(major))
                 major_string = " ".join(major)
-                dept.append(self.task_manager_department_match(major_string))
+                dept.append(self.task_manager_concentration_match(major_string))
             return dept
 
     def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities, unsure=False):
