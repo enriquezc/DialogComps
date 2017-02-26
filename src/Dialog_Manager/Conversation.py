@@ -509,9 +509,11 @@ class Conversation:
             self.student_profile.current_classes.append(tm_courses[0])
             return [self.decision_tree.get_next_node()]
 
+    
     def handleStudentRequirementResponse(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         return [(self.decision_tree.get_next_node)]
 
+    #Not implemented
     def handleClassTimeRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         course = Course.Course()
         self.task_manager_information(course)
@@ -523,7 +525,9 @@ class Conversation:
     def handleClassTermRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         return [self.decision_tree.get_next_node()]
 
-    # done
+    #Takes in a student interest request
+    #Uses Luis first, then uses out own guess about interests. 
+    #Adds those courses to potential courses and prints them out. 
     def handleStudentInterests(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         if unsure:
             return [self.decision_tree.get_next_node()]
@@ -619,12 +623,15 @@ class Conversation:
             return eval_fn(input, luisAI, format(new_intent), luis_entities, unsure=True)
         else:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
-
+            
+            
+    #We ask a yes/no question. If we get a yes no response we deal with it here using Vader.
+    #Then calls the handleClassDistro function to deal with it for us.
     def handle_class_info_distributions(self, input, luisAI, luis_intent, luis_entities, unsure=False):
-        self.call_debug_print("hey there! Did you say yes or no? I hope you did. OOooooohWeeEEE")
+        self.call_debug_print("hey there!")
         responseSentiment = self.sentimentAnalyzer.polarity_scores(input)
         if responseSentiment["neg"] > responseSentiment["pos"]:
-            self.call_debug_print("We don't need no distrobutions")
+            self.call_debug_print("We don't need no distributions")
             return [self.decision_tree.get_next_node]
         self.call_debug_print("we need some distros")
         return self.handleClassDistribution(input, luisAI, luis_intent, luis_entities)
@@ -645,6 +652,9 @@ class Conversation:
         return self.handleStudentInfoYear(input, luisAI, luis_intent, luis_entities, unsure)
         # return self.decision_tree.get_next_node()
 
+    #Deals with when they need to fulfill a requirement.
+    #Here we figure out if its a major requirement or a general requirement.
+    #Also checks if they want what classes they've registered for, because some phrasings end up in this intent. 
     def handleStudentRequirementRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         self.call_debug_print("ayyyyy")
         if self.nluu.get_history(input):
@@ -657,7 +667,11 @@ class Conversation:
                 return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities)
         else:
             return self.handle_student_info_requirements(input, luisAI, luis_intent, luis_entities)
-
+    
+    #checks what distros they still need
+    #Could be none, so we deal with that.
+    #We rely on Luis to figure out the distro because they are so different in terms of PoS
+    #Then we use the TM to get us courses.
     def handle_student_info_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 16
         if unsure:
             return self.decision_tree.get_next_node()
@@ -668,7 +682,7 @@ class Conversation:
             return self.decision_tree.get_next_node()
         if luis_entities:
             for entity in luis_entities:
-                self.call_debug_print("i still gotta finish up that yung" + entity.entity)
+                self.call_debug_print("i still gotta finish up that " + entity.entity)
                 if entity.type == "distribution":
                     tm_distro = self.task_manager_query_courses_by_distribution(entity.entity)
                     self.student_profile.distributions_needed.append(entity.entity) #add the text to gen distros
@@ -683,7 +697,9 @@ class Conversation:
 
         else:
             return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities, unsure=False)
-
+    
+    #Searches for the course they talk about when they say they need to complete something for their major.
+    #Based on their year and major
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 17
         if unsure:
             course = Course.Course()
