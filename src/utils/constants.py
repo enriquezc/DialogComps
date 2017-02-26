@@ -35,7 +35,7 @@ class Responses:
                                  "Are there any general graduation requirements (distros) you still need to complete?",)
     STUDENT_INFO_REQUIREMENTS_RES = ("Let's try to find some courses to fill these requirements.", 
                                      "Here are some classes that fill general requirements that you still need:\n{}",)
-    STUDENT_INFO_MAJOR_REQUIREMENTS = ("What classes do you still have to take to complete your major?",)
+    STUDENT_INFO_MAJOR_REQUIREMENTS = ("What classes, if any, do you need to take to complete your major?",)
     STUDENT_INFO_MAJOR_REQUIREMENTS_RES = ("Let's try to find some classes to fill these requirements.\n",)
     CLASS_INFO_NAME = ("What is the name of {}?",)
     CLASS_INFO_NAME_RES = ("{} is the official name.",)

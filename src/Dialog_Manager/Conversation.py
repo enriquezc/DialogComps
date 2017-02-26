@@ -119,6 +119,7 @@ class Conversation:
                         break
                     our_str_response += self.nluu.create_response(userQueries) + '\n'
                     print(our_str_response)
+        exit()
 
     def check_full_schedule(self, debug=False):
         responseToCredits = input()
@@ -126,6 +127,9 @@ class Conversation:
         if responseSentiment["neg"] > responseSentiment["pos"]:
             print("Smell ya later! Thanks for chatting.")
             self.conversing = False
+            self.conversation(debug)
+        elif responseSentiment["pos"] > responseSentiment["neu"]:
+            print(self.nluu.create_response(self.decision_tree.get_next_node()) + '\n')
             self.conversation(debug)
         elif responseSentiment["neu"] > responseSentiment["pos"]:
             luis_analysis = self.nluu.get_luis(responseToCredits)
@@ -138,8 +142,9 @@ class Conversation:
                 if uQ.type == User_Query.QueryType.goodbye:
                     print("Goodbye")
                     self.conversing = False
+                    self.conversation(debug)
                 time.sleep(1)
-        self.conversation(debug)
+            self.conversation(debug)
 
     # @params
     # @return
@@ -650,14 +655,7 @@ class Conversation:
 
         else:
             return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities, unsure=False)
-        '''courses = self.task_manager_query_courses_by_distribution()
-        if courses is None:
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
-        for course in courses:
-            if course not in self.student_profile.distributions_needed:
-                self.student_profile.distributions_needed.append(course)
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res),
-            self.decision_tree.get_next_node()]''' #fuck it if we don't get entities, lets say they were talking about majors
+
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 17
         if unsure:
             course = Course.Course()
