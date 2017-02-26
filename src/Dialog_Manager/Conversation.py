@@ -71,16 +71,16 @@ class Conversation:
 
     def conversation(self, debug=False):
         """
-                Starts the conversation with client. Pushes interactions onto stack of utterances that can be looked at down
-                the road of the conversation in order to contextualize generic utterances. Passes client utterances on to
-                handle functions based on intent/context and prints a string response from NLUU based on what is returned from
-                handle function.
+        Starts the conversation with client. Pushes interactions onto stack of utterances that can be looked at down
+        the road of the conversation in order to contextualize generic utterances. Passes client utterances on to
+        handle functions based on intent/context and prints a string response from NLUU based on what is returned from
+        handle function.
 
-                :param debug: Debug for printing
-                """
+        :param debug: Debug for printing
+        """
         while self.conversing:
             client_response = input()
-            print('\n')
+            #print('\n')
             #If they only input a space, wait for another input.
             if client_response.isspace():
                 continue
@@ -114,7 +114,9 @@ class Conversation:
                                 self.conversing = False
                                 break
                             print("-" * 100)
-                            print(self.nluu.create_response(userQuery))
+                            toPrint = self.nluu.create_response(userQuery)
+                            spaces = " " * (100 - len(toPrint))
+                            print(spaces + toPrint)
                             time.sleep(1)
                     # This mess of code stops descriptions with accents from
                     # throwing an error
