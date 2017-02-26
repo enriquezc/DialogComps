@@ -51,7 +51,7 @@ class Conversation:
         self.pretty_print = pprint.PrettyPrinter(indent=4)
         TaskManager.init(debug)
 
-    def start_conversation(self, debug=False):
+    def welcome(self, debug=False):
         self.conversing = True
         self.debug = debug
         our_response = [self.get_current_node()[0],
@@ -60,6 +60,9 @@ class Conversation:
             our_response[1])
         self.utterancesStack.append(our_response)
         print(our_str_response)
+        self.conversation(debug)
+
+    def conversation(self, debug=False):
         while self.conversing:
             client_response = input()
             print('\n')
@@ -80,21 +83,9 @@ class Conversation:
                     for userQuery in userQueries:
                         ###
                         if User_Query.QueryType.full_schedule_check == userQuery.type:
-                            print(self.nluu.create_response(userQuery) + '\n')
-                            responseToCredits = input()
-                            responseSentiment = self.sentimentAnalyzer.polarity_scores(responseToCredits)
-                            if responseSentiment["neg"] > responseSentiment["pos"]:
-                                print("Smell ya later! Thanks for chatting.")
-                                return
-                            elif responseSentiment["neu"] > responseSentiment["pos"]:
-                                self.utterancesStack.append(userQuery)
-                                self.last_user_query.append(userQuery)
-                                if userQuery.type == User_Query.QueryType.goodbye:
-                                    print("Goodbye")
-                                    self.conversing = False
-                                    break
-                            print(self.nluu.create_response(userQuery) + '\n')
-                            time.sleep(1)
+                            our_str_response += self.nluu.create_response(userQuery) + '\n'
+                            print(our_str_response)
+                            self.check_full_schedule(debug)
                         else:
                             self.utterancesStack.append(userQuery)
                             self.last_user_query.append(userQuery)
@@ -120,6 +111,27 @@ class Conversation:
                         break
                     our_str_response += self.nluu.create_response(userQueries) + '\n'
                     print(our_str_response)
+
+    def check_full_schedule(self, debug=False):
+        responseToCredits = input()
+        responseSentiment = self.sentimentAnalyzer.polarity_scores(responseToCredits)
+        if responseSentiment["neg"] > responseSentiment["pos"]:
+            print("Smell ya later! Thanks for chatting.")
+            self.conversing = False
+            self.conversation(debug)
+        elif responseSentiment["neu"] > responseSentiment["pos"]:
+            luis_analysis = self.nluu.get_luis(responseToCredits)
+            self.utterancesStack.append(luis_analysis)
+            uQs = self.get_next_response(responseToCredits,
+                                         luis_analysis) or User_Query.UserQuery(self.student_profile,
+                                                                                User_Query.QueryType.clarify)[0]
+            for uQ in uQs:
+                print(self.nluu.create_response(uQ) + '\n')
+                if uQ.type == User_Query.QueryType.goodbye:
+                    print("Goodbye")
+                    self.conversing = False
+                time.sleep(1)
+        self.conversation(debug)
 
     # @params
     # @return
