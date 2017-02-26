@@ -137,8 +137,6 @@ def query_by_title(title_string, department = None):
         # anything else, and we add a space before
         if i > 0:
             new_string = new_string + " " + new_substring + "%"
-            else:
-                new_string = new_string  + " " + new_word_array[i].lower() + "%"
             if word_array[i].upper() not in dept_dict:
                 # do nothing if a stop word is currently being read
                 if word_array[i].lower() in stop_words:
