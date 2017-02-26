@@ -871,6 +871,16 @@ def major_match(str_in):
     if str_in in stop_words:
         return None
 
+    new_word_array = []
+    for word in str_in.split():
+        if word not in stop_words:
+            new_word_array.append(word)
+
+    str_in = " ".join(new_word_array)
+
+    if str_in.isspace():
+        return None
+
     cur_match = None
     cur_best = 100
     major_items = major_dict.items()
