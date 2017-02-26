@@ -9,7 +9,7 @@ def start_comps(debug):
     config_file = open("./config.json")
     config = json.load(config_file)
     conversation = Conversation.Conversation(config["luisurl"], debug)
-    conversation.start_conversation(debug)
+    conversation.welcome(debug)
 
 
 if __name__ == "__main__":

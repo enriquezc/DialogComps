@@ -51,15 +51,7 @@ class Conversation:
         self.pretty_print = pprint.PrettyPrinter(indent=4)
         TaskManager.init(debug)
 
-    def start_conversation(self, debug=False):
-        """
-        Starts the conversation with client. Pushes interactions onto stack of utterances that can be looked at down
-        the road of the conversation in order to contextualize generic utterances. Passes client utterances on to
-        handle functions based on intent/context and prints a string response from NLUU based on what is returned from
-        handle function.
-
-        :param debug: Debug for printing
-        """
+    def welcome(self, debug=False):
         self.conversing = True
         self.debug = debug
         our_response = [self.get_current_node()[0],
@@ -68,6 +60,17 @@ class Conversation:
             our_response[1])
         self.utterancesStack.append(our_response)
         print(our_str_response)
+        self.conversation(debug)
+
+    def conversation(self, debug=False):
+        """
+                Starts the conversation with client. Pushes interactions onto stack of utterances that can be looked at down
+                the road of the conversation in order to contextualize generic utterances. Passes client utterances on to
+                handle functions based on intent/context and prints a string response from NLUU based on what is returned from
+                handle function.
+
+                :param debug: Debug for printing
+                """
         while self.conversing:
             client_response = input()
             print('\n')
@@ -93,21 +96,9 @@ class Conversation:
                         ###
                         #Special case if they just registered for a class and past 18 credits
                         if User_Query.QueryType.full_schedule_check == userQuery.type:
-                            print(self.nluu.create_response(userQuery) + '\n')
-                            responseToCredits = input()
-                            responseSentiment = self.sentimentAnalyzer.polarity_scores(responseToCredits)
-                            if responseSentiment["neg"] > responseSentiment["pos"]:
-                                print("Smell ya later! Thanks for chatting.")
-                                return
-                            elif responseSentiment["neu"] > responseSentiment["pos"]:
-                                self.utterancesStack.append(userQuery)
-                                self.last_user_query.append(userQuery)
-                                if userQuery.type == User_Query.QueryType.goodbye:
-                                    print("Goodbye")
-                                    self.conversing = False
-                                    break
-                            print(self.nluu.create_response(userQuery) + '\n')
-                            time.sleep(1)
+                            our_str_response += self.nluu.create_response(userQuery) + '\n'
+                            print(our_str_response)
+                            self.check_full_schedule(debug)
                         else:
                             self.utterancesStack.append(userQuery)
                             self.last_user_query.append(userQuery)
@@ -133,6 +124,32 @@ class Conversation:
                         break
                     our_str_response += self.nluu.create_response(userQueries) + '\n'
                     print(our_str_response)
+        exit()
+
+    def check_full_schedule(self, debug=False):
+        responseToCredits = input()
+        responseSentiment = self.sentimentAnalyzer.polarity_scores(responseToCredits)
+        if responseSentiment["neg"] > responseSentiment["pos"]:
+            print("Smell ya later! Thanks for chatting.")
+            self.conversing = False
+            self.conversation(debug)
+        elif responseSentiment["pos"] > responseSentiment["neu"]:
+            print(self.nluu.create_response(self.decision_tree.get_next_node()) + '\n')
+            self.conversation(debug)
+        elif responseSentiment["neu"] > responseSentiment["pos"]:
+            luis_analysis = self.nluu.get_luis(responseToCredits)
+            self.utterancesStack.append(luis_analysis)
+            uQs = self.get_next_response(responseToCredits,
+                                         luis_analysis) or User_Query.UserQuery(self.student_profile,
+                                                                                User_Query.QueryType.clarify)[0]
+            for uQ in uQs:
+                print(self.nluu.create_response(uQ) + '\n')
+                if uQ.type == User_Query.QueryType.goodbye:
+                    print("Goodbye")
+                    self.conversing = False
+                    self.conversation(debug)
+                time.sleep(1)
+            self.conversation(debug)
 
     # @params
     # @return
@@ -666,14 +683,7 @@ class Conversation:
 
         else:
             return self.handle_student_info_major_requirements(input, luisAI, luis_intent, luis_entities, unsure=False)
-        '''courses = self.task_manager_query_courses_by_distribution()
-        if courses is None:
-            return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.specify)]
-        for course in courses:
-            if course not in self.student_profile.distributions_needed:
-                self.student_profile.distributions_needed.append(course)
-        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_requirements_res),
-            self.decision_tree.get_next_node()]''' #fuck it if we don't get entities, lets say they were talking about majors
+
     def handle_student_info_major_requirements(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 17
         if unsure:
             course = Course.Course()
