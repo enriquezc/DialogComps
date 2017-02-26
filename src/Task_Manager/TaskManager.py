@@ -1,5 +1,5 @@
 """
- Conversation.py
+ TaskManager.py
  Serves to decide what actions need to be taken next to facilitate conversation for the Dialog Manager
 
 """
