@@ -452,7 +452,8 @@ class nLUU:
         codes = ["VBD",  "VBN"]
         for p in pos:
             if p[1] in codes:
-                if "was" not in p[0]:
+                #If not 'was' or one of the few past tense verbs in a course title in our database
+                if p[0].lower() not in ["was", "were", 'established', 'directed', 'measured','situated']:
                     return True
         return False
 

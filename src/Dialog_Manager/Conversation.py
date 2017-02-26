@@ -74,11 +74,14 @@ class Conversation:
         while self.conversing:
             client_response = input()
             print('\n')
+            #If they only input a space, wait for another input.
             if client_response.isspace():
                 continue
+            #Let's see if they're done with us.
             if "goodbye" in client_response.lower() or " bye" in (" " + client_response.lower()):
                 print("Smell ya later! Thanks for chatting.")
                 return
+            #Also checks for empty strings.
             if client_response != "" and client_response != "\n":
                 luis_analysis = self.nluu.get_luis(client_response)
                 self.utterancesStack.append(luis_analysis)
@@ -88,8 +91,10 @@ class Conversation:
                 self.call_debug_print("luis: {}".format(luis_analysis))
                 our_str_response = ""
                 if type(userQueries) is list:
+                    #Go through each userQuery and formulate a response
                     for userQuery in userQueries:
                         ###
+                        #Special case if they just registered for a class and past 18 credits
                         if User_Query.QueryType.full_schedule_check == userQuery.type:
                             our_str_response += self.nluu.create_response(userQuery) + '\n'
                             print(our_str_response)
@@ -172,10 +177,12 @@ class Conversation:
             if luis_input.entities[key].score > CUTOFF:
                 entities[luis_input.entities[key].type] = luis_input.entities[key].score
         return entities
-
+    
+    #Returns the current node of the decision tree
     def get_current_node(self):
         return [User_Query.UserQuery(self.student_profile, self.current_node.userQuery)]
-
+    
+    #Checks for a concentration, adds it to the list of concentrations, and then moves on
     def handleStudentConcentration(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         depts = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
         for dept in depts:
