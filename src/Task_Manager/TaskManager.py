@@ -20,7 +20,6 @@ concentration_dict = {}
 stop_words = None
 debug_value = None
 
-
 def init(init_debug = False):
     connect_to_db()
     create_dept_dict()
@@ -200,12 +199,7 @@ def query_by_title(title_string, department = None):
     return list(set(courses))
 
 
-# Helper function that takes the SQL results list, and fills out a list of
-# course objects according to the contents of the SQL list. Only works if the
-# SQL query is run on course with a SELECT * function. Otherwise, will have an
-# index out of bounds error.
-# returns a list of course objects
-def fill_out_courses(results, new_keywords=None, student_major=None, student_interests=None):
+def fill_out_courses(results, new_keywords = None, student_major = None, student_interests = None):
     """
     Helper function that takes the SQL results list, and fills out a list of course objects according to the contents
     of the SQL list. Only works if the SQL query is run on course with a SELECT * function. Otherwise, will have an
