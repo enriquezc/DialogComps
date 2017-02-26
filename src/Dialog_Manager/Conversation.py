@@ -764,7 +764,9 @@ class Conversation:
 
     def handle_new_class_name(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 30
         return self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities, unsure)
-
+    
+    
+    #We haven't trained for this
     def handle_new_class_prof(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 31
         if luis_entities:
             for entity in luis_entities:
@@ -781,7 +783,8 @@ class Conversation:
             return self.decision_tree.get_next_node()
         else:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
-
+    
+    #searches for a class within a department
     def handle_new_class_dept(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 32
         if luis_entities:
             for entity in luis_entities:
@@ -808,7 +811,8 @@ class Conversation:
 
     def handle_new_class_description(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 36
         self.handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities, unsure)
-
+    
+    #Deals with a type of question we don't use anymore- yes or no questions for a recommendation
     def handle_new_class_request(self, input, luisAI, luis_intent, luis_entities, unsure=False):  # 37
         if " ok" in self.last_query or "sure" == self.last_query or "recommend" in self.last_query:
             self.call_debug_print("they have gotten to the point where they want a course from us")
@@ -820,6 +824,9 @@ class Conversation:
         # @params
 
     # @return
+    # Called every time we get an input
+    # Uses intent and/or the current node to decide which function to call
+    # and eventually returns a UserQuery list.
     def get_next_response(self, input, luisAI):
         self.last_query = input
         luis_entities = luisAI.entities
@@ -940,7 +947,7 @@ class Conversation:
         return toReturn
 
     def task_manager_information(self, course):
-        # returns a list
+        # returns a list of classes
         self.call_debug_print("We here")
         tm_courses = TaskManager.query_courses(course)
         self.call_debug_print("We done")
@@ -953,9 +960,9 @@ class Conversation:
                 return None
         else:
             return [tm_courses]
-
+    
     def task_manager_keyword(self, keywords):
-        # returns a list
+        # returns a list if classes based on a student object. Picks some of them and returns, stores the rest.
         stud = self.student_profile
         exclude = set(self.student_profile.potential_courses) if self.student_profile.potential_courses is not None \
             else set()
@@ -991,7 +998,7 @@ class Conversation:
                     return None
         else:
             return [tm_courses]
-
+    #matches phrase to a department, returns a string.
     def task_manager_department_match(self, dept, majors=True):
         tm_department = TaskManager.department_match(dept)
         if type(tm_department) is list:
@@ -1001,7 +1008,7 @@ class Conversation:
                 return None
         else:
             return tm_department
-
+    
     def task_manager_major_match(self, major):
         tm_major = TaskManager.major_match(major)
         return tm_major
