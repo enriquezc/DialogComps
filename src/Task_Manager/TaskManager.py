@@ -136,7 +136,7 @@ def query_by_title(title_string, department = None):
         # if the first word is being read, no need for a space before the word
         # anything else, and we add a space before
         if i > 0:
-            new_string = new_string  + " " + new_word_array[i].lower() + "%"
+            new_string = new_string + " " + new_substring + "%"
             if word_array[i].upper() not in dept_dict:
                 # do nothing if a stop word is currently being read
                 if word_array[i].lower() in stop_words:
@@ -150,7 +150,7 @@ def query_by_title(title_string, department = None):
                         dept_string = dept_string.replace(" " +word, "%")
                 cur_string = cur_string + " " + dept_string + "%"
         else:
-            new_string = new_string  + new_word_array[i].lower() + "%"
+            new_string = new_string + new_word_array[i].lower() + "%"
             if word_array[i].upper() not in dept_dict:
                 if word_array[i] in stop_words:
                     continue
@@ -175,6 +175,7 @@ def query_by_title(title_string, department = None):
         query_string = query_string + " AND sec_subject = '" + department + "'"
 
     cur = conn.cursor()
+    call_debug_print(cur.mogrify(query_string, (new_string, cur_string)))
     cur.execute(query_string, (new_string, cur_string))
 
     results = cur.fetchall()
@@ -386,6 +387,7 @@ def create_stop_words_set():
     stop_words.add("interest")
     stop_words.add("major")
     stop_words.add("student")
+    stop_words.add("class")
 
 def create_distro_dictionary():
     global distro_dict
