@@ -146,7 +146,7 @@ class Conversation:
         if responseSentiment["neg"] > responseSentiment["pos"]:
             print("Smell ya later! Thanks for chatting.")
             self.conversing = False
-            self.conversation(debug)
+            self.start_conversation(debug)
         elif responseSentiment["pos"] > responseSentiment["neu"]:
             print(self.nluu.create_response(self.decision_tree.get_next_node()) + '\n')
             self.conversation(debug)
