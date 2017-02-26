@@ -1,11 +1,9 @@
 import json
 import sys
-from src.NLUU import nluu
 from src.Dialog_Manager import Conversation
 import profile
 
 def start_comps(debug):
-    print("Starting comps")
     config_file = open("./config.json")
     config = json.load(config_file)
     conversation = Conversation.Conversation(config["luisurl"], debug)
