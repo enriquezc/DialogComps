@@ -303,6 +303,12 @@ class Conversation:
     def handleStudentMajorResponse(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         return self.handleStudentMajorRequest(input, luisAI, luis_intent, luis_entities)
 
+    #Schedules a class if they ask for it and they aren't already registered for the class
+    #Checks Luis, if Luis doesn't have anything as a course entity try to find it ourself
+    #Also handles DEPT123 format using a database query for department
+    #Once we think we have a class, we send it over to the TM and get them to return a course
+    #Which we then add to our current courses in student
+    #And tell them what classes they've signed up for.
     def handleScheduleClass(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         index = self.nluu.get_number_from_ordinal_str(input)
         tm_courses = None
@@ -346,6 +352,12 @@ class Conversation:
             , self.decision_tree.get_next_node()]
         #return [self.decision_tree.get_next_node()]
 
+
+    '''First off, we check for if you actually meant to check your classes, and handle that
+    Then we take their request and search for courses that match
+    And then return some and add them to potential courses so we can reference them later
+    Also this is weighted for your major and student year
+    '''
     def handleClassDescriptionRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         self.call_debug_print("hello" + input)
         if self.nluu.get_history(input):
@@ -384,6 +396,9 @@ class Conversation:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.new_class_description)
                 , self.decision_tree.get_next_node()]
 
+    #figures out what year the player is and sets that info, then gets next node
+    #currently dependent on current year and month if you give a year (ie 2017)
+    #Also sets major if you're too young to have one.
     def handleStudentInfoYear(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         cur_term = "fall"
         if datetime.datetime.now().month < 4:
@@ -436,6 +451,9 @@ class Conversation:
         else:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.clarify)]
 
+    #Deals with it if you want to tell us your name
+    #We don't really care what your name is though, we don't use it much at all
+    #So if we don't get it, ¯\_(ツ)_/¯
     def handleStudentNameInfo(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         if len(luis_entities) == 0:
             name = self.nluu.find_name(luisAI.query)
@@ -453,16 +471,19 @@ class Conversation:
         else:
             return [self.decision_tree.get_next_node()]
 
+    #"I said Hey, What's your name." - Avril Lavinge
     def handleWelcomeResponse(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         return [self.decision_tree.get_next_node()]
-
+    
+    
     def handleClassDescriptionResponse(self, input, luisAI, luis_intent, luis_entities, unsure=False):
-        course = Course.Course()
-        self.task_manager_information(course)
+        return handleClassDescriptionRequest(input, luisAI, luis_intent, luis_entities, unsure=False)
 
     def handleClassProfessorRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         return self.handleClassProfessorResponse(input, luisAI, luis_intent, luis_entities)
 
+
+    #Not trained on, we don't use this yet
     def handleClassProfessorResponse(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         tm_courses = self.getCoursesFromLuis(input, luisAI, luis_intent, luis_entities)
         if tm_courses is None:
