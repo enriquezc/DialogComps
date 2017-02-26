@@ -403,7 +403,7 @@ def create_distro_dictionary():
     "LS":"lab","LA":"literary_analysis",
     "HI":"humanistic_inquiry",
     "SI":"social_inquiry",
-    "WR1":"writing_rich_1","WR2":"writing_rich_2","QRE":"quantitative_reasoning",
+    "WR2":"writing_rich_2","QRE":"quantitative_reasoning",
     "IDS":"intercultural_domestic_studies","IS":"international_studies"}
 
 # takes a list of keywords, returns a list of classes
