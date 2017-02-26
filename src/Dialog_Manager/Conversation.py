@@ -196,7 +196,7 @@ class Conversation:
         depts = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
         for dept in depts:
             self.student_profile.concentration.add(dept)
-        return [self.decision_tree.get_next_node()]
+        return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.student_info_concentration_res), self.decision_tree.get_next_node()]
 
     def handleStudentMajorRequest(self, input, luisAI, luis_intent, luis_entities, unsure=False):
         """
