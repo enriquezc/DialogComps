@@ -477,58 +477,76 @@ def query_by_keywords(keywords, exclude=None, threshold = 3, student_department=
             coursesToReturn.append(course)
     return coursesToReturn
 
-# queries a list of classes that fill out a distribution
+
 def query_by_distribution(distribution, department = None, keywords = [], student_major_dept = None):
+    """
+    Queries a list of courses which fulfill a distribution requirement, considering dept/keywords and major
+    :param distribution: String distribution requirement tag
+    :param department: String department, initialized to None
+    :param keywords: List of keywords included in distribution query, initially empty
+    :param student_major_dept: String major of Student object disro is being queried for
+    :return: List of Course objects returned by query
+    """
+
     global dept_dict
     global conn
 
     call_debug_print("QUERYING BY DISTRO: " + distribution)
-    # resetting the department to be the four letter code
+
+    # Resetting the department to be the four letter code
     if department != None:
         dept_items = dept_dict.items()
         for key, value in dept_items:
             if department == key or department == value:
                 department = key
                 call_debug_print(department)
+
     # Building the query string
     query_string = "SELECT DISTINCT course_name FROM distribution WHERE {} > 0".format(distribution)
     if department != None:
         query_string = query_string + "AND actual_dept = '{}".format(department.upper())
         query_string = query_string + "'"
 
+    # Establishing database connection
     cur = conn.cursor()
     call_debug_print(cur.mogrify(query_string))
     cur.execute(query_string)
 
+    # Fetching results...
     results = cur.fetchall()
     course_results = []
+    new_results = []
+
     for result in results:
+        # Try building Course which fulfills distribution
         try:
             course = Course.Course()
             course.department = result[0][:-3]
             course.course_num = result[0][-3:]
-
             course_results.extend(query_courses(course))
-            if keywords != []:
-                new_keywords = []
-                for keyword in keywords:
-                    kss = smart_description_expansion(keyword)
-                    #new_keywords.append(keyword)
-                    #new_keywords.append(kss)
-                    ks = kss.split()
-                    for k in ks:
-                        if k.lower() not in stop_words:
-                            new_keywords.append(k.upper())
-                new_results = []
-                for course in course_results:
-                    course.weighted_score = calculate_course_relevance(course, new_keywords, student_major_dept)
-                    if course.prereqs == "":
-                        new_results.append(course)
-                new_results.sort(key = lambda course: course.weighted_score)
-                new_results.reverse()
-                return new_results
         except:
             continue
+
+    if keywords != []:
+        new_keywords = []
+        for keyword in keywords:
+            kss = smart_description_expansion(keyword)
+            #new_keywords.append(keyword)
+            #new_keywords.append(kss)
+            ks = kss.split()
+            for k in ks:
+                if k.lower() not in stop_words:
+                    new_keywords.append(k.upper())
+        for course in course_results:
+            course.weighted_score = calculate_course_relevance(course, new_keywords, student_major_dept, None)[1]
+            if course.prereqs == "":
+                new_results.append(course)
+
+
+    if keywords != []:
+        new_results.sort(key=lambda course: course.weighted_score)
+        new_results.reverse()
+        course_results = new_results
 
     if len(course_results) > 10:
         return course_results[:10]
@@ -537,16 +555,33 @@ def query_by_distribution(distribution, department = None, keywords = [], studen
 
 
 def calculate_course_relevance(course_obj, new_keywords, student_major_dept, student_interests):
+    """
+    Determine weighted score/relevance of course to be returned by query based on keywords, major and interests
+    :param course_obj: Course object built from query
+    :param new_keywords: List of String keywords to be compared to Course object properties
+    :param student_major_dept: String major department of Student object the course is being queried for
+    :param student_interests: List of String interests of Student object the course is being queried for
+    :return: Tuple containing List of 4 Integer relevance component scores and Integer weighted composite score
+    """
+
+    # Relevance components: Number of distinct keywords, keyword matches, major matches, and interest matches
     relevance = [0, 0, 0, 0]
+
+    # Strip punctuation
     punctuationset = set(string.punctuation)
     description = course_obj.description
     description = ''.join(ch for ch in description if ch not in punctuationset)
+
     title = course_obj.name
     title = ''.join(ch for ch in title if ch not in punctuationset)
+
     words = description.split()
     words2 = title.split()
+
     distinct_keywords = set([])
     distinct_keywords2 = set([])
+
+    # Match Course object to properties to keywords
     for word in words:
         if word.upper() in new_keywords:
             relevance[1] += 1
@@ -555,21 +590,30 @@ def calculate_course_relevance(course_obj, new_keywords, student_major_dept, stu
         if word.upper() in new_keywords:
             relevance[1] += 1
             distinct_keywords2.add(word.upper())
+
+    # Add number of number of distinct keywords to relevancy
     relevance[0] = len(distinct_keywords)
     relevance[0] += len(distinct_keywords2)
+
+    # Match Course object to properties to department
     if student_major_dept is not None:
         for major in student_major_dept:
             if department_match(course_obj.department) == department_match(major):
                 relevance[2] += 1
+
+    # Match Course object to properties to interests
     if student_interests is not None:
         for interest in student_interests:
             if interest in course_obj.description:
                 relevance[3] += 1
+
+    # Determine weighted score
     weights = [10, 1, 6, 3]
     weighted_score = sum([relevance[i] * weights[i] for i in range(len(relevance))])
+
     return relevance, weighted_score
 
-# called in the init function, reads the file to create a dictionary
+
 def create_dept_dict():
     global dept_dict
     file = open('./src/Task_Manager/course_subjects.txt', 'r')
@@ -579,6 +623,7 @@ def create_dept_dict():
         pair = line.split(';')
 
         dept_dict[pair[0]] = pair[1]
+
 
 def create_major_dict():
     global major_dict
@@ -590,6 +635,7 @@ def create_major_dict():
 
         major_dict[pair[1]] = pair[0]
 
+
 def create_concentration_dict():
     global concentration_dict
     file = open('./src/Task_Manager/concentrations.txt', 'r')
@@ -600,31 +646,50 @@ def create_concentration_dict():
 
         concentration_dict[pair[1]] = pair[0]
 
-## Taken from wiki/Algorithm_Implementation ##
+
 def edit_distance(s1, s2):
+    """
+    Deletion, insertion, and replacement edit distance algorithm taken from wiki/Algorithm_Implementation
+    :param s1: String to be compared
+    :param s2: String to be compared
+    :return: Integer smallest number of edits between s1 and s2
+    """
+
+    # Order inputs
     if len(s1) < len(s2):
         return edit_distance(s2, s1)
 
-    # len(s1) >= len(s2)
+    # Return on empty string input
     if len(s2) == 0:
         return len(s1)
 
+    # For each character/index in s1
     previous_row = range(len(s2) + 1)
     for i, c1 in enumerate(s1):
         current_row = [i + 1]
+
+        # For each character/index in s2
         for j, c2 in enumerate(s2):
             insertions = previous_row[j + 1] + 1
             deletions = current_row[j] + 1
             substitutions = previous_row[j] + (c1 != c2)
+
+            # Insert shortest edit operation
             current_row.append(min(insertions, deletions, substitutions))
         previous_row = current_row
 
+    # Return last dynamic programming table entry
     return previous_row[-1]
+
 
 # @params String object 'str_in' which is a department code or description
 # @return String object that is the best guess for a valid, capitalized dept code
 def department_match(str_in):
-
+    """
+    Match input string to department
+    :param str_in: String description of dept
+    :return: String dept
+    """
 
     call_debug_print("MATCHING DEPT: " + str_in)
 
@@ -638,20 +703,22 @@ def department_match(str_in):
     global dept_dict
     global stop_words
 
-    # if the string is in our set of stop words, we return nothing
+    # If the string is in our stop words set, return None type
     if str_in in stop_words:
         return None
 
     cur_match = None
     cur_best = 100
     dept_items = dept_dict.items()
-    # check to see if the input already matches a department
+
+    # Check to see if the input already matches a department
     for key, value in dept_items:
         if str_in.upper() == key:
             return value
         if str_in.lower() == value.lower():
             return value
-    # otherwise, use edit distance to find the nearest major
+
+    # Otherwise, use edit distance to find the nearest department
     for key in dept_dict:
         dist = edit_distance(key,str_in.upper())
         if dist < cur_best:
@@ -661,9 +728,17 @@ def department_match(str_in):
         if dist < cur_best:
             cur_match = dept_dict[key]
             cur_best = dist
+
     return cur_match
 
+
 def distro_match(str_in):
+    """
+    Match input string to distribution
+    :param str_in: String description of distro
+    :return: String distro
+    """
+
     # Handling bad input
     if str_in.isspace():
         return None
@@ -689,6 +764,7 @@ def distro_match(str_in):
             return value
         if str_in.lower() == value.lower():
             return value
+
     # Otherwise, use edit distance to find the nearest distro
     for key in distro_dict:
         dist = edit_distance(key.lower(),str_in.lower())
@@ -702,7 +778,13 @@ def distro_match(str_in):
 
     return cur_match
 
+
 def major_match(str_in):
+    """
+    Match input string to major
+    :param str_in: String description of major
+    :return: String major
+    """
 
     # Handling bad input
     if str_in.isspace():
@@ -843,6 +925,7 @@ def query_courses_by_level(course):
     :param course: Course object to be queried on
     :return: List of Course objects returned by query_courses function
     """
+
     dept = course.department
     for key, value in dept_dict.items():
         if dept.lower() == key.lower() or dept.lower() == value.lower():
@@ -888,9 +971,12 @@ def call_debug_print(ob):
 ## main function for isolated testing purposes ##
 if __name__ == "__main__":
     init()
-
-    print(major_match("English"))
-    print(concentration_match("NEURO"))
+    # results = query_by_distribution("quantitative_reasoning", department = None, keywords = ["math", "science", "computer"])
+    # for course in results:
+    #     print(course.name)
+    #     print(course.description)
+    #print(major_match("English"))
+    #print(concentration_match("NEURO"))
     #print(concentration_match("American Music")[0] + concentration_match("American Music")[1])
     #print(parse_time_room("OLIN 102      T       10:10AM 11:55AM|OLIN 104      T       10:10AM 11:55AM"))
     #print(parse_time_room("COWL DANC     MW      08:55PM 09:35PM"))
