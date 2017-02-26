@@ -87,7 +87,7 @@ class Conversation:
             #Let's see if they're done with us.
             if "goodbye" in client_response.lower() or " bye" in (" " + client_response.lower()):
                 print("Smell ya later! Thanks for chatting.")
-                return
+                break
             #Also checks for empty strings.
             if client_response != "" and client_response != "\n":
                 luis_analysis = self.nluu.get_luis(client_response)
@@ -214,7 +214,7 @@ class Conversation:
             return [self.decision_tree.get_next_node()]
         if "not" in luisAI.query:
             return self.handleRemoveMajor(input, luisAI, luis_intent, luis_entities)
-        if "concentration" in luisAI.query:
+        if "concentrat" in luisAI.query:
             return self.handleStudentConcentration(input, luisAI, luis_intent, luis_entities)
         major_list = self.getDepartmentStringFromLuis(input, luisAI, luis_intent, luis_entities)
         self.call_debug_print("major: " + str(major_list))
