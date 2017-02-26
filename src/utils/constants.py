@@ -20,7 +20,7 @@ class Responses:
                               "{} major, huh? I've heard they're the best students.",
                               "So you haven't chosen your major yet?",)
     STUDENT_INFO_CONCENTRATION = ("Do you have a concentration? If so, what is it?",)
-    STUDENT_INFO_CONCENTRATION_RES = ("Ok, so you concentrations include: {}", 
+    STUDENT_INFO_CONCENTRATION_RES = ("Ok, so your concentrations include: {}",
                                       "So you don't have any concentrations?")
     STUDENT_INFO_PREVIOUS_CLASSES = ("Can you tell me about classes you've already taken?",)
     STUDENT_INFO_PREVIOUS_CLASSES_RES = ("I'll try to find classes for you to look at other than:\n {}",)

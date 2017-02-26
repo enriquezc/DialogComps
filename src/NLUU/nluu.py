@@ -329,7 +329,8 @@ class nLUU:
             concentration_string = ""
             for concentration in userQuery.object.concentration:
                 concentration_string += (concentration + ", ")
-            concentration_string = concentration_string[:-2]
+            if concentration_string != "":
+                concentration_string = concentration_string[:-2]
             return s.format(concentration_string)
 
         else:
