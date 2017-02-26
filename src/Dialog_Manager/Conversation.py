@@ -132,6 +132,9 @@ class Conversation:
                         self.conversing = False
                         break
                     our_str_response += self.nluu.create_response(userQueries) + '\n'
+                    spaces = " " * (100 - len(our_str_response) + 1)
+                    our_str_response = spaces + our_str_response
+                    print("-" * 100)
                     print(our_str_response)
         exit()
 
@@ -345,6 +348,8 @@ class Conversation:
                         break
                 if tm_course is not None:
                     tm_courses = [tm_course]
+            elif len(self.student_profile.potential_courses) == 1:
+                tm_courses = [self.student_profile.potential_courses[0]]
         if tm_courses is None:
             return [User_Query.UserQuery(self.student_profile, User_Query.QueryType.tm_course_clarify)]
         tm_course = tm_courses[0]

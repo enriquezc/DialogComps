@@ -258,14 +258,14 @@ class nLUU:
         else:
             course_list = ""
             for course in userQuery.object.current_classes:
-                course_list += (course.name + "\n")
+                course_list += (" - {}\n".format(course.name))
             return s.format(userQuery.object.current_credits, course_list)
 
     def create_full_schedule_check_res(self, userQuery):
         s = constants.Responses.FULL_SCHEDULE_CHECK[0]
         course_list = ""
         for course in userQuery.object.current_classes:
-            course_list += (course.name + "\n")
+            course_list += " - {}\n".format(course.name)
         return s.format(course_list, userQuery.object.current_credits)
 
     def create_student_info_name_res_res(self, userQuery):
