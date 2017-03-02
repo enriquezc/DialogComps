@@ -148,8 +148,7 @@ class Conversation:
             self.conversing = False
             self.start_conversation(debug)
         elif responseSentiment["pos"] > responseSentiment["neu"]:
-            print(self.nluu.create_response(self.decision_tree.get_next_node()) + '\n')
-            self.conversation(debug)
+            self.start_conversation(debug)
         elif responseSentiment["neu"] > responseSentiment["pos"]:
             luis_analysis = self.nluu.get_luis(responseToCredits)
             self.utterancesStack.append(luis_analysis)
@@ -161,7 +160,7 @@ class Conversation:
                 if uQ.type == User_Query.QueryType.goodbye:
                     print("Goodbye")
                     self.conversing = False
-                    self.conversation(debug)
+                    self.start_conversation(debug)
                 time.sleep(1)
             self.start_conversation(debug)
 
