@@ -148,7 +148,6 @@ class Conversation:
             self.conversing = False
             self.start_conversation(debug)
         elif responseSentiment["pos"] > responseSentiment["neu"]:
-            print(self.nluu.create_response(self.decision_tree.get_next_node()) + '\n')
             self.start_conversation(debug)
         elif responseSentiment["neu"] > responseSentiment["pos"]:
             luis_analysis = self.nluu.get_luis(responseToCredits)
