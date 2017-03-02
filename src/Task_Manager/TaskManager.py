@@ -434,6 +434,7 @@ def create_stop_words_set():
     stop_words.add("class")
     stop_words.add("i")
     stop_words.add("concentration")
+    #stop_words.add("concentrate")
     stop_words.add("concentrator")
     stop_words.add("yes")
 
