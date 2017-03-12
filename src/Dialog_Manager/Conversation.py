@@ -66,7 +66,13 @@ class Conversation:
         our_str_response = self.nluu.create_response(our_response[0].type) + "\n" + self.nluu.create_response(
             our_response[1])
         self.utterancesStack.append(our_response)
-        print(our_str_response)
+        print("-" * 100)
+        toPrint = our_str_response
+        toPrint = toPrint.encode("ascii", "ignore")
+        toPrint = toPrint.decode("ascii")
+        spaces = " " * (100 - len(toPrint))
+        print(spaces + toPrint)
+        time.sleep(1)
         self.start_conversation(debug)
 
     def start_conversation(self, debug=False):
@@ -156,7 +162,13 @@ class Conversation:
                                          luis_analysis) or User_Query.UserQuery(self.student_profile,
                                                                                 User_Query.QueryType.clarify)[0]
             for uQ in uQs:
-                print(self.nluu.create_response(uQ) + '\n')
+                print("-" * 100)
+                toPrint = self.nluu.create_response(userQuery)
+                toPrint = toPrint.encode("ascii", "ignore")
+                toPrint = toPrint.decode("ascii")
+                spaces = " " * (100 - len(toPrint))
+                print(spaces + toPrint)
+                time.sleep(1)
                 if uQ.type == User_Query.QueryType.goodbye:
                     print("Goodbye")
                     self.conversing = False

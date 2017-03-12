@@ -33,6 +33,6 @@ The decision tree is a tree of nodes that guide the conversation. We ask leading
 
 
 ## Task Manager
-This acts as an intelligent database. It has access to the real PostgreSQL database that houses information on courses, professors and a calculated keyword co-occurence matrix. 
+This acts as an intelligent database. It has access to the real PostgreSQL database that houses information on courses, professors and a calculated keyword occurence matrix. 
 
 

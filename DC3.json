@@ -1,0 +1,5811 @@
+{
+  "luis_schema_version": "1.3.1",
+  "versionId": "0.1",
+  "name": "DC3",
+  "desc": "",
+  "culture": "en-us",
+  "intents": [
+    {
+      "name": "ClassDescriptionRequest"
+    },
+    {
+      "name": "ClassDescriptionResponse"
+    },
+    {
+      "name": "ClassProfessorRequest"
+    },
+    {
+      "name": "ClassProfessorResponse"
+    },
+    {
+      "name": "ClassSentiment"
+    },
+    {
+      "name": "ClassTermRequest"
+    },
+    {
+      "name": "ClassTermResponse"
+    },
+    {
+      "name": "ClassTimeRequest"
+    },
+    {
+      "name": "ClassTimeResponse"
+    },
+    {
+      "name": "None"
+    },
+    {
+      "name": "ScheduleClass"
+    },
+    {
+      "name": "StudentInfoYear"
+    },
+    {
+      "name": "StudentInterests"
+    },
+    {
+      "name": "StudentMajorRequest"
+    },
+    {
+      "name": "StudentMajorResponse"
+    },
+    {
+      "name": "StudentNameInfo"
+    },
+    {
+      "name": "StudentRequirementRequest"
+    },
+    {
+      "name": "StudentRequirementResponse"
+    },
+    {
+      "name": "UncertainResponse"
+    },
+    {
+      "name": "UnregisterRequest"
+    },
+    {
+      "name": "WelcomeResponse"
+    }
+  ],
+  "entities": [
+    {
+      "name": "class"
+    },
+    {
+      "name": "department"
+    },
+    {
+      "name": "distribution"
+    },
+    {
+      "name": "personname"
+    },
+    {
+      "name": "sentiment"
+    },
+    {
+      "name": "term"
+    },
+    {
+      "name": "time"
+    }
+  ],
+  "composites": [],
+  "closedLists": [],
+  "bing_entities": [],
+  "actions": [],
+  "model_features": [],
+  "regex_features": [
+    {
+      "name": "classSignature",
+      "pattern": "([a-z]{2,4}) ?(\\d{3,3})",
+      "activated": true
+    },
+    {
+      "name": "timeSignature",
+      "pattern": "\\da|\\d\\/\\dc",
+      "activated": true
+    }
+  ],
+  "utterances": [
+    {
+      "text": "the shiz wizz",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "can i take cs111?",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "can i take art214",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "is there room in my schedule for me to take another art history class?",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 11,
+          "endPos": 12
+        }
+      ]
+    },
+    {
+      "text": "i need to take an english class",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "can you please eat some cheese",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "can i take intro sculpture?",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "do i have space for cs201?",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "can i have some provolone",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "consume dairy",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "did you buy any stilton",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "eat some cheese mothafucka",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "is there space for another computer science class?",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "as",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "do i have space for cs 201?",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "cs208.",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 0,
+          "endPos": 0
+        }
+      ]
+    },
+    {
+      "text": "can i take cs208?",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "can i take intro to sculpture?",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "is there room in my schedule to take another art history class?",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 9,
+          "endPos": 10
+        }
+      ]
+    },
+    {
+      "text": "how many classes have i signed up for?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "fuck fuck you",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "i would like to take cs208",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "can you close the door?",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "i will take cs111 next term.",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "next term i have no choice but to take computer science comps",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 9,
+          "endPos": 10
+        }
+      ]
+    },
+    {
+      "text": "i will take a studio art class next term.",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "cs252.",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 0,
+          "endPos": 0
+        }
+      ]
+    },
+    {
+      "text": "cs111",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 0,
+          "endPos": 0
+        }
+      ]
+    },
+    {
+      "text": "\u001b[a",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "exit()",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "cs111.",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 0,
+          "endPos": 0
+        }
+      ]
+    },
+    {
+      "text": "254.",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "yo, it's charlie in the house",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "can i take art 214?",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "can i take cs208",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "cs 235",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 0,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "goodbye",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "bye",
+      "intent": "None",
+      "entities": []
+    },
+    {
+      "text": "i still need to take my humanistic inquiry requirement",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "lab",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 0,
+          "endPos": 0
+        }
+      ]
+    },
+    {
+      "text": "lab science",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 0,
+          "endPos": 0
+        }
+      ]
+    },
+    {
+      "text": "qre",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 0,
+          "endPos": 0
+        }
+      ]
+    },
+    {
+      "text": "statistical reasoning",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 0,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "writing rich",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 0,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "arts practice",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 0,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "arts practice and lab",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 0,
+          "endPos": 1
+        },
+        {
+          "entity": "distribution",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "humanistic inquiry",
+      "intent": "None",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 0,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "is there a class on sculpture?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "put me in math225",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i would like to take cs254.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "put me in math 225.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "schedule me for intro to computer science.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i want to take cs252.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i want to take hist120.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i want to take cs208.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i want to take hist120",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i would like to take cs254",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i would like to take cs111.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "schedule me for cs111.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "can you schedule me for cs111?",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "can you schedule me for cs111",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i want to take pe158.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "register me for arts160",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i want to take cs111",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i would like to take introduction to music technology.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "schedule me for computer security",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "sign me up for intro to syntax",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i want to take cs111.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "put me in artificial intelligence",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "register me for phonetics and phonology",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "schedule me for a computer science class.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i want to take pe172.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i want to take intro to geology",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "put me in hist120",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i want to take hist131",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "sign me up for hist 194",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "register me for hist210",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "schedule me for hist 212",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "put me in hist229",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i want to take hist 224",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i want to take relg110",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "sign me up for hist 236",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "schedule me for hist 280",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "schedule me for relg 122",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "sign me up for relg 221",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "put me in relg150",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i want to take relg233",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "put me in fam 142",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "register me for cs111.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "schedule me for afam 124",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "put me in intro cs",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "register me for afam 101",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "schedule me for hist 111",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "schedule me for hist 114",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i need to take arth 101",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "schedule me for hist 112",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "schedule me for math236.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "schedule me for a math class",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "schedule me for cs 111",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "can i take hist 125",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "schedule me for am 101",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "register me for ai 111",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i want to take cs 111.",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "register me for afam 103",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "let me take hist 125",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "register me for math236",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i want to take phil 120",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "register me for hist 125",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "ok, i guess i'll take that class",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'll take that class",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "alright, i'll take that class",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "sure, i'll take that class",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "sign me up for that class",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "register me for that",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "register me for that class",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "sure, i'll take that course",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "sure i'll take that course",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "ok, i'll take that course",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "sure, sign me up for that course",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "sure, sign me up for that class",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'd like to take the second one",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'd like to take the third one",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'd like to take the fourth one",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'd like to take the fifth one",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'd like to take the first one",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'd like to the fifth one",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'd like to take the 3rd one",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'd like to take the 4th one",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'd like to take the 5th one",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'd like to take the 2nd one",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'd like to take the 1st one",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "the last one sounds good",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "sign me up for the last one",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'll take the last one",
+      "intent": "ScheduleClass",
+      "entities": []
+    },
+    {
+      "text": "i'll take the math of cs",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i'll take intro physics",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "register me for data structures",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "register me for math of cs",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "register me for intro spanish",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "register me for digital foundations",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "register me for price theory",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "register me for math of s",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "register me for intro chemistry",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "register me for intro biology",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "register me for history of man",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "register me for history of woman",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "register me for jewish cultural studies",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "sign me up for jewish cultural studies",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "sign me up for algorithms",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "sign me up for frisbee",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "sign me up for frisbee class",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "sign me up for blood lust",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "sign me up for london studies project",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "sign me up for european studies",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i want to take ai",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i want to take programming languages",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i want to take computer security",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i want to take nonfiction",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i'd like to take astr100",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i want to take intro to astronomy",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i want to take badminton",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i want to take outdoor soccer",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i want to take logic",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i would like to take logic",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "sign me up for logic",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "register me for logic",
+      "intent": "ScheduleClass",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i took math 235 with sam patterson",
+      "intent": "ClassProfessorResponse",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 5,
+          "endPos": 6
+        },
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i liked the class i took with jeff ondich.",
+      "intent": "ClassProfessorResponse",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 7,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "what about arth111.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "what studio art classes are in the morning next term?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 1,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "what information do you have about cs111.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "what classes are in the computer science department?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "tell me about cs208.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "should i take computability and complexity or behavioral economics for my third class?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 5
+        },
+        {
+          "entity": "class",
+          "startPos": 7,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "tell me about cs111.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "tell me about cs208",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "can you tell me about history of the us",
+      "intent": "ClassDescriptionRequest",
+      "entities": []
+    },
+    {
+      "text": "tell me about intro to computer science",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "tell me about cs11",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "where does civil rights history meet?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "can you tell me about algorithms?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "tell me more about cs111.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "tell me more about intro to computer science.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "what classes are in computer science?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "can you tell me about the history of the us?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 6,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "give me information about cs111.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "tell me about cs111",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "what about cs111",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "can you tell me about cs111?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "tell me about cs254",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "tell me more about cs208.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "what about cs111.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "tell me about cs208.'",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "what is cs111?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "waht about cs110?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "more about math236",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "tell me about math211",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "tell me about cs211.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "can i get information on cs210?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "tell me about math208.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i was thinking about cs.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "what music classes are offered?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "can you tell me about rel 101",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "can you tell me about the soan department?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "tell me about math236",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "can you tell me about hist 125",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "what can you tell me about cs111?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "what math classes can i take?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 1,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "i am interested in philosophy",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "what can you tell me about the arts department",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "what about math236?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "tell me about data structures.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "tell me about linear algebra",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "can you tell me anything about the cs department?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "can you tell me about math 236?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "what is up with math 236?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "what classes are being taught by dave musicant?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "tell me about cs 111.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "can you tell me about phys 101?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "what about math 236",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "what is cs111 like?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "i was thinking about cs",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "can i get information on math 235",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i need to take an english class.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "tell me about math236.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "tell me about math 236",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "tell me about cs11.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i was thinking about taking calculus 2",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "can you tell me about spanish 202?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "where can i learn about skiing?",
+      "intent": "ClassDescriptionRequest",
+      "entities": []
+    },
+    {
+      "text": "tell me about arts140.",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "where can i learn about french cinema?",
+      "intent": "ClassDescriptionRequest",
+      "entities": []
+    },
+    {
+      "text": "tell me about arts160",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "where can i learn about the politics of south asia?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 6,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "tell me about cs 111",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "where can",
+      "intent": "ClassDescriptionRequest",
+      "entities": []
+    },
+    {
+      "text": "tell me about algorithms",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "is there a class on data?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "is there a class on language?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "is there a class on movies?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "is there a class on stats?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "is there a class on films?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "is there a class on frisbee?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "is there a class on smash?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "is there a class on video games?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "is there a class on rocks?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "is there a class on tomatoes?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "is there a class on orangutans?",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i want to take a class about sports",
+      "intent": "ClassDescriptionRequest",
+      "entities": []
+    },
+    {
+      "text": "i'd like to take a class about stars",
+      "intent": "ClassDescriptionRequest",
+      "entities": []
+    },
+    {
+      "text": "i want to take a class about astronomy",
+      "intent": "ClassDescriptionRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "pe 112 was during 2a.",
+      "intent": "ClassTimeResponse",
+      "entities": [
+        {
+          "entity": "time",
+          "startPos": 4,
+          "endPos": 4
+        },
+        {
+          "entity": "class",
+          "startPos": 0,
+          "endPos": 1
+        }
+      ]
+    },
+    {
+      "text": "i want to take a computer science class after 3a.",
+      "intent": "ClassTimeResponse",
+      "entities": [
+        {
+          "entity": "time",
+          "startPos": 9,
+          "endPos": 9
+        },
+        {
+          "entity": "department",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i want to take cs111 during 3a.",
+      "intent": "ClassTimeResponse",
+      "entities": [
+        {
+          "entity": "time",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "my name is ryan. i am a junior.",
+      "intent": "WelcomeResponse",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hello, my name is tore.",
+      "intent": "WelcomeResponse",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "hi my name is adi. not same. he sucks",
+      "intent": "WelcomeResponse",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "that seems too hard.",
+      "intent": "ClassSentiment",
+      "entities": []
+    },
+    {
+      "text": "i am a math major.",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "my major is english.",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am a math major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am an english major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am a women's and gender studies major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "i am a history major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am a biology major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am a european studies major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i am a computer science major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i am a psychology major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am a latin american studies major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i am a economics major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am an economics major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am a cinema and media studies major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i am a linguistics major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am a mathematics major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am an art history major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i am a french and francophone studies major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i am a studio art major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i am a cams major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am a wgst major",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am a cinema and media studies",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i am a neuroscience concentrator",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am a biochemistry concentrator",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am a political economy concentrator",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i am a latin american studies concentrator",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i am a european studies concentrator",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i am an archaeology concentrator",
+      "intent": "StudentMajorResponse",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "my name is ryan saeta",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is sam.",
+      "intent": "StudentNameInfo",
+      "entities": []
+    },
+    {
+      "text": "hello my name is sam boswell.",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "hi my name is sam boswell.",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "hello my name is sam boswell",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "my name is sam boswell.",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "my name is sam boswell",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is sam boswell",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "hi, my name is sam boswell.",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "hi my name is tim",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i'm alex.",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hi, my name is zach",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "hi i'm tore",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi, my name is charlie",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "hi my name is allan",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i'm david",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hello, my name is evan",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "hi, my name is quinn",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "hi my name is jose",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is alison",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi, my name is jenna",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "hi my name is emily",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is shmoopie",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "my name is emily",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hi my name is juan",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is aditya",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hello i am tim",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hi my name is julie",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "my name is slim shady",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i'm harrison",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hi my name is chloe",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "they call me batman",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hi my name is esmerelda",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is sara",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi i'm charlie",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is carlitos",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is charlotte",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi i'm emily",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "my name is ryan",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hi my name is scott",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is kanye",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is sarah",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is pablo",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "my name's zelda",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is robert",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is goliath",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is sam",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is charles",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "my name is charlie",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hi my name is peter",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is carson",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is lee",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is enrique",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hello my name is david",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is homer",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hello, my name is bob",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "hi my name is cleveland",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "my name is sam.",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hi my name is beth",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is charlie",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is shirley",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is morty",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is jerry",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is gabriel",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is britta",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is troy",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is jessica",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is annie",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is amy",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "my name is jay",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hi my name is summer",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is rick",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is alex",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is ben",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is neil",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is phil",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is cudder",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is abed",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is jeff",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi i'm christopher",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is christopher",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is ryan",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi i'm michael",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is steve",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hello, i am tore",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hello my name is kevin",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi i'm justin",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "my name is kanye",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hi, i'm sam boswell",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "hi my name is matthew",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "my name is carleton",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hi i am quincy",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "my name is rick",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "my name is carl",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "my name is andre",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "hi i'm ben",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "hi my name is bob",
+      "intent": "StudentNameInfo",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i took a writing rich course sophomore year.",
+      "intent": "StudentRequirementResponse",
+      "entities": []
+    },
+    {
+      "text": "i still need take a writing rich 2 course.",
+      "intent": "StudentRequirementResponse",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "what requirements do i have left?",
+      "intent": "StudentRequirementRequest",
+      "entities": []
+    },
+    {
+      "text": "what classes should i take?",
+      "intent": "StudentRequirementRequest",
+      "entities": []
+    },
+    {
+      "text": "what should i take to fulfill my requirements?",
+      "intent": "StudentRequirementRequest",
+      "entities": []
+    },
+    {
+      "text": "what do i need to take?",
+      "intent": "StudentRequirementRequest",
+      "entities": []
+    },
+    {
+      "text": "what do i still need to take?",
+      "intent": "StudentRequirementRequest",
+      "entities": []
+    },
+    {
+      "text": "what classes do i still have to take?",
+      "intent": "StudentRequirementRequest",
+      "entities": []
+    },
+    {
+      "text": "do i need to take any more writing rich courses?",
+      "intent": "StudentRequirementRequest",
+      "entities": []
+    },
+    {
+      "text": "what classes do i need to take?",
+      "intent": "StudentRequirementRequest",
+      "entities": []
+    },
+    {
+      "text": "i still need to fulfill my formal or statistical reasoning requirement",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "i need to take a statistical reasoning class",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "yup, i still need to complete my arts practice requirement",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 8,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "i've still gotta take an arts course",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i need to take a writing rich course",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i gotta complete my lab requirement",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i still need to complete my science with lab component distro",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "i have to take a literary analysis class",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "yeah, i still i have to complete my artistic analysis requirement",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 9,
+          "endPos": 10
+        }
+      ]
+    },
+    {
+      "text": "i need to finish my humanistic inquiry requirement",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i still need to take a hi course",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i have to take something to fulfill my social inquiry requirement",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 8,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "i still need to take an si class",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "writing rich 1 is the last distribution requirement i have",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 0,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "i need to take a qre course",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i need to take a quantitative reasoning course",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i need to take two more qre courses",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i still have to take another quantitative reasoning course",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i have to take my ids and qre requirements",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
+          "entity": "distribution",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i just need to take an ids course",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i need to take an intercultural domestic studies",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i have to take ids and qre courses",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 4,
+          "endPos": 4
+        },
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i need to fulfill my international studies requirement",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i've got my is requirement left.",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "the only requirement i have left is arts practice",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 7,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "i still need to complete my arts practice",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "the last requirement i have left is quantitative reasoning",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 7,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "i still need to take an international studies class",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i still need to fill my intercultural domestic studies requirement",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "i need to fulfill my ids and hi requirements",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
+          "entity": "distribution",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i've still got my hi and qre requirements left",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
+          "entity": "distribution",
+          "startPos": 8,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "my last two requirements are arts practice and statistical reasoning",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        },
+        {
+          "entity": "distribution",
+          "startPos": 8,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "i still need to complete my arts practice and qre requirements",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 7
+        },
+        {
+          "entity": "distribution",
+          "startPos": 9,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "i still need to complete my ids requirement",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i still have to complete my arts practice distro",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i still need to take a lab",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i have to take a lab",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i need to take a lab science",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i think i need to take a lab science",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i still need to take a qre",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i think i have to take a qre",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i need to take a lab science before i graduate",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i still need to take a writing rich",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i have to take a writing rich class",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i need to take a writing rich class before i graduate",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i have to take a qre",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i need to take a qre",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i need to take a humanistic inquiry class",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i still need humanistic inquiry",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i need to take an arts practice class",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i need to take an arts practice before i graduate",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i still need to take an arts practice and a lab",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 7
+        },
+        {
+          "entity": "distribution",
+          "startPos": 10,
+          "endPos": 10
+        }
+      ]
+    },
+    {
+      "text": "a lab and an arts practice",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 1,
+          "endPos": 1
+        },
+        {
+          "entity": "distribution",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i still need to take a qre and arts practice",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
+          "entity": "distribution",
+          "startPos": 8,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "i still need to take a lab and a qre",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
+          "entity": "distribution",
+          "startPos": 9,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "i still need to take a qre and a lab",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
+          "entity": "distribution",
+          "startPos": 9,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "i have a qre and lab left",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 3,
+          "endPos": 3
+        },
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i need to take a writing rich and a lab",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        },
+        {
+          "entity": "distribution",
+          "startPos": 9,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "i need to take a qre and a writing rich",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
+          "entity": "distribution",
+          "startPos": 8,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "i need a writing rich",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i have to take a writing rich",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i could use a lab",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i could use a qre",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i still need to take a literary analysis class",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i still need to take a humanistic inquiry class",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i still need to take a writing rich class",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i still need to complete my hi, ids, arts, and qre requirements",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 6
+        },
+        {
+          "entity": "distribution",
+          "startPos": 8,
+          "endPos": 8
+        },
+        {
+          "entity": "distribution",
+          "startPos": 10,
+          "endPos": 11
+        },
+        {
+          "entity": "distribution",
+          "startPos": 13,
+          "endPos": 13
+        }
+      ]
+    },
+    {
+      "text": "i need to complete my ids, humanistic inquiry, and arts practice requirements",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 5
+        },
+        {
+          "entity": "distribution",
+          "startPos": 7,
+          "endPos": 8
+        },
+        {
+          "entity": "distribution",
+          "startPos": 11,
+          "endPos": 12
+        }
+      ]
+    },
+    {
+      "text": "i need to take my a & i",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i need to take my a&i",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i need to take my a and i",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 5,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i still need to take my a and i",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "i still need to take my a&i",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "distribution",
+          "startPos": 6,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "i need to take a pe class",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i need to take intermediate macro",
+      "intent": "StudentRequirementRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "when is math 245 offered?",
+      "intent": "ClassTimeRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "when does cs111 meet?",
+      "intent": "ClassTimeRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "when is org and arch?",
+      "intent": "ClassTimeRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "who is teaching math of computer science?",
+      "intent": "ClassProfessorRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "who's the professor for afam102?",
+      "intent": "ClassProfessorRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "who teaches cs208 next term?",
+      "intent": "ClassProfessorRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "what term is cs 254?",
+      "intent": "ClassTermRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "when did i take algorithms?",
+      "intent": "ClassTermRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i like physics",
+      "intent": "StudentInterests",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 2,
+          "endPos": 2
+        }
+      ]
+    },
+    {
+      "text": "i'd like to know more about history",
+      "intent": "StudentInterests",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 8,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "i really like philosophy",
+      "intent": "StudentInterests",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i like biology, chemistry, and physics.",
+      "intent": "StudentInterests",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 2,
+          "endPos": 2
+        },
+        {
+          "entity": "department",
+          "startPos": 4,
+          "endPos": 4
+        },
+        {
+          "entity": "department",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i'm not that great at learning a language.",
+      "intent": "StudentInterests",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 9,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "can i take a physics class?",
+      "intent": "StudentInterests",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i really like chemistry",
+      "intent": "StudentInterests",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "what should i take this term?",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "i'm interested in biology",
+      "intent": "StudentInterests",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "where can i learn about rockets?",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "where can i learn about bloodlust",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "do you think i should take an art class?",
+      "intent": "StudentInterests",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 7,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "should i take a math class?",
+      "intent": "StudentInterests",
+      "entities": [
+        {
+          "entity": "department",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "where can i learn about climate change",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "where can i learn about weather?",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "where can i learn about music?",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "where can i learn about rocks?",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "where can i learn about roman history",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "where can i learn about sociology",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "where can i learn about rap?",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "where can i learn about the world?",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "where can i learn about clouds?",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "where can i learn about trees?",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "where can i learn about robotics",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "where can i learn about cinema?",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "i'm interested in clouds",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "i like rocks",
+      "intent": "StudentInterests",
+      "entities": []
+    },
+    {
+      "text": "i took org and arch sophomore fall.",
+      "intent": "ClassTermResponse",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "what is my major?",
+      "intent": "StudentMajorRequest",
+      "entities": []
+    },
+    {
+      "text": "i took ode's in fall 2016.",
+      "intent": "ClassDescriptionResponse",
+      "entities": [
+        {
+          "entity": "term",
+          "startPos": 6,
+          "endPos": 7
+        }
+      ]
+    },
+    {
+      "text": "i took math 235 with sam patterson.",
+      "intent": "ClassDescriptionResponse",
+      "entities": [
+        {
+          "entity": "personname",
+          "startPos": 5,
+          "endPos": 6
+        },
+        {
+          "entity": "class",
+          "startPos": 2,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "is there a class on genetics",
+      "intent": "ClassDescriptionResponse",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "take me out of math of cs.",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "unregister me from history of the internet",
+      "intent": "UnregisterRequest",
+      "entities": []
+    },
+    {
+      "text": "unregister me from org and arch",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i don't want to be in math of cs",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 8,
+          "endPos": 10
+        }
+      ]
+    },
+    {
+      "text": "i don't want to be in philosophy of science",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 8,
+          "endPos": 10
+        }
+      ]
+    },
+    {
+      "text": "i want to take another class instead of cs 111",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 8,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "unregister me from math of cs",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i don't want to take gis anymore",
+      "intent": "UnregisterRequest",
+      "entities": []
+    },
+    {
+      "text": "take me out of ents 115",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "unregister me for math 215",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "unregister me for that class",
+      "intent": "UnregisterRequest",
+      "entities": []
+    },
+    {
+      "text": "take me out of ents 215",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "unregister me from cs 111",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i don't want to take that class anymore",
+      "intent": "UnregisterRequest",
+      "entities": []
+    },
+    {
+      "text": "take me out of a class",
+      "intent": "UnregisterRequest",
+      "entities": []
+    },
+    {
+      "text": "unregister me for that",
+      "intent": "UnregisterRequest",
+      "entities": []
+    },
+    {
+      "text": "unregister me for data structures",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "unregister me for math of cs",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 3,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "take me out of that",
+      "intent": "UnregisterRequest",
+      "entities": []
+    },
+    {
+      "text": "take me out of that class",
+      "intent": "UnregisterRequest",
+      "entities": []
+    },
+    {
+      "text": "take me out of data structures",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "take me out of math of cs",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "take me out of history 101",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 4,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i don't want to take data structures",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 7,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "i don't want to take math of cs",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 7,
+          "endPos": 9
+        }
+      ]
+    },
+    {
+      "text": "i dont want to take that",
+      "intent": "UnregisterRequest",
+      "entities": []
+    },
+    {
+      "text": "i don't want to take digital foundations",
+      "intent": "UnregisterRequest",
+      "entities": [
+        {
+          "entity": "class",
+          "startPos": 7,
+          "endPos": 8
+        }
+      ]
+    },
+    {
+      "text": "i don't want to take that class",
+      "intent": "UnregisterRequest",
+      "entities": []
+    },
+    {
+      "text": "i am a sophomore",
+      "intent": "StudentInfoYear",
+      "entities": [
+        {
+          "entity": "time",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i'm graduating next term",
+      "intent": "StudentInfoYear",
+      "entities": [
+        {
+          "entity": "time",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i am a freshman",
+      "intent": "StudentInfoYear",
+      "entities": [
+        {
+          "entity": "time",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am a junior",
+      "intent": "StudentInfoYear",
+      "entities": [
+        {
+          "entity": "time",
+          "startPos": 3,
+          "endPos": 3
+        }
+      ]
+    },
+    {
+      "text": "i am in the class of 2017",
+      "intent": "StudentInfoYear",
+      "entities": [
+        {
+          "entity": "time",
+          "startPos": 6,
+          "endPos": 6
+        }
+      ]
+    },
+    {
+      "text": "i'm graduating in 2018",
+      "intent": "StudentInfoYear",
+      "entities": [
+        {
+          "entity": "time",
+          "startPos": 5,
+          "endPos": 5
+        }
+      ]
+    },
+    {
+      "text": "i'm a senior",
+      "intent": "StudentInfoYear",
+      "entities": [
+        {
+          "entity": "time",
+          "startPos": 4,
+          "endPos": 4
+        }
+      ]
+    },
+    {
+      "text": "i don't know",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i'm not sure",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i have no clue",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i have no idea",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i haven't an idea",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i'm unsure",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i'm uncertain",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i don't what i need to take",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i don't know what i need to take",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i am not sure what i should take",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i am not super sure on what i should take",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i have no idea what i should take",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i am uncertain",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i dont know",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i am not sure",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "im not sure",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i dont have a clue",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i couldn't tell you",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i haven't the faintest idea",
+      "intent": "UncertainResponse",
+      "entities": []
+    },
+    {
+      "text": "i don't know what to do",
+      "intent": "UncertainResponse",
+      "entities": []
+    }
+  ]
+}
