@@ -277,7 +277,7 @@ def fill_out_courses(results, new_keywords = None, student_major = None, student
     return courses
 
 
-def makeOccurenceMatrix():
+def make_occurrence_matrix():
     """
     Helper function to construct co-occurrence matrix, which is now stored on the database
     """
@@ -317,7 +317,7 @@ def makeOccurenceMatrix():
                 for word in titleArray:
                     w = ''.join(ch for ch in word if ch not in punctuationset)
                     w = w.upper()
-                    if w not in stop_words:
+                    if w.lower() not in stop_words:
                         distinct_word.add(w)
                     if w not in dept_dictionary:
                         dept_dictionary[w] = 1
@@ -328,7 +328,7 @@ def makeOccurenceMatrix():
                 for word2 in long_description_array:
                     w = ''.join(ch for ch in word2 if ch not in punctuationset)
                     w = w.upper()
-                    if w not in stop_words:
+                    if w.lower() not in stop_words:
                         distinct_word.add(w)
                     if w not in dept_dictionary:
                         dept_dictionary[w] = 1
