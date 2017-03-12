@@ -149,7 +149,7 @@ class Conversation:
     def check_full_schedule(self, debug=False):
         responseToCredits = input()
         responseSentiment = self.sentimentAnalyzer.polarity_scores(responseToCredits)
-        if responseSentiment["neg"] > responseSentiment["pos"]:
+        if responseSentiment["neg"] > responseSentiment["pos"] or "bye" in responseToCredits:
             print("Smell ya later! Thanks for chatting.")
             self.conversing = False
             self.start_conversation(debug)
@@ -163,7 +163,7 @@ class Conversation:
                                                                                 User_Query.QueryType.clarify)[0]
             for uQ in uQs:
                 print("-" * 100)
-                toPrint = self.nluu.create_response(userQuery)
+                toPrint = self.nluu.create_response(uQ)
                 toPrint = toPrint.encode("ascii", "ignore")
                 toPrint = toPrint.decode("ascii")
                 spaces = " " * (100 - len(toPrint))
