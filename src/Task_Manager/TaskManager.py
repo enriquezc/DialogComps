@@ -274,7 +274,7 @@ def fill_out_courses(results, new_keywords = None, student_major = None, student
     return courses
 
 
-def makeCooccurenceMatrix():
+def makeOccurenceMatrix():
     """
     Helper function to construct co-occurrence matrix, which is now stored on the database
     """
