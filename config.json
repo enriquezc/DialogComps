@@ -1,4 +1,6 @@
 {
-    "luisurl": "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/6a9bd343-9d24-4a97-bd44-52f1a6a7e240?subscription-key=608ce3fa500945a3b9f501df012affa9&verbose=true"
-
+    "luisurl": "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/6a9bd343-9d24-4a97-bd44-52f1a6a7e240?subscription-key=608ce3fa500945a3b9f501df012affa9&verbose=true",
+    "database_host":"cmc307-07.mathcs.carleton.edu",
+    "database_name":"dialogcomps",
+    "database_password":"dialog!=comps"
 }
