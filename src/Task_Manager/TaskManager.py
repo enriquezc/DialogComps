@@ -11,6 +11,7 @@ import io
 import string
 from src.Dialog_Manager import Course
 import src.utils.debug as debug
+import json
 
 conn = None
 dept_dict = {}
@@ -21,7 +22,7 @@ stop_words = None
 debug_value = None
 
 def init(init_debug = False):
-    connect_to_db()
+
     create_dept_dict()
     create_major_dict()
     create_concentration_dict()
@@ -31,12 +32,14 @@ def init(init_debug = False):
     global debug_value
     debug_value = init_debug
 
+    config_file = open("./config.json")
+    config = json.load(config_file)
+    connect_to_db(config["database_host"], config["database_name"], config["database_password"])
 
-
-def connect_to_db():
+def connect_to_db(db_host, db_name, db_password):
     global conn
-    conn = psycopg2.connect(host = "cmc307-07.mathcs.carleton.edu", \
-    database = "dialogcomps", user = "dialogcomps", password = "dialog!=comps")
+    conn = psycopg2.connect(host = db_host, \
+    database = db_name, user = db_name, password = db_password)
 
 
 def query_courses(course, approximate = False):
@@ -274,7 +277,7 @@ def fill_out_courses(results, new_keywords = None, student_major = None, student
     return courses
 
 
-def makeOccurenceMatrix():
+def make_occurrence_matrix():
     """
     Helper function to construct co-occurrence matrix, which is now stored on the database
     """
@@ -314,7 +317,7 @@ def makeOccurenceMatrix():
                 for word in titleArray:
                     w = ''.join(ch for ch in word if ch not in punctuationset)
                     w = w.upper()
-                    if w not in stop_words:
+                    if w.lower() not in stop_words:
                         distinct_word.add(w)
                     if w not in dept_dictionary:
                         dept_dictionary[w] = 1
@@ -325,7 +328,7 @@ def makeOccurenceMatrix():
                 for word2 in long_description_array:
                     w = ''.join(ch for ch in word2 if ch not in punctuationset)
                     w = w.upper()
-                    if w not in stop_words:
+                    if w.lower() not in stop_words:
                         distinct_word.add(w)
                     if w not in dept_dictionary:
                         dept_dictionary[w] = 1
@@ -434,6 +437,7 @@ def create_stop_words_set():
     stop_words.add("class")
     stop_words.add("i")
     stop_words.add("concentration")
+    #stop_words.add("concentrate")
     stop_words.add("concentrator")
     stop_words.add("yes")
 
