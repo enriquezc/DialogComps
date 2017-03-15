@@ -4,12 +4,9 @@
 This project is an attempt at developing a conversation machine for helping students find and register for courses at Carleton College. We combined our domain knowledge about Carleton, principles of conversation such as Grice's Maxims of Conversation, and fundamental computer science principles to create a conversational structure and reactive system that can incorporate context and objectives to register a client for a personalized course load.
 To set up for your own project, you will need to add the various information to our config.json file. The information that you need to fill out is:
 
-luisurl: The link to your published Microsoft LUIS account. You will get a link when you publish it.
-
-database_host: Wherever you host the database. We set up our database with the help of Mike Tie.
-
-database_name: Whatever the name of your database is.
-
+luisurl: The link to your published Microsoft LUIS account. You will get a link when you publish it.          
+database_host: Wherever you host the database. We set up our database with the help of Mike Tie.          
+database_name: Whatever the name of your database is.         
 database_password: The password to your database.
 
 After all of this information is filled out, you will be able to run Making Your Advisor Obsolete.
