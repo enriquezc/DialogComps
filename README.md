@@ -2,6 +2,9 @@
 # Making Your Advisor Obsolete: A Dialogue System
 [COMPS 2016-2017]
 This project is an attempt at developing a conversation machine for helping students find and register for courses at Carleton College. We combined our domain knowledge about Carleton, principles of conversation such as Grice's Maxims of Conversation, and fundamental computer science principles to create a conversational structure and reactive system that can incorporate context and objectives to register a client for a personalized course load.
+
+Visit the COMPS webpage to see a detailed overview of the project: http://cs.carleton.edu/cs_comps/1617/dialogue/final-results/index.html
+
 To set up for your own project, you will need to add the various information to our config.json file. The information that you need to fill out is:
 
 luisurl: The link to your published Microsoft LUIS account. You will get a link when you publish it.          
